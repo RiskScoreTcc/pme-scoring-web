@@ -1,0 +1,64 @@
+<div class="app-container">
+  <aside class="sidebar" [class.closed]="!isSidebarOpen">
+    <div class="sidebar-header">
+      <h2 class="logo-full">PME Scoring</h2>
+      <span class="logo-icon">PS</span>
+    </div>
+
+    <nav class="sidebar-nav">
+      <ul>
+        <li>
+          <a routerLink="/dashboard" routerLinkActive="active">
+            <span class="icon">📊</span>
+            <span class="label">Dashboard</span>
+          </a>
+        </li>
+        <li>
+          <a routerLink="/firms" routerLinkActive="active">
+            <span class="icon">🏢</span>
+            <span class="label">Firms (Empresas)</span>
+          </a>
+        </li>
+        <li>
+          <a routerLink="/scores" routerLinkActive="active">
+            <span class="icon">📈</span>
+            <span class="label">Calculated Scores</span>
+          </a>
+        </li>
+        <li>
+          <a routerLink="/occurrences" routerLinkActive="active">
+            <span class="icon">⚠️</span>
+            <span class="label">Occurrences</span>
+          </a>
+        </li>
+        <li>
+          <a routerLink="/weights" routerLinkActive="active">
+            <span class="icon">⚖️</span>
+            <span class="label">Weight Config</span>
+          </a>
+        </li>
+        <li>
+          <a routerLink="/users" routerLinkActive="active">
+            <span class="icon">👥</span>
+            <span class="label">Users & Access</span>
+          </a>
+        </li>
+      </ul>
+    </nav>
+  </aside>
+
+  <!-- Conteúdo Principal -->
+  <div class="main-content">
+    <header class="topbar">
+      <button class="toggle-btn" (click)="toggleSidebar()" aria-label="Alternar Menu">☰</button>
+      <div class="user-profile">
+        <span class="user-info">Administrador</span>
+        <div class="avatar">AD</div>
+      </div>
+    </header>
+
+    <main class="content-area">
+      <router-outlet></router-outlet>
+    </main>
+  </div>
+</div>

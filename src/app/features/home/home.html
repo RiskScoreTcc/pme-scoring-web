@@ -1,0 +1,56 @@
+<div class="home-container">
+  <!-- Cabeçalho de Boas-Vindas -->
+  <div class="welcome-banner">
+    <h1>Bem-vindo ao PME Scoring Dashboard</h1>
+    <p>Monitoramento financeiro, cálculo de riscos e gestão de empresas simplificados.</p>
+  </div>
+
+  <!-- Cards de Resumo / Métricas Rápidas -->
+  <div class="metrics-grid">
+    <div class="metric-card">
+      <div class="metric-icon firms">🏢</div>
+      <div class="metric-info">
+        <h3>Firm Management</h3>
+        <p>Cadastre e gerencie as empresas avaliadas.</p>
+        <span class="badge">FirmController</span>
+      </div>
+    </div>
+
+    <div class="metric-card">
+      <div class="metric-icon scores">📈</div>
+      <div class="metric-info">
+        <h3>Calculated Scores</h3>
+        <p>Acompanhe os scores e pontuações calculadas.</p>
+        <span class="badge">ScoreController</span>
+      </div>
+    </div>
+
+    <div class="metric-card">
+      <div class="metric-icon occurrences">⚠️</div>
+      <div class="metric-info">
+        <h3>Occurrences</h3>
+        <p>Monitore ocorrências e alertas registrados.</p>
+        <span class="badge">OccurrenceController</span>
+      </div>
+    </div>
+
+    <div class="metric-card">
+      <div class="metric-icon weights">⚖️</div>
+      <div class="metric-info">
+        <h3>Weight Config</h3>
+        <p>Ajuste os pesos e parâmetros de cálculo.</p>
+        <span class="badge">WeightController</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Seção de Ações Rápidas -->
+  <div class="quick-actions">
+    <h2>Ações Rápidas</h2>
+    <div class="actions-list">
+      <button class="action-btn" routerLink="/firms">✨ Nova Empresa (Firm)</button>
+      <button class="action-btn" routerLink="/scores">📊 Visualizar Novo Cálculo</button>
+      <button class="action-btn" routerLink="/weights">⚙️ Configurar Pesos</button>
+    </div>
+  </div>
+</div>

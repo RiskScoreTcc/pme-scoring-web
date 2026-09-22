@@ -1,56 +1,391 @@
-<div class="home-container">
-  <!-- Cabeçalho de Boas-Vindas -->
-  <div class="welcome-banner">
-    <h1>Bem-vindo ao PME Scoring Dashboard</h1>
-    <p>Monitoramento financeiro, cálculo de riscos e gestão de empresas simplificados.</p>
-  </div>
+<div class="overview">
 
-  <!-- Cards de Resumo / Métricas Rápidas -->
-  <div class="metrics-grid">
-    <div class="metric-card">
-      <div class="metric-icon firms">🏢</div>
-      <div class="metric-info">
-        <h3>Firm Management</h3>
-        <p>Cadastre e gerencie as empresas avaliadas.</p>
-        <span class="badge">FirmController</span>
+  <!-- Cabeçalho -->
+  <header class="overview-header">
+    <div>
+      <span class="eyebrow">PME SCORING</span>
+
+      <h1>Visão Geral de Risco</h1>
+
+      <p>
+        Acompanhe os principais indicadores e a situação de risco das empresas avaliadas.
+      </p>
+    </div>
+
+    <div class="header-info">
+      <span>Última atualização</span>
+      <strong>Hoje, 14:32</strong>
+    </div>
+  </header>
+
+
+  <!-- Indicadores principais -->
+  <section class="metrics-grid" aria-label="Principais indicadores">
+
+    <article class="metric-card">
+      <div class="metric-header">
+        <span class="metric-label">Empresas avaliadas</span>
+        <span class="metric-icon firms" aria-hidden="true">▣</span>
+      </div>
+
+      <div class="metric-value">1.248</div>
+
+      <p class="metric-description">
+        Empresas com avaliação registrada
+      </p>
+    </article>
+
+
+    <article class="metric-card">
+      <div class="metric-header">
+        <span class="metric-label">Score médio</span>
+        <span class="metric-icon score" aria-hidden="true">↗</span>
+      </div>
+
+      <div class="metric-value">742</div>
+
+      <p class="metric-description">
+        Média dos scores calculados
+      </p>
+    </article>
+
+
+    <article class="metric-card">
+      <div class="metric-header">
+        <span class="metric-label">Alto risco</span>
+        <span class="metric-icon high" aria-hidden="true">!</span>
+      </div>
+
+      <div class="metric-value">126</div>
+
+      <p class="metric-description">
+        Empresas classificadas como alto risco
+      </p>
+    </article>
+
+
+    <article class="metric-card">
+      <div class="metric-header">
+        <span class="metric-label">Ocorrências abertas</span>
+        <span class="metric-icon occurrence" aria-hidden="true">!</span>
+      </div>
+
+      <div class="metric-value">23</div>
+
+      <div class="occurrence-summary">
+        <span class="high-text">5 alta</span>
+        <span>11 média</span>
+        <span class="low-text">7 baixa</span>
+      </div>
+    </article>
+
+  </section>
+
+
+  <!-- Análise -->
+  <section class="analysis-grid">
+
+    <!-- Distribuição de risco -->
+    <article class="panel risk-panel">
+
+      <div class="panel-header">
+        <div>
+          <h2>Distribuição de risco</h2>
+          <p>Distribuição das empresas por classificação de risco.</p>
+        </div>
+      </div>
+
+      <div class="risk-list">
+
+        <div class="risk-item">
+          <div class="risk-info">
+            <span>Baixo</span>
+            <strong>52%</strong>
+          </div>
+
+          <div class="risk-bar">
+            <div
+              class="risk-progress low"
+              style="width: 52%">
+            </div>
+          </div>
+        </div>
+
+
+        <div class="risk-item">
+          <div class="risk-info">
+            <span>Médio</span>
+            <strong>31%</strong>
+          </div>
+
+          <div class="risk-bar">
+            <div
+              class="risk-progress medium"
+              style="width: 31%">
+            </div>
+          </div>
+        </div>
+
+
+        <div class="risk-item">
+          <div class="risk-info">
+            <span>Alto</span>
+            <strong>17%</strong>
+          </div>
+
+          <div class="risk-bar">
+            <div
+              class="risk-progress high"
+              style="width: 17%">
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </article>
+
+
+    <!-- Atenção -->
+    <article class="panel attention-panel">
+
+      <div class="panel-header">
+        <div>
+          <h2>Atenção necessária</h2>
+          <p>Ocorrências que exigem acompanhamento.</p>
+        </div>
+      </div>
+
+      <div class="attention-list">
+
+        <div class="attention-item">
+          <div class="attention-icon high" aria-hidden="true">
+            !
+          </div>
+
+          <div>
+            <strong>5 ocorrências de alta severidade</strong>
+            <span>Requerem atenção prioritária</span>
+          </div>
+        </div>
+
+
+        <div class="attention-item">
+          <div class="attention-icon medium" aria-hidden="true">
+            !
+          </div>
+
+          <div>
+            <strong>11 ocorrências de média severidade</strong>
+            <span>Recomendado acompanhamento</span>
+          </div>
+        </div>
+
+
+        <div class="attention-item">
+          <div class="attention-icon low" aria-hidden="true">
+            !
+          </div>
+
+          <div>
+            <strong>7 ocorrências de baixa severidade</strong>
+            <span>Acompanhamento de rotina</span>
+          </div>
+        </div>
+
+      </div>
+
+    </article>
+
+  </section>
+
+
+  <!-- Avaliações recentes -->
+  <section class="panel recent-panel">
+
+    <div class="panel-header">
+      <div>
+        <h2>Avaliações recentes</h2>
+        <p>Últimas empresas que tiveram o score calculado.</p>
+      </div>
+
+      <a
+        routerLink="/scores"
+        class="panel-link">
+        Ver todos
+      </a>
+    </div>
+
+
+    <div class="table-container">
+
+      <table>
+
+        <thead>
+          <tr>
+            <th scope="col">Empresa</th>
+            <th scope="col">Score</th>
+            <th scope="col">Classificação</th>
+            <th scope="col">Data da avaliação</th>
+          </tr>
+        </thead>
+
+        <tbody>
+
+          <tr>
+            <td>
+              <strong>Empresa Alpha Ltda.</strong>
+            </td>
+
+            <td>824</td>
+
+            <td>
+              <span class="risk-badge low">
+                Baixo
+              </span>
+            </td>
+
+            <td>22/09/2026</td>
+          </tr>
+
+
+          <tr>
+            <td>
+              <strong>Empresa Beta Ltda.</strong>
+            </td>
+
+            <td>581</td>
+
+            <td>
+              <span class="risk-badge medium">
+                Médio
+              </span>
+            </td>
+
+            <td>22/09/2026</td>
+          </tr>
+
+
+          <tr>
+            <td>
+              <strong>Empresa Gamma Ltda.</strong>
+            </td>
+
+            <td>312</td>
+
+            <td>
+              <span class="risk-badge high">
+                Alto
+              </span>
+            </td>
+
+            <td>21/09/2026</td>
+          </tr>
+
+
+          <tr>
+            <td>
+              <strong>Empresa Delta Ltda.</strong>
+            </td>
+
+            <td>691</td>
+
+            <td>
+              <span class="risk-badge medium">
+                Médio
+              </span>
+            </td>
+
+            <td>21/09/2026</td>
+          </tr>
+
+        </tbody>
+
+      </table>
+
+    </div>
+
+  </section>
+
+
+  <!-- Ações rápidas -->
+  <section class="quick-actions">
+
+    <div class="quick-actions-header">
+      <div>
+        <h2>Ações rápidas</h2>
+        <p>Acesse rapidamente as principais funcionalidades.</p>
       </div>
     </div>
 
-    <div class="metric-card">
-      <div class="metric-icon scores">📈</div>
-      <div class="metric-info">
-        <h3>Calculated Scores</h3>
-        <p>Acompanhe os scores e pontuações calculadas.</p>
-        <span class="badge">ScoreController</span>
-      </div>
+
+    <div class="actions-grid">
+
+      <a
+        routerLink="/firms"
+        class="action-card">
+
+        <span class="action-icon" aria-hidden="true">+</span>
+
+        <div>
+          <strong>Nova empresa</strong>
+          <span>Cadastrar uma nova empresa para avaliação.</span>
+        </div>
+
+        <span class="action-arrow" aria-hidden="true">→</span>
+
+      </a>
+
+
+      <a
+        routerLink="/scores"
+        class="action-card">
+
+        <span class="action-icon" aria-hidden="true">↗</span>
+
+        <div>
+          <strong>Consultar scores</strong>
+          <span>Visualizar e analisar os scores calculados.</span>
+        </div>
+
+        <span class="action-arrow" aria-hidden="true">→</span>
+
+      </a>
+
+
+      <a
+        routerLink="/occurrences"
+        class="action-card">
+
+        <span class="action-icon" aria-hidden="true">!</span>
+
+        <div>
+          <strong>Ver ocorrências</strong>
+          <span>Acompanhar ocorrências registradas.</span>
+        </div>
+
+        <span class="action-arrow" aria-hidden="true">→</span>
+
+      </a>
+
+
+      <a
+        routerLink="/scores"
+        class="action-card">
+
+        <span class="action-icon" aria-hidden="true">↓</span>
+
+        <div>
+          <strong>Exportar CSV</strong>
+          <span>Exportar os dados das avaliações.</span>
+        </div>
+
+        <span class="action-arrow" aria-hidden="true">→</span>
+
+      </a>
+
     </div>
 
-    <div class="metric-card">
-      <div class="metric-icon occurrences">⚠️</div>
-      <div class="metric-info">
-        <h3>Occurrences</h3>
-        <p>Monitore ocorrências e alertas registrados.</p>
-        <span class="badge">OccurrenceController</span>
-      </div>
-    </div>
+  </section>
 
-    <div class="metric-card">
-      <div class="metric-icon weights">⚖️</div>
-      <div class="metric-info">
-        <h3>Weight Config</h3>
-        <p>Ajuste os pesos e parâmetros de cálculo.</p>
-        <span class="badge">WeightController</span>
-      </div>
-    </div>
-  </div>
-
-  <!-- Seção de Ações Rápidas -->
-  <div class="quick-actions">
-    <h2>Ações Rápidas</h2>
-    <div class="actions-list">
-      <button class="action-btn" routerLink="/firms">✨ Nova Empresa (Firm)</button>
-      <button class="action-btn" routerLink="/scores">📊 Visualizar Novo Cálculo</button>
-      <button class="action-btn" routerLink="/weights">⚙️ Configurar Pesos</button>
-    </div>
-  </div>
 </div>

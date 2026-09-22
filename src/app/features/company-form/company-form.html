@@ -1,0 +1,847 @@
+<div class="company-form-page">
+
+  <!-- Cabeçalho -->
+  <header class="page-header">
+
+    <div class="page-header-content">
+
+      <div>
+
+        <span class="eyebrow">
+          GESTÃO DE EMPRESAS
+        </span>
+
+        <h1>
+          Cadastrar nova empresa
+        </h1>
+
+        <p>
+          Informe os dados cadastrais da empresa para incluí-la
+          na base de avaliação do PME Scoring.
+        </p>
+
+      </div>
+
+      <a
+        routerLink="/empresas"
+        class="back-link">
+
+        <span aria-hidden="true">←</span>
+
+        <span>
+          Voltar para empresas
+        </span>
+
+      </a>
+
+    </div>
+
+  </header>
+
+
+  <!-- Formulário -->
+  <form
+    class="company-form"
+    [formGroup]="companyForm"
+    (ngSubmit)="onSubmit()"
+    novalidate>
+
+
+    <!-- ========================================= -->
+    <!-- DADOS DA EMPRESA -->
+    <!-- ========================================= -->
+
+    <section
+      class="form-section"
+      formGroupName="companyData"
+      aria-labelledby="company-data-title">
+
+      <div class="section-heading">
+
+        <div>
+
+          <h2 id="company-data-title">
+            Dados da empresa
+          </h2>
+
+          <p>
+            Informe os principais dados cadastrais da empresa.
+          </p>
+
+        </div>
+
+        <span class="required-hint">
+          * Campos obrigatórios
+        </span>
+
+      </div>
+
+
+      <div class="form-grid">
+
+
+        <!-- Razão social -->
+        <div class="form-field form-field-wide">
+
+          <label for="legalName">
+            Razão social
+            <span
+              class="required"
+              aria-hidden="true">*</span>
+          </label>
+
+          <input
+            id="legalName"
+            type="text"
+            formControlName="legalName"
+            autocomplete="organization"
+            placeholder="Ex.: Alfa Comércio Ltda."
+            [attr.aria-invalid]="isInvalid('companyData.legalName')"
+            [attr.aria-describedby]="
+              isInvalid('companyData.legalName')
+                ? 'legalName-error'
+                : null
+            "
+          >
+
+          @if (isInvalid('companyData.legalName')) {
+
+            <span
+              id="legalName-error"
+              class="field-error"
+              role="alert">
+
+              Informe a razão social da empresa.
+
+            </span>
+
+          }
+
+        </div>
+
+
+        <!-- Nome fantasia -->
+        <div class="form-field">
+
+          <label for="tradeName">
+            Nome fantasia
+          </label>
+
+          <input
+            id="tradeName"
+            type="text"
+            formControlName="tradeName"
+            autocomplete="organization"
+            placeholder="Ex.: Alfa Comércio"
+          >
+
+        </div>
+
+
+        <!-- CNPJ -->
+        <div class="form-field">
+
+          <label for="cnpj">
+            CNPJ
+            <span
+              class="required"
+              aria-hidden="true">*</span>
+          </label>
+
+          <input
+            id="cnpj"
+            type="text"
+            formControlName="cnpj"
+            inputmode="numeric"
+            autocomplete="off"
+            placeholder="00.000.000/0000-00"
+            [attr.aria-invalid]="isInvalid('companyData.cnpj')"
+            [attr.aria-describedby]="
+              isInvalid('companyData.cnpj')
+                ? 'cnpj-help cnpj-error'
+                : 'cnpj-help'
+            "
+          >
+
+          <span
+            id="cnpj-help"
+            class="field-help">
+
+            Informe o CNPJ da empresa.
+
+          </span>
+
+          @if (isInvalid('companyData.cnpj')) {
+
+            <span
+              id="cnpj-error"
+              class="field-error"
+              role="alert">
+
+              Informe o CNPJ da empresa.
+
+            </span>
+
+          }
+
+        </div>
+
+
+        <!-- Natureza jurídica -->
+        <div class="form-field">
+
+          <label for="legalNature">
+            Natureza jurídica
+            <span
+              class="required"
+              aria-hidden="true">*</span>
+          </label>
+
+          <select
+            id="legalNature"
+            formControlName="legalNature"
+            [attr.aria-invalid]="isInvalid('companyData.legalNature')">
+
+            <option value="">
+              Selecione
+            </option>
+
+            <option value="LTDA">
+              Ltda.
+            </option>
+
+            <option value="SA">
+              S.A.
+            </option>
+
+            <option value="MEI">
+              MEI
+            </option>
+
+            <option value="EI">
+              Empresário Individual
+            </option>
+
+            <option value="OTHER">
+              Outra
+            </option>
+
+          </select>
+
+          @if (isInvalid('companyData.legalNature')) {
+
+            <span
+              class="field-error"
+              role="alert">
+
+              Selecione a natureza jurídica.
+
+            </span>
+
+          }
+
+        </div>
+
+
+        <!-- Setor -->
+        <div class="form-field">
+
+          <label for="businessSector">
+            Setor de atuação
+            <span
+              class="required"
+              aria-hidden="true">*</span>
+          </label>
+
+          <select
+            id="businessSector"
+            formControlName="businessSector"
+            [attr.aria-invalid]="
+              isInvalid('companyData.businessSector')
+            ">
+
+            <option value="">
+              Selecione
+            </option>
+
+            <option value="COMMERCE">
+              Comércio
+            </option>
+
+            <option value="INDUSTRY">
+              Indústria
+            </option>
+
+            <option value="SERVICES">
+              Serviços
+            </option>
+
+            <option value="TECHNOLOGY">
+              Tecnologia
+            </option>
+
+            <option value="HEALTH">
+              Saúde
+            </option>
+
+            <option value="LOGISTICS">
+              Logística
+            </option>
+
+            <option value="OTHER">
+              Outro
+            </option>
+
+          </select>
+
+          @if (isInvalid('companyData.businessSector')) {
+
+            <span
+              class="field-error"
+              role="alert">
+
+              Selecione o setor de atuação.
+
+            </span>
+
+          }
+
+        </div>
+
+
+        <!-- Data de abertura -->
+        <div class="form-field">
+
+          <label for="openingDate">
+            Data de abertura
+            <span
+              class="required"
+              aria-hidden="true">*</span>
+          </label>
+
+          <input
+            id="openingDate"
+            type="date"
+            formControlName="openingDate"
+            [attr.aria-invalid]="
+              isInvalid('companyData.openingDate')
+            "
+          >
+
+          @if (isInvalid('companyData.openingDate')) {
+
+            <span
+              class="field-error"
+              role="alert">
+
+              Informe a data de abertura.
+
+            </span>
+
+          }
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- ========================================= -->
+    <!-- ENDEREÇO -->
+    <!-- ========================================= -->
+
+    <section
+      class="form-section"
+      formGroupName="address"
+      aria-labelledby="address-title">
+
+      <div class="section-heading">
+
+        <div>
+
+          <h2 id="address-title">
+            Endereço
+          </h2>
+
+          <p>
+            Informe o endereço principal da empresa.
+          </p>
+
+        </div>
+
+      </div>
+
+
+      <div class="form-grid">
+
+
+        <!-- CEP -->
+        <div class="form-field">
+
+          <label for="zipCode">
+            CEP
+            <span
+              class="required"
+              aria-hidden="true">*</span>
+          </label>
+
+          <input
+            id="zipCode"
+            type="text"
+            formControlName="zipCode"
+            inputmode="numeric"
+            autocomplete="postal-code"
+            placeholder="00000-000"
+            [attr.aria-invalid]="
+              isInvalid('address.zipCode')
+            "
+          >
+
+          @if (isInvalid('address.zipCode')) {
+
+            <span
+              class="field-error"
+              role="alert">
+
+              Informe o CEP.
+
+            </span>
+
+          }
+
+        </div>
+
+
+        <!-- Estado -->
+        <div class="form-field">
+
+          <label for="state">
+            Estado
+            <span
+              class="required"
+              aria-hidden="true">*</span>
+          </label>
+
+          <select
+            id="state"
+            formControlName="state"
+            autocomplete="address-level1"
+            [attr.aria-invalid]="
+              isInvalid('address.state')
+            ">
+
+            <option value="">
+              Selecione
+            </option>
+
+            <option value="AC">Acre</option>
+            <option value="AL">Alagoas</option>
+            <option value="AP">Amapá</option>
+            <option value="AM">Amazonas</option>
+            <option value="BA">Bahia</option>
+            <option value="CE">Ceará</option>
+            <option value="DF">Distrito Federal</option>
+            <option value="ES">Espírito Santo</option>
+            <option value="GO">Goiás</option>
+            <option value="MA">Maranhão</option>
+            <option value="MT">Mato Grosso</option>
+            <option value="MS">Mato Grosso do Sul</option>
+            <option value="MG">Minas Gerais</option>
+            <option value="PA">Pará</option>
+            <option value="PB">Paraíba</option>
+            <option value="PR">Paraná</option>
+            <option value="PE">Pernambuco</option>
+            <option value="PI">Piauí</option>
+            <option value="RJ">Rio de Janeiro</option>
+            <option value="RN">Rio Grande do Norte</option>
+            <option value="RS">Rio Grande do Sul</option>
+            <option value="RO">Rondônia</option>
+            <option value="RR">Roraima</option>
+            <option value="SC">Santa Catarina</option>
+            <option value="SP">São Paulo</option>
+            <option value="SE">Sergipe</option>
+            <option value="TO">Tocantins</option>
+
+          </select>
+
+          @if (isInvalid('address.state')) {
+
+            <span
+              class="field-error"
+              role="alert">
+
+              Selecione o estado.
+
+            </span>
+
+          }
+
+        </div>
+
+
+        <!-- Cidade -->
+        <div class="form-field">
+
+          <label for="city">
+            Cidade
+            <span
+              class="required"
+              aria-hidden="true">*</span>
+          </label>
+
+          <input
+            id="city"
+            type="text"
+            formControlName="city"
+            autocomplete="address-level2"
+            placeholder="Ex.: São Paulo"
+            [attr.aria-invalid]="
+              isInvalid('address.city')
+            "
+          >
+
+          @if (isInvalid('address.city')) {
+
+            <span
+              class="field-error"
+              role="alert">
+
+              Informe a cidade.
+
+            </span>
+
+          }
+
+        </div>
+
+
+        <!-- Bairro -->
+        <div class="form-field">
+
+          <label for="neighborhood">
+            Bairro
+            <span
+              class="required"
+              aria-hidden="true">*</span>
+          </label>
+
+          <input
+            id="neighborhood"
+            type="text"
+            formControlName="neighborhood"
+            autocomplete="address-level3"
+            placeholder="Ex.: Centro"
+            [attr.aria-invalid]="
+              isInvalid('address.neighborhood')
+            "
+          >
+
+          @if (isInvalid('address.neighborhood')) {
+
+            <span
+              class="field-error"
+              role="alert">
+
+              Informe o bairro.
+
+            </span>
+
+          }
+
+        </div>
+
+
+        <!-- Logradouro -->
+        <div class="form-field form-field-wide">
+
+          <label for="street">
+            Logradouro
+            <span
+              class="required"
+              aria-hidden="true">*</span>
+          </label>
+
+          <input
+            id="street"
+            type="text"
+            formControlName="street"
+            autocomplete="street-address"
+            placeholder="Ex.: Avenida Paulista"
+            [attr.aria-invalid]="
+              isInvalid('address.street')
+            "
+          >
+
+          @if (isInvalid('address.street')) {
+
+            <span
+              class="field-error"
+              role="alert">
+
+              Informe o logradouro.
+
+            </span>
+
+          }
+
+        </div>
+
+
+        <!-- Número -->
+        <div class="form-field">
+
+          <label for="number">
+            Número
+            <span
+              class="required"
+              aria-hidden="true">*</span>
+          </label>
+
+          <input
+            id="number"
+            type="text"
+            formControlName="number"
+            inputmode="numeric"
+            autocomplete="address-line2"
+            placeholder="Ex.: 1000"
+            [attr.aria-invalid]="
+              isInvalid('address.number')
+            "
+          >
+
+          @if (isInvalid('address.number')) {
+
+            <span
+              class="field-error"
+              role="alert">
+
+              Informe o número.
+
+            </span>
+
+          }
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- ========================================= -->
+    <!-- CONTATO -->
+    <!-- ========================================= -->
+
+    <section
+      class="form-section"
+      formGroupName="contact"
+      aria-labelledby="contact-title">
+
+      <div class="section-heading">
+
+        <div>
+
+          <h2 id="contact-title">
+            Informações de contato
+          </h2>
+
+          <p>
+            Informe os principais canais de contato da empresa.
+          </p>
+
+        </div>
+
+      </div>
+
+
+      <div class="form-grid">
+
+
+        <!-- E-mail -->
+        <div class="form-field">
+
+          <label for="email">
+            E-mail corporativo
+            <span
+              class="required"
+              aria-hidden="true">*</span>
+          </label>
+
+          <input
+            id="email"
+            type="email"
+            formControlName="email"
+            autocomplete="email"
+            placeholder="contato@empresa.com.br"
+            [attr.aria-invalid]="
+              isInvalid('contact.email')
+            "
+          >
+
+          @if (isInvalid('contact.email')) {
+
+            @if (companyForm.get('contact.email')?.hasError('required')) {
+
+              <span
+                class="field-error"
+                role="alert">
+
+                Informe o e-mail corporativo.
+
+              </span>
+
+            } @else if (
+              companyForm.get('contact.email')?.hasError('email')
+            ) {
+
+              <span
+                class="field-error"
+                role="alert">
+
+                Informe um endereço de e-mail válido.
+
+              </span>
+
+            }
+
+          }
+
+        </div>
+
+
+        <!-- Telefone -->
+        <div class="form-field">
+
+          <label for="phone">
+            Telefone
+            <span
+              class="required"
+              aria-hidden="true">*</span>
+          </label>
+
+          <input
+            id="phone"
+            type="tel"
+            formControlName="phone"
+            inputmode="tel"
+            autocomplete="tel"
+            placeholder="(11) 3333-4444"
+            [attr.aria-invalid]="
+              isInvalid('contact.phone')
+            "
+          >
+
+          @if (isInvalid('contact.phone')) {
+
+            <span
+              class="field-error"
+              role="alert">
+
+              Informe o telefone da empresa.
+
+            </span>
+
+          }
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- ========================================= -->
+    <!-- INFORMAÇÕES ADICIONAIS -->
+    <!-- ========================================= -->
+
+    <section
+      class="form-section"
+      formGroupName="additional"
+      aria-labelledby="additional-title">
+
+      <div class="section-heading">
+
+        <div>
+
+          <h2 id="additional-title">
+            Informações adicionais
+          </h2>
+
+          <p>
+            Adicione alguma observação relevante sobre a empresa,
+            se necessário.
+          </p>
+
+        </div>
+
+      </div>
+
+
+      <div class="form-field">
+
+        <label for="notes">
+          Observações
+        </label>
+
+        <textarea
+          id="notes"
+          formControlName="notes"
+          rows="5"
+          maxlength="500"
+          placeholder="Digite alguma informação adicional..."
+          [attr.aria-describedby]="'notes-help'"
+        ></textarea>
+
+        <span
+          id="notes-help"
+          class="field-help">
+
+          Máximo de 500 caracteres.
+
+        </span>
+
+        @if (companyForm.get('additional.notes')?.hasError('maxlength')) {
+
+          <span
+            class="field-error"
+            role="alert">
+
+            A observação deve possuir no máximo 500 caracteres.
+
+          </span>
+
+        }
+
+      </div>
+
+    </section>
+
+
+    <!-- ========================================= -->
+    <!-- AÇÕES -->
+    <!-- ========================================= -->
+
+    <footer class="form-actions">
+
+      <a
+        routerLink="/empresas"
+        class="button button-secondary">
+
+        Cancelar
+
+      </a>
+
+      <button
+        type="submit"
+        class="button button-primary">
+
+        Cadastrar empresa
+
+      </button>
+
+    </footer>
+
+  </form>
+
+</div>

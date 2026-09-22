@@ -1,64 +1,275 @@
-<div class="app-container">
-  <aside class="sidebar" [class.closed]="!isSidebarOpen">
-    <div class="sidebar-header">
-      <h2 class="logo-full">PME Scoring</h2>
-      <span class="logo-icon">PS</span>
+<div class="application-shell">
+
+  <!-- =====================================================
+       NAVEGAÇÃO PRINCIPAL
+       ===================================================== -->
+
+  <aside
+    id="main-navigation"
+    class="main-navigation"
+    [class.is-collapsed]="!isNavigationOpen"
+    aria-label="Navegação principal">
+
+    <!-- Cabeçalho da navegação -->
+    <div class="navigation-header">
+
+      <a
+        routerLink="/dashboard"
+        class="application-brand"
+        aria-label="PME Scoring - Visão Geral">
+
+        <span class="brand-name">
+          PME Scoring
+        </span>
+
+        <span
+          class="brand-symbol"
+          aria-hidden="true">
+          PS
+        </span>
+
+      </a>
+
+
+      <!-- Botão para fechar no mobile -->
+      <button
+        type="button"
+        class="navigation-close"
+        (click)="closeNavigation()"
+        aria-label="Fechar menu de navegação">
+
+        <span aria-hidden="true">
+          ×
+        </span>
+
+      </button>
+
     </div>
 
-    <nav class="sidebar-nav">
+
+    <!-- ===================================================
+         MENU DE NAVEGAÇÃO
+         =================================================== -->
+
+    <nav
+      class="navigation-menu"
+      aria-label="Menu principal">
+
       <ul>
+
+        <!-- Visão Geral -->
         <li>
-          <a routerLink="/dashboard" routerLinkActive="active">
-            <span class="icon">📊</span>
-            <span class="label">Dashboard</span>
+
+          <a
+            routerLink="/dashboard"
+            routerLinkActive="is-active"
+            [routerLinkActiveOptions]="{ exact: true }"
+            #overviewLink="routerLinkActive"
+            [attr.aria-current]="
+              overviewLink.isActive ? 'page' : null
+            "
+            (click)="closeNavigation()">
+
+            <span
+              class="navigation-icon"
+              aria-hidden="true">
+              ▦
+            </span>
+
+            <span class="navigation-label">
+              Visão Geral
+            </span>
+
           </a>
+
         </li>
+
+
+        <!-- Empresas -->
         <li>
-          <a routerLink="/firms" routerLinkActive="active">
-            <span class="icon">🏢</span>
-            <span class="label">Firms (Empresas)</span>
+
+          <a
+            routerLink="/companies"
+            routerLinkActive="is-active"
+            #companiesLink="routerLinkActive"
+            [attr.aria-current]="
+              companiesLink.isActive ? 'page' : null
+            "
+            (click)="closeNavigation()">
+
+            <span
+              class="navigation-icon"
+              aria-hidden="true">
+              ▣
+            </span>
+
+            <span class="navigation-label">
+              Empresas
+            </span>
+
           </a>
+
         </li>
+
+        <!-- Ocorrências -->
         <li>
-          <a routerLink="/scores" routerLinkActive="active">
-            <span class="icon">📈</span>
-            <span class="label">Calculated Scores</span>
+
+          <a
+            routerLink="/occurrences"
+            routerLinkActive="is-active"
+            #occurrencesLink="routerLinkActive"
+            [attr.aria-current]="
+              occurrencesLink.isActive ? 'page' : null
+            "
+            (click)="closeNavigation()">
+
+            <span
+              class="navigation-icon"
+              aria-hidden="true">
+              !
+            </span>
+
+            <span class="navigation-label">
+              Ocorrências
+            </span>
+
           </a>
+
         </li>
+
+
+        <!-- Configuração de Pesos -->
         <li>
-          <a routerLink="/occurrences" routerLinkActive="active">
-            <span class="icon">⚠️</span>
-            <span class="label">Occurrences</span>
+
+          <a
+            routerLink="/weights"
+            routerLinkActive="is-active"
+            #weightsLink="routerLinkActive"
+            [attr.aria-current]="
+              weightsLink.isActive ? 'page' : null
+            "
+            (click)="closeNavigation()">
+
+            <span
+              class="navigation-icon"
+              aria-hidden="true">
+              ⚖
+            </span>
+
+            <span class="navigation-label">
+              Configuração de Pesos
+            </span>
+
           </a>
+
         </li>
+
+
+        <!-- Usuários e Acessos -->
         <li>
-          <a routerLink="/weights" routerLinkActive="active">
-            <span class="icon">⚖️</span>
-            <span class="label">Weight Config</span>
+
+          <a
+            routerLink="/users"
+            routerLinkActive="is-active"
+            #usersLink="routerLinkActive"
+            [attr.aria-current]="
+              usersLink.isActive ? 'page' : null
+            "
+            (click)="closeNavigation()">
+
+            <span
+              class="navigation-icon"
+              aria-hidden="true">
+              ♙
+            </span>
+
+            <span class="navigation-label">
+              Usuários e Acessos
+            </span>
+
           </a>
+
         </li>
-        <li>
-          <a routerLink="/users" routerLinkActive="active">
-            <span class="icon">👥</span>
-            <span class="label">Users & Access</span>
-          </a>
-        </li>
+
       </ul>
+
     </nav>
+
   </aside>
 
-  <!-- Conteúdo Principal -->
-  <div class="main-content">
-    <header class="topbar">
-      <button class="toggle-btn" (click)="toggleSidebar()" aria-label="Alternar Menu">☰</button>
-      <div class="user-profile">
-        <span class="user-info">Administrador</span>
-        <div class="avatar">AD</div>
+
+  <!-- =====================================================
+       FUNDO SOBREPOSTO - MOBILE
+       ===================================================== -->
+
+  <button
+    type="button"
+    class="navigation-overlay"
+    [class.is-visible]="isNavigationOpen"
+    (click)="closeNavigation()"
+    aria-label="Fechar menu de navegação">
+  </button>
+
+
+  <!-- =====================================================
+       ÁREA PRINCIPAL DA APLICAÇÃO
+       ===================================================== -->
+
+  <div class="application-content">
+
+    <!-- Barra superior -->
+    <header class="application-header">
+
+      <button
+        type="button"
+        class="navigation-toggle"
+        (click)="toggleNavigation()"
+        [attr.aria-expanded]="isNavigationOpen"
+        aria-controls="main-navigation"
+        aria-label="Alternar menu de navegação">
+
+        <span aria-hidden="true">
+          ☰
+        </span>
+
+      </button>
+
+
+      <!-- Usuário autenticado -->
+      <div class="current-user">
+
+        <span class="current-user-name">
+          Administrador
+        </span>
+
+        <button
+          type="button"
+          class="current-user-avatar"
+          aria-label="Abrir opções do usuário">
+
+          <span aria-hidden="true">
+            AD
+          </span>
+
+        </button>
+
       </div>
+
     </header>
 
-    <main class="content-area">
+
+    <!-- ===================================================
+         CONTEÚDO DAS ROTAS
+         =================================================== -->
+
+    <main
+      class="route-content"
+      id="main-content">
+
       <router-outlet></router-outlet>
+
     </main>
+
   </div>
+
 </div>

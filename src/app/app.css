@@ -1,14 +1,17 @@
-html, body {
+html,
+body {
   margin: 0;
   padding: 0;
+
   width: 100%;
-  height: 100%;
-  overflow: hidden;
-  background-color: #0f172a; /* Garante que o fundo inicial seja escuro se carregar algo */
+  min-height: 100%;
+
+  background-color: #f8fafc;
 }
 
 app-root {
   display: block;
-  width: 100vw;
-  height: 100vh;
+
+  width: 100%;
+  min-height: 100vh;
 }

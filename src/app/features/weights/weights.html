@@ -1,0 +1,809 @@
+<div class="weights-page">
+
+  <!-- Cabeçalho -->
+  <header class="page-header">
+
+    <div class="page-heading">
+
+      <span class="page-eyebrow">
+        CONFIGURAÇÃO DO MOTOR
+      </span>
+
+      <h1>
+        Configuração de Pesos
+      </h1>
+
+      <p>
+        Defina os parâmetros utilizados pelo mecanismo de
+        cálculo de score e classificação de risco.
+      </p>
+
+    </div>
+
+  </header>
+
+
+  <!-- Aviso -->
+  <section
+    class="configuration-alert"
+    aria-label="Informação importante"
+  >
+
+    <div class="alert-icon" aria-hidden="true">
+      !
+    </div>
+
+    <div>
+
+      <strong>
+        Atenção ao alterar esta configuração
+      </strong>
+
+      <p>
+        Os parâmetros definidos aqui influenciam diretamente
+        o cálculo dos scores das empresas.
+      </p>
+
+    </div>
+
+  </section>
+
+
+  <!-- Configuração atual -->
+  <section class="current-configuration">
+
+    <div class="section-header">
+
+      <div>
+
+        <span class="section-eyebrow">
+          CONFIGURAÇÃO ATUAL
+        </span>
+
+        <h2>
+          Parâmetros ativos
+        </h2>
+
+      </div>
+
+      <span class="active-badge">
+        Ativa
+      </span>
+
+    </div>
+
+
+    <div class="current-grid">
+
+      <div class="current-item">
+
+        <span>
+          Fórmula
+        </span>
+
+        <strong>
+          Média ponderada
+        </strong>
+
+      </div>
+
+
+      <div class="current-item">
+
+        <span>
+          Pesos
+        </span>
+
+        <strong>
+          40% · 30% · 30%
+        </strong>
+
+      </div>
+
+
+      <div class="current-item">
+
+        <span>
+          Referência de receita
+        </span>
+
+        <strong>
+          R$ 500.000,00
+        </strong>
+
+      </div>
+
+
+      <div class="current-item">
+
+        <span>
+          Referência de tempo
+        </span>
+
+        <strong>
+          60 meses
+        </strong>
+
+      </div>
+
+
+      <div class="current-item">
+
+        <span>
+          Baixo risco
+        </span>
+
+        <strong>
+          ≥ 75
+        </strong>
+
+      </div>
+
+
+      <div class="current-item">
+
+        <span>
+          Médio risco
+        </span>
+
+        <strong>
+          ≥ 50
+        </strong>
+
+      </div>
+
+    </div>
+
+
+    <div class="configuration-meta">
+
+      <span>
+        Última atualização:
+        <strong>20/09/2026</strong>
+      </span>
+
+      <span>
+        Administrador:
+        <strong>#1</strong>
+      </span>
+
+    </div>
+
+  </section>
+
+
+  <!-- Formulário -->
+  <form
+    class="configuration-form"
+    [formGroup]="weightsForm"
+    (ngSubmit)="onSubmit()"
+  >
+
+    <!-- Fórmula -->
+    <section class="form-section">
+
+      <div class="section-header">
+
+        <div>
+
+          <span class="section-eyebrow">
+            01 · MÉTODO
+          </span>
+
+          <h2>
+            Fórmula de cálculo
+          </h2>
+
+          <p>
+            Define o método matemático utilizado pelo motor
+            para combinar os fatores de risco.
+          </p>
+
+        </div>
+
+      </div>
+
+
+      <div class="field">
+
+        <label for="formulaType">
+          Tipo de fórmula
+        </label>
+
+        <select
+          id="formulaType"
+          formControlName="formulaType"
+          [attr.aria-invalid]="isInvalid('formulaType')"
+        >
+
+          <option value="WEIGHTED_AVERAGE">
+            Média ponderada
+          </option>
+
+        </select>
+
+        @if (isInvalid('formulaType')) {
+
+          <span class="field-error">
+            Selecione o tipo de fórmula.
+          </span>
+
+        }
+
+      </div>
+
+    </section>
+
+
+    <!-- Pesos -->
+    <section class="form-section">
+
+      <div class="section-header">
+
+        <div>
+
+          <span class="section-eyebrow">
+            02 · PESOS
+          </span>
+
+          <h2>
+            Distribuição dos fatores
+          </h2>
+
+          <p>
+            Informe o peso de cada fator utilizado no cálculo
+            do score. A soma deve ser exatamente 100%.
+          </p>
+
+        </div>
+
+
+        <div
+          class="weight-total"
+          [class.invalid]="!weightsAreValid()"
+        >
+
+          <span>
+            Total
+          </span>
+
+          <strong>
+            {{ totalWeight() * 100 | number:'1.0-2' }}%
+          </strong>
+
+        </div>
+
+      </div>
+
+
+      <div class="weights-grid">
+
+        <!-- Receita -->
+        <article class="weight-card">
+
+          <div class="weight-card-header">
+
+            <div>
+
+              <span class="weight-number">
+                01
+              </span>
+
+              <h3>
+                Receita
+              </h3>
+
+            </div>
+
+            <strong>
+              {{ getWeightPercentage(
+                weightsForm.get('revenueWeight')?.value
+              ) }}%
+            </strong>
+
+          </div>
+
+
+          <p>
+            Representa a influência da receita da empresa
+            na composição do score.
+          </p>
+
+
+          <div class="field">
+
+            <label for="revenueWeight">
+              Peso
+            </label>
+
+            <div class="input-suffix">
+
+              <input
+                id="revenueWeight"
+                type="number"
+                min="0"
+                max="1"
+                step="0.01"
+                formControlName="revenueWeight"
+                [attr.aria-invalid]="isInvalid('revenueWeight')"
+              />
+
+              <span>
+                0–1
+              </span>
+
+            </div>
+
+            @if (isInvalid('revenueWeight')) {
+
+              <span class="field-error">
+                Informe um valor entre 0,00 e 1,00.
+              </span>
+
+            }
+
+          </div>
+
+        </article>
+
+
+        <!-- Tempo -->
+        <article class="weight-card">
+
+          <div class="weight-card-header">
+
+            <div>
+
+              <span class="weight-number">
+                02
+              </span>
+
+              <h3>
+                Tempo
+              </h3>
+
+            </div>
+
+            <strong>
+              {{ getWeightPercentage(
+                weightsForm.get('timeWeight')?.value
+              ) }}%
+            </strong>
+
+          </div>
+
+
+          <p>
+            Representa a influência do tempo de atividade
+            da empresa no cálculo.
+          </p>
+
+
+          <div class="field">
+
+            <label for="timeWeight">
+              Peso
+            </label>
+
+            <div class="input-suffix">
+
+              <input
+                id="timeWeight"
+                type="number"
+                min="0"
+                max="1"
+                step="0.01"
+                formControlName="timeWeight"
+                [attr.aria-invalid]="isInvalid('timeWeight')"
+              />
+
+              <span>
+                0–1
+              </span>
+
+            </div>
+
+            @if (isInvalid('timeWeight')) {
+
+              <span class="field-error">
+                Informe um valor entre 0,00 e 1,00.
+              </span>
+
+            }
+
+          </div>
+
+        </article>
+
+
+        <!-- Ocorrências -->
+        <article class="weight-card">
+
+          <div class="weight-card-header">
+
+            <div>
+
+              <span class="weight-number">
+                03
+              </span>
+
+              <h3>
+                Ocorrências
+              </h3>
+
+            </div>
+
+            <strong>
+              {{ getWeightPercentage(
+                weightsForm.get('defaultWeight')?.value
+              ) }}%
+            </strong>
+
+          </div>
+
+
+          <p>
+            Representa a influência das ocorrências registradas
+            na composição do score.
+          </p>
+
+
+          <div class="field">
+
+            <label for="defaultWeight">
+              Peso
+            </label>
+
+            <div class="input-suffix">
+
+              <input
+                id="defaultWeight"
+                type="number"
+                min="0"
+                max="1"
+                step="0.01"
+                formControlName="defaultWeight"
+                [attr.aria-invalid]="isInvalid('defaultWeight')"
+              />
+
+              <span>
+                0–1
+              </span>
+
+            </div>
+
+            @if (isInvalid('defaultWeight')) {
+
+              <span class="field-error">
+                Informe um valor entre 0,00 e 1,00.
+              </span>
+
+            }
+
+          </div>
+
+        </article>
+
+      </div>
+
+
+      @if (!weightsAreValid()) {
+
+        <div class="form-warning">
+
+          <strong>
+            A soma dos pesos deve ser 100%.
+          </strong>
+
+          <span>
+            Ajuste os valores de Receita, Tempo e Ocorrências
+            antes de salvar.
+          </span>
+
+        </div>
+
+      }
+
+    </section>
+
+
+    <!-- Referências -->
+    <section class="form-section">
+
+      <div class="section-header">
+
+        <div>
+
+          <span class="section-eyebrow">
+            03 · NORMALIZAÇÃO
+          </span>
+
+          <h2>
+            Valores de referência
+          </h2>
+
+          <p>
+            Valores utilizados como referência para normalizar
+            os dados antes do cálculo.
+          </p>
+
+        </div>
+
+      </div>
+
+
+      <div class="form-grid">
+
+        <!-- Receita máxima -->
+        <div class="field">
+
+          <label for="maxRevenueReference">
+            Receita máxima de referência
+          </label>
+
+          <div class="input-prefix">
+
+            <span>
+              R$
+            </span>
+
+            <input
+              id="maxRevenueReference"
+              type="number"
+              min="0.01"
+              step="0.01"
+              formControlName="maxRevenueReference"
+              [attr.aria-invalid]="
+                isInvalid('maxRevenueReference')
+              "
+            />
+
+          </div>
+
+          <small>
+            Valor máximo utilizado como referência para
+            normalização da receita.
+          </small>
+
+          @if (isInvalid('maxRevenueReference')) {
+
+            <span class="field-error">
+              Informe uma receita de referência maior que zero.
+            </span>
+
+          }
+
+        </div>
+
+
+        <!-- Tempo máximo -->
+        <div class="field">
+
+          <label for="maxTimeReferenceMonths">
+            Tempo máximo de referência
+          </label>
+
+          <div class="input-suffix">
+
+            <input
+              id="maxTimeReferenceMonths"
+              type="number"
+              min="1"
+              step="1"
+              formControlName="maxTimeReferenceMonths"
+              [attr.aria-invalid]="
+                isInvalid('maxTimeReferenceMonths')
+              "
+            />
+
+            <span>
+              meses
+            </span>
+
+          </div>
+
+          <small>
+            Tempo máximo considerado para normalização
+            do fator de idade da empresa.
+          </small>
+
+          @if (isInvalid('maxTimeReferenceMonths')) {
+
+            <span class="field-error">
+              Informe um valor maior que zero.
+            </span>
+
+          }
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- Risco -->
+    <section class="form-section">
+
+      <div class="section-header">
+
+        <div>
+
+          <span class="section-eyebrow">
+            04 · CLASSIFICAÇÃO
+          </span>
+
+          <h2>
+            Faixas de risco
+          </h2>
+
+          <p>
+            Defina os pontos de corte utilizados para classificar
+            o resultado do score.
+          </p>
+
+        </div>
+
+      </div>
+
+
+      <div class="risk-thresholds">
+
+        <div class="risk-card risk-low">
+
+          <div class="risk-indicator">
+            Baixo risco
+          </div>
+
+          <div class="field">
+
+            <label for="lowRiskThreshold">
+              Score mínimo
+            </label>
+
+            <div class="input-suffix">
+
+              <input
+                id="lowRiskThreshold"
+                type="number"
+                min="1"
+                max="100"
+                step="1"
+                formControlName="lowRiskThreshold"
+                [attr.aria-invalid]="
+                  isInvalid('lowRiskThreshold')
+                "
+              />
+
+              <span>
+                pontos
+              </span>
+
+            </div>
+
+            @if (isInvalid('lowRiskThreshold')) {
+
+              <span class="field-error">
+                Informe um valor entre 1 e 100.
+              </span>
+
+            }
+
+          </div>
+
+          <p>
+            Scores iguais ou superiores a este valor
+            serão classificados como baixo risco.
+          </p>
+
+        </div>
+
+
+        <div class="risk-card risk-medium">
+
+          <div class="risk-indicator">
+            Médio risco
+          </div>
+
+          <div class="field">
+
+            <label for="mediumRiskThreshold">
+              Score mínimo
+            </label>
+
+            <div class="input-suffix">
+
+              <input
+                id="mediumRiskThreshold"
+                type="number"
+                min="1"
+                max="100"
+                step="1"
+                formControlName="mediumRiskThreshold"
+                [attr.aria-invalid]="
+                  isInvalid('mediumRiskThreshold')
+                "
+              />
+
+              <span>
+                pontos
+              </span>
+
+            </div>
+
+            @if (isInvalid('mediumRiskThreshold')) {
+
+              <span class="field-error">
+                Informe um valor entre 1 e 100.
+              </span>
+
+            }
+
+          </div>
+
+          <p>
+            Scores iguais ou superiores a este valor e abaixo
+            do limite de baixo risco serão classificados como
+            médio risco.
+          </p>
+
+        </div>
+
+
+        <div class="risk-card risk-high">
+
+          <div class="risk-indicator">
+            Alto risco
+          </div>
+
+          <div class="risk-preview">
+
+            <strong>
+              Abaixo de {{ weightsForm.get('mediumRiskThreshold')?.value || 50 }}
+            </strong>
+
+            <span>
+              pontos
+            </span>
+
+          </div>
+
+          <p>
+            Scores abaixo do limite de médio risco serão
+            classificados como alto risco.
+          </p>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- Ações -->
+    <footer class="form-actions">
+
+      <button
+        type="button"
+        class="button button-secondary"
+        (click)="resetForm()"
+      >
+        Restaurar atual
+      </button>
+
+      <button
+        type="submit"
+        class="button button-primary"
+        [disabled]="
+          weightsForm.invalid ||
+          !weightsAreValid()
+        "
+      >
+        Salvar configuração
+      </button>
+
+    </footer>
+
+  </form>
+
+</div>

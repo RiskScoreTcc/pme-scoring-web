@@ -1,0 +1,824 @@
+<div class="users-page">
+
+  <header class="page-header">
+    <div>
+      <span class="eyebrow">CONTROLE DE ACESSO</span>
+
+      <h1>Usuários e Acessos</h1>
+
+      <p>
+        Gerencie os usuários autorizados e seus respectivos
+        perfis de acesso ao PME Scoring.
+      </p>
+    </div>
+
+    <button
+      type="button"
+      class="primary-button"
+      (click)="openNewUser()"
+    >
+      <span aria-hidden="true">+</span>
+      Novo usuário
+    </button>
+  </header>
+
+
+  <!-- Resumo -->
+
+  <section
+    class="summary-grid"
+    aria-label="Resumo dos usuários"
+  >
+
+    <article class="summary-card">
+      <span class="summary-label">Total de usuários</span>
+
+      <strong class="summary-value">
+        {{ totalUsers }}
+      </strong>
+
+      <span class="summary-description">
+        Contas cadastradas
+      </span>
+    </article>
+
+
+    <article class="summary-card">
+      <span class="summary-label">Usuários ativos</span>
+
+      <strong class="summary-value">
+        {{ activeUsers }}
+      </strong>
+
+      <span class="summary-description">
+        Com acesso habilitado
+      </span>
+    </article>
+
+
+    <article class="summary-card">
+      <span class="summary-label">Administradores</span>
+
+      <strong class="summary-value">
+        {{ adminUsers }}
+      </strong>
+
+      <span class="summary-description">
+        Acesso administrativo
+      </span>
+    </article>
+
+
+    <article class="summary-card">
+      <span class="summary-label">Analistas</span>
+
+      <strong class="summary-value">
+        {{ analystUsers }}
+      </strong>
+
+      <span class="summary-description">
+        Perfis operacionais
+      </span>
+    </article>
+
+  </section>
+
+
+  <!-- Filtros -->
+
+  <section class="filters-card">
+
+    <div class="filters-header">
+      <div>
+        <h2>Usuários cadastrados</h2>
+
+        <p>
+          Consulte e gerencie as contas de acesso.
+        </p>
+      </div>
+    </div>
+
+
+    <div class="filters-grid">
+
+      <div class="field field-search">
+        <label for="user-search">
+          Buscar usuário
+        </label>
+
+        <input
+          id="user-search"
+          type="search"
+          [(ngModel)]="searchTerm"
+          placeholder="E-mail do usuário"
+          autocomplete="off"
+        />
+      </div>
+
+
+      <div class="field">
+        <label for="user-type-filter">
+          Perfil
+        </label>
+
+        <select
+          id="user-type-filter"
+          [(ngModel)]="selectedType"
+        >
+          <option value="">
+            Todos os perfis
+          </option>
+
+          <option value="ADMIN">
+            Administrador
+          </option>
+
+          <option value="ANALYST">
+            Analista
+          </option>
+
+          <option value="CREDIT_ANALYST">
+            Analista de Crédito
+          </option>
+        </select>
+      </div>
+
+
+      <div class="field">
+        <label for="user-status-filter">
+          Situação
+        </label>
+
+        <select
+          id="user-status-filter"
+          [(ngModel)]="selectedStatus"
+        >
+          <option value="">
+            Todas
+          </option>
+
+          <option value="active">
+            Ativo
+          </option>
+
+          <option value="inactive">
+            Inativo
+          </option>
+        </select>
+      </div>
+
+
+      <div class="filter-action">
+        <button
+          type="button"
+          class="secondary-button"
+          (click)="clearFilters()"
+        >
+          Limpar filtros
+        </button>
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- Tabela -->
+
+  <section class="table-card">
+
+    <div class="table-header">
+
+      <div>
+        <span class="results-count">
+          {{ filteredUsers.length }} usuário(s)
+        </span>
+      </div>
+
+    </div>
+
+
+    <div class="table-wrapper">
+
+      <table>
+
+        <caption class="sr-only">
+          Lista de usuários cadastrados
+        </caption>
+
+        <thead>
+          <tr>
+            <th scope="col">Usuário</th>
+            <th scope="col">Perfil</th>
+            <th scope="col">Situação</th>
+            <th scope="col">Último acesso</th>
+            <th scope="col">Cadastro</th>
+            <th scope="col" class="actions-column">
+              Ações
+            </th>
+          </tr>
+        </thead>
+
+
+        <tbody>
+
+          @for (user of filteredUsers; track user.id) {
+
+            <tr>
+
+              <td>
+                <div class="user-cell">
+
+                  <div class="user-avatar" aria-hidden="true">
+                    {{ user.email.charAt(0).toUpperCase() }}
+                  </div>
+
+                  <div>
+                    <strong>
+                      {{ user.email }}
+                    </strong>
+
+                    <span>
+                      ID #{{ user.id }}
+                    </span>
+                  </div>
+
+                </div>
+              </td>
+
+
+              <td>
+                <span
+                  class="type-badge"
+                  [class]="getTypeClass(user.type)"
+                >
+                  {{ getTypeLabel(user.type) }}
+                </span>
+              </td>
+
+
+              <td>
+                <span
+                  class="status-badge"
+                  [class]="getStatusClass(user.status)"
+                >
+                  <span
+                    class="status-dot"
+                    aria-hidden="true"
+                  ></span>
+
+                  {{ getStatusLabel(user.status) }}
+                </span>
+              </td>
+
+
+              <td>
+                <span class="date-value">
+                  {{ formatLastAccess(user.lastAccess) }}
+                </span>
+              </td>
+
+
+              <td>
+                <span class="date-value">
+                  {{ formatDate(user.createdAt) }}
+                </span>
+              </td>
+
+
+              <td class="actions-cell">
+
+                <div class="row-actions">
+
+                  <button
+                    type="button"
+                    class="icon-button"
+                    title="Ver usuário"
+                    aria-label="Ver usuário {{ user.email }}"
+                    (click)="openDetails(user)"
+                  >
+                    👁
+                  </button>
+
+                  <button
+                    type="button"
+                    class="icon-button"
+                    title="Editar usuário"
+                    aria-label="Editar usuário {{ user.email }}"
+                    (click)="openEdit(user)"
+                  >
+                    ✎
+                  </button>
+
+                  <button
+                    type="button"
+                    class="icon-button danger"
+                    title="Excluir usuário"
+                    aria-label="Excluir usuário {{ user.email }}"
+                    (click)="openDeleteConfirmation(user)"
+                  >
+                    🗑
+                  </button>
+
+                </div>
+
+              </td>
+
+            </tr>
+
+          }
+
+          @if (filteredUsers.length === 0) {
+
+            <tr>
+              <td
+                colspan="6"
+                class="empty-state"
+              >
+                <strong>Nenhum usuário encontrado</strong>
+
+                <span>
+                  Tente alterar os filtros utilizados.
+                </span>
+              </td>
+            </tr>
+
+          }
+
+        </tbody>
+
+      </table>
+
+    </div>
+
+  </section>
+
+</div>
+
+
+<!-- Modal: detalhes -->
+
+@if (activeModal === 'details' && selectedUser) {
+
+  <div
+    class="modal-backdrop"
+    role="presentation"
+    (click)="closeModal()"
+  >
+
+    <section
+      class="modal"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="details-title"
+      (click)="$event.stopPropagation()"
+    >
+
+      <header class="modal-header">
+
+        <div>
+          <span class="eyebrow">DETALHES</span>
+
+          <h2 id="details-title">
+            Dados do usuário
+          </h2>
+        </div>
+
+        <button
+          type="button"
+          class="modal-close"
+          aria-label="Fechar"
+          (click)="closeModal()"
+        >
+          ×
+        </button>
+
+      </header>
+
+
+      <div class="details-content">
+
+        <div class="detail-row">
+          <span>E-mail</span>
+          <strong>{{ selectedUser.email }}</strong>
+        </div>
+
+        <div class="detail-row">
+          <span>Perfil de acesso</span>
+          <strong>
+            {{ getTypeLabel(selectedUser.type) }}
+          </strong>
+        </div>
+
+        <div class="detail-row">
+          <span>Situação</span>
+
+          <span
+            class="status-badge"
+            [class]="getStatusClass(selectedUser.status)"
+          >
+            <span
+              class="status-dot"
+              aria-hidden="true"
+            ></span>
+
+            {{ getStatusLabel(selectedUser.status) }}
+          </span>
+        </div>
+
+        <div class="detail-row">
+          <span>Cadastrado em</span>
+          <strong>
+            {{ formatDate(selectedUser.createdAt) }}
+          </strong>
+        </div>
+
+        <div class="detail-row">
+          <span>Último acesso</span>
+          <strong>
+            {{ formatLastAccess(selectedUser.lastAccess) }}
+          </strong>
+        </div>
+
+      </div>
+
+
+      <footer class="modal-footer">
+
+        <button
+          type="button"
+          class="secondary-button"
+          (click)="closeModal()"
+        >
+          Fechar
+        </button>
+
+      </footer>
+
+    </section>
+
+  </div>
+
+}
+
+
+<!-- Modal: novo / edição -->
+
+@if (
+  activeModal === 'new' ||
+  activeModal === 'edit'
+) {
+
+  <div
+    class="modal-backdrop"
+    role="presentation"
+    (click)="closeModal()"
+  >
+
+    <section
+      class="modal"
+      role="dialog"
+      aria-modal="true"
+      [attr.aria-labelledby]="
+        activeModal === 'new'
+          ? 'new-user-title'
+          : 'edit-user-title'
+      "
+      (click)="$event.stopPropagation()"
+    >
+
+      <header class="modal-header">
+
+        <div>
+
+          <span class="eyebrow">
+            CONTROLE DE ACESSO
+          </span>
+
+          <h2
+            [id]="
+              activeModal === 'new'
+                ? 'new-user-title'
+                : 'edit-user-title'
+            "
+          >
+            {{
+              activeModal === 'new'
+                ? 'Novo usuário'
+                : 'Editar usuário'
+            }}
+          </h2>
+
+        </div>
+
+        <button
+          type="button"
+          class="modal-close"
+          aria-label="Fechar"
+          (click)="closeModal()"
+        >
+          ×
+        </button>
+
+      </header>
+
+
+      <form
+        [formGroup]="userForm"
+        (ngSubmit)="
+          activeModal === 'new'
+            ? onSubmit()
+            : updateUser()
+        "
+      >
+
+        <div class="form-content">
+
+
+          <div class="security-notice">
+
+            <span
+              class="security-icon"
+              aria-hidden="true"
+            >
+              🔒
+            </span>
+
+            <div>
+              <strong>
+                Dados de acesso
+              </strong>
+
+              <p>
+                O e-mail será utilizado como identificador
+                para autenticação no sistema.
+              </p>
+            </div>
+
+          </div>
+
+
+          <div class="field">
+
+            <label for="user-email">
+              E-mail
+              <span aria-hidden="true">*</span>
+            </label>
+
+            <input
+              id="user-email"
+              type="email"
+              formControlName="email"
+              autocomplete="email"
+              placeholder="usuario@empresa.com"
+              [attr.aria-invalid]="
+                isInvalid('email')
+              "
+            />
+
+            @if (isInvalid('email')) {
+
+              <small class="error-message">
+
+                @if (
+                  userForm.controls.email.hasError('required')
+                ) {
+                  Informe o e-mail do usuário.
+                }
+
+                @if (
+                  userForm.controls.email.hasError('email')
+                ) {
+                  Informe um e-mail válido.
+                }
+
+              </small>
+
+            }
+
+          </div>
+
+
+          <div class="field">
+
+            <label for="user-password">
+              {{
+                activeModal === 'new'
+                  ? 'Senha'
+                  : 'Nova senha'
+              }}
+
+              @if (activeModal === 'new') {
+                <span aria-hidden="true">*</span>
+              }
+            </label>
+
+            <input
+              id="user-password"
+              type="password"
+              formControlName="password"
+              autocomplete="new-password"
+              placeholder="Mínimo de 8 caracteres"
+              [attr.aria-invalid]="
+                isInvalid('password')
+              "
+            />
+
+            <small class="field-hint">
+              {{
+                activeModal === 'edit'
+                  ? 'Deixe em branco para manter a senha atual.'
+                  : 'A senha deve possuir pelo menos 8 caracteres.'
+              }}
+            </small>
+
+            @if (isInvalid('password')) {
+
+              <small class="error-message">
+                A senha deve possuir pelo menos 8 caracteres.
+              </small>
+
+            }
+
+          </div>
+
+
+          <div class="field">
+
+            <label for="user-type">
+              Perfil de acesso
+              <span aria-hidden="true">*</span>
+            </label>
+
+            <select
+              id="user-type"
+              formControlName="type"
+              [attr.aria-invalid]="
+                isInvalid('type')
+              "
+            >
+
+              <option value="">
+                Selecione um perfil
+              </option>
+
+              <option value="ADMIN">
+                Administrador
+              </option>
+
+              <option value="ANALYST">
+                Analista
+              </option>
+
+              <option value="CREDIT_ANALYST">
+                Analista de Crédito
+              </option>
+
+            </select>
+
+
+            <small class="field-hint">
+              O perfil determina quais funcionalidades
+              o usuário poderá acessar.
+            </small>
+
+          </div>
+
+
+          <div class="permission-warning">
+
+            <strong>
+              Atenção às permissões
+            </strong>
+
+            <p>
+              A alteração do perfil pode modificar o nível
+              de acesso do usuário a informações e operações
+              do sistema.
+            </p>
+
+          </div>
+
+        </div>
+
+
+        <footer class="modal-footer">
+
+          <button
+            type="button"
+            class="secondary-button"
+            (click)="closeModal()"
+          >
+            Cancelar
+          </button>
+
+          <button
+            type="submit"
+            class="primary-button"
+          >
+            {{
+              activeModal === 'new'
+                ? 'Cadastrar usuário'
+                : 'Salvar alterações'
+            }}
+          </button>
+
+        </footer>
+
+      </form>
+
+    </section>
+
+  </div>
+
+}
+
+
+<!-- Modal: exclusão -->
+
+@if (activeModal === 'delete' && selectedUser) {
+
+  <div
+    class="modal-backdrop"
+    role="presentation"
+    (click)="closeModal()"
+  >
+
+    <section
+      class="modal modal-small"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="delete-user-title"
+      (click)="$event.stopPropagation()"
+    >
+
+      <header class="modal-header">
+
+        <div>
+          <span class="eyebrow">AÇÃO IRREVERSÍVEL</span>
+
+          <h2 id="delete-user-title">
+            Excluir usuário?
+          </h2>
+        </div>
+
+        <button
+          type="button"
+          class="modal-close"
+          aria-label="Fechar"
+          (click)="closeModal()"
+        >
+          ×
+        </button>
+
+      </header>
+
+
+      <div class="delete-content">
+
+        <div class="delete-icon" aria-hidden="true">
+          !
+        </div>
+
+        <p>
+          Você está prestes a excluir o acesso de:
+        </p>
+
+        <strong>
+          {{ selectedUser.email }}
+        </strong>
+
+        <p class="delete-warning">
+          O usuário perderá o acesso ao PME Scoring.
+          Essa ação deve ser realizada somente quando
+          tiver certeza.
+        </p>
+
+      </div>
+
+
+      <footer class="modal-footer">
+
+        <button
+          type="button"
+          class="secondary-button"
+          (click)="closeModal()"
+        >
+          Cancelar
+        </button>
+
+        <button
+          type="button"
+          class="danger-button"
+          (click)="deleteUser()"
+        >
+          Excluir usuário
+        </button>
+
+      </footer>
+
+    </section>
+
+  </div>
+
+}

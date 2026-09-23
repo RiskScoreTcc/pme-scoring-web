@@ -1,0 +1,1662 @@
+<section class="companies-page">
+
+  <!-- =====================================================
+       CABEÇALHO
+       ===================================================== -->
+
+  <header class="page-header">
+
+    <div class="page-heading">
+
+      <span class="page-eyebrow">
+        GESTÃO DE EMPRESAS
+      </span>
+
+      <h1>
+        Empresas
+      </h1>
+
+      <p>
+        Consulte empresas cadastradas e acompanhe seus indicadores
+        de risco, pontuação e ocorrências.
+      </p>
+
+    </div>
+
+    <div class="page-actions">
+
+      <a
+        routerLink="/companies/new"
+        class="button button-primary">
+
+        <span
+          class="button-icon"
+          aria-hidden="true">
+          +
+        </span>
+
+        <span>
+          Nova empresa
+        </span>
+
+      </a>
+
+    </div>
+
+  </header>
+
+
+  <!-- =====================================================
+       INDICADORES
+       ===================================================== -->
+
+  <section
+    class="summary-section"
+    aria-labelledby="companies-summary-title">
+
+    <div class="section-heading">
+
+      <div>
+
+        <span class="section-eyebrow">
+          RESUMO
+        </span>
+
+        <h2 id="companies-summary-title">
+          Visão geral
+        </h2>
+
+      </div>
+
+    </div>
+
+
+    <div class="summary-grid">
+
+      <article class="summary-card">
+
+        <div class="summary-card-header">
+
+          <span class="summary-label">
+            Total de empresas
+          </span>
+
+          <span
+            class="summary-icon"
+            aria-hidden="true">
+            ▣
+          </span>
+
+        </div>
+
+        <strong class="summary-value">
+          1.248
+        </strong>
+
+        <span class="summary-description">
+          Empresas cadastradas
+        </span>
+
+      </article>
+
+
+      <article class="summary-card">
+
+        <div class="summary-card-header">
+
+          <span class="summary-label">
+            Baixo risco
+          </span>
+
+          <span
+            class="summary-icon summary-icon-positive"
+            aria-hidden="true">
+            ✓
+          </span>
+
+        </div>
+
+        <strong class="summary-value">
+          742
+        </strong>
+
+        <span class="summary-description">
+          59,5% das empresas
+        </span>
+
+      </article>
+
+
+      <article class="summary-card">
+
+        <div class="summary-card-header">
+
+          <span class="summary-label">
+            Médio risco
+          </span>
+
+          <span
+            class="summary-icon summary-icon-warning"
+            aria-hidden="true">
+            !
+          </span>
+
+        </div>
+
+        <strong class="summary-value">
+          381
+        </strong>
+
+        <span class="summary-description">
+          30,5% das empresas
+        </span>
+
+      </article>
+
+
+      <article class="summary-card">
+
+        <div class="summary-card-header">
+
+          <span class="summary-label">
+            Alto risco
+          </span>
+
+          <span
+            class="summary-icon summary-icon-danger"
+            aria-hidden="true">
+            !
+          </span>
+
+        </div>
+
+        <strong class="summary-value">
+          125
+        </strong>
+
+        <span class="summary-description">
+          10,0% das empresas
+        </span>
+
+      </article>
+
+    </div>
+
+  </section>
+
+
+  <!-- =====================================================
+       LISTAGEM
+       ===================================================== -->
+
+  <section
+    class="companies-section"
+    aria-labelledby="companies-list-title">
+
+    <div class="section-heading companies-heading">
+
+      <div>
+
+        <span class="section-eyebrow">
+          CADASTRO
+        </span>
+
+        <h2 id="companies-list-title">
+          Empresas cadastradas
+        </h2>
+
+        <p>
+          Pesquise empresas e consulte suas informações,
+          scores e ocorrências.
+        </p>
+
+      </div>
+
+    </div>
+
+
+    <!-- ===================================================
+         FILTROS
+         =================================================== -->
+
+    <div class="filters-panel">
+
+      <div class="search-field">
+
+        <label for="company-search">
+          Buscar empresa
+        </label>
+
+        <div class="input-wrapper">
+
+          <span
+            class="input-icon"
+            aria-hidden="true">
+            ⌕
+          </span>
+
+          <input
+            id="company-search"
+            type="search"
+            placeholder="Nome ou CNPJ"
+            autocomplete="off"
+            aria-describedby="company-search-help">
+
+        </div>
+
+        <span
+          id="company-search-help"
+          class="field-help">
+          Informe o nome da empresa ou o CNPJ.
+        </span>
+
+      </div>
+
+
+      <div class="filter-field">
+
+        <label for="risk-filter">
+          Faixa de risco
+        </label>
+
+        <select id="risk-filter">
+
+          <option value="">
+            Todas as faixas
+          </option>
+
+          <option value="low">
+            Baixo risco
+          </option>
+
+          <option value="medium">
+            Médio risco
+          </option>
+
+          <option value="high">
+            Alto risco
+          </option>
+
+        </select>
+
+      </div>
+
+
+      <div class="filter-field">
+
+        <label for="status-filter">
+          Situação
+        </label>
+
+        <select id="status-filter">
+
+          <option value="">
+            Todas
+          </option>
+
+          <option value="active">
+            Ativa
+          </option>
+
+          <option value="inactive">
+            Inativa
+          </option>
+
+        </select>
+
+      </div>
+
+
+      <div class="filter-actions">
+
+        <button
+          type="button"
+          class="button button-secondary">
+
+          Limpar filtros
+
+        </button>
+
+      </div>
+
+    </div>
+
+
+    <!-- ===================================================
+         RESULTADOS
+         =================================================== -->
+
+    <div class="results-header">
+
+      <span class="results-count">
+        <strong>1.248</strong>
+        empresas encontradas
+      </span>
+
+      <div class="results-sort">
+
+        <label for="company-sort">
+          Ordenar por
+        </label>
+
+        <select id="company-sort">
+
+          <option value="score">
+            Score
+          </option>
+
+          <option value="name">
+            Nome
+          </option>
+
+          <option value="risk">
+            Faixa de risco
+          </option>
+
+        </select>
+
+      </div>
+
+    </div>
+
+
+    <!-- ===================================================
+         TABELA
+         =================================================== -->
+
+    <div class="table-container">
+
+      <table>
+
+        <caption class="visually-hidden">
+          Lista de empresas avaliadas pelo sistema de scoring.
+        </caption>
+
+        <thead>
+
+          <tr>
+
+            <th scope="col">
+              Empresa
+            </th>
+
+            <th scope="col">
+              CNPJ
+            </th>
+
+            <th
+              scope="col"
+              class="score-column">
+              Score
+            </th>
+
+            <th scope="col">
+              Faixa de risco
+            </th>
+
+            <th scope="col">
+              Situação
+            </th>
+
+            <th
+              scope="col"
+              class="actions-column">
+              Ações
+            </th>
+
+          </tr>
+
+        </thead>
+
+
+        <tbody>
+
+          @for (company of companies; track company.id) {
+
+            <tr>
+
+              <td>
+
+                <div class="company-cell">
+
+                  <strong>
+                    {{ company.legalName }}
+                  </strong>
+
+                  <span>
+                    {{ company.sector }}
+                  </span>
+
+                </div>
+
+              </td>
+
+
+              <td>
+                {{ company.cnpj }}
+              </td>
+
+
+              <td class="score-column">
+
+                @if (company.score !== null) {
+
+                  <strong
+                    class="score"
+                    [class.score-low]="company.risk === 'low'"
+                    [class.score-medium]="company.risk === 'medium'"
+                    [class.score-high]="company.risk === 'high'">
+
+                    {{ company.score }}
+
+                  </strong>
+
+                } @else {
+
+                  <span class="score-empty">
+                    Não calculado
+                  </span>
+
+                }
+
+              </td>
+
+
+              <td>
+
+                @if (company.risk) {
+
+                  <span
+                    class="risk-badge"
+                    [class.risk-low]="company.risk === 'low'"
+                    [class.risk-medium]="company.risk === 'medium'"
+                    [class.risk-high]="company.risk === 'high'">
+
+                    {{ getRiskLabel(company.risk) }}
+
+                  </span>
+
+                } @else {
+
+                  <span class="risk-badge risk-unrated">
+                    Não avaliado
+                  </span>
+
+                }
+
+              </td>
+
+
+              <td>
+
+                <span
+                  class="status-badge"
+                  [class.status-active]="company.status === 'active'">
+
+                  {{ company.status === 'active' ? 'Ativa' : 'Inativa' }}
+
+                </span>
+
+              </td>
+
+
+              <!-- =================================================
+                   AÇÕES
+                   ================================================= -->
+
+              <td class="actions-column">
+
+                <div class="action-menu">
+
+                  <button
+                    type="button"
+                    class="table-action"
+                    [attr.aria-label]="'Ações para ' + company.legalName"
+                    aria-haspopup="menu"
+                    [attr.aria-expanded]="openActionMenu === company.id"
+                    (click)="toggleActionMenu(company.id)">
+
+                    <span aria-hidden="true">
+                      ⋮
+                    </span>
+
+                  </button>
+
+
+                  @if (openActionMenu === company.id) {
+
+                    <div
+                      class="action-menu-dropdown"
+                      role="menu"
+                      [attr.aria-label]="'Ações de ' + company.legalName">
+
+                      <button
+                        type="button"
+                        role="menuitem"
+                        (click)="openCompanyDetails(company.id)">
+
+                        <span aria-hidden="true">
+                          ◉
+                        </span>
+
+                        Ver empresa
+
+                      </button>
+
+
+                      <a
+                        role="menuitem"
+                        [routerLink]="['/companies', company.id, 'edit']"
+                        (click)="openActionMenu = null">
+
+                        <span aria-hidden="true">
+                          ✎
+                        </span>
+
+                        Editar dados
+
+                      </a>
+
+
+                      <div class="menu-divider"></div>
+
+
+                      <button
+                        type="button"
+                        role="menuitem"
+                        (click)="openScore(company.id)">
+
+                        <span aria-hidden="true">
+                          ◈
+                        </span>
+
+                        Ver score
+
+                      </button>
+
+
+                      <button
+                        type="button"
+                        role="menuitem"
+                        (click)="openScoreCalculation(company.id)">
+
+                        <span aria-hidden="true">
+                          ↻
+                        </span>
+
+                        {{ company.score !== null
+                          ? 'Recalcular score'
+                          : 'Calcular score' }}
+
+                      </button>
+
+
+                      <div class="menu-divider"></div>
+
+
+                      <button
+                        type="button"
+                        role="menuitem"
+                        (click)="openOccurrences(company.id)">
+
+                        <span aria-hidden="true">
+                          ≡
+                        </span>
+
+                        Ver ocorrências
+
+                      </button>
+
+
+                      <button
+                        type="button"
+                        role="menuitem"
+                        (click)="openNewOccurrence(company.id)">
+
+                        <span aria-hidden="true">
+                          +
+                        </span>
+
+                        Nova ocorrência
+
+                      </button>
+
+
+                      <div class="menu-divider"></div>
+
+
+                      <button
+                        type="button"
+                        role="menuitem"
+                        class="action-danger"
+                        (click)="openDeleteConfirmation(company.id)">
+
+                        <span aria-hidden="true">
+                          ×
+                        </span>
+
+                        Excluir empresa
+
+                      </button>
+
+                    </div>
+
+                  }
+
+                </div>
+
+              </td>
+
+            </tr>
+
+          }
+
+        </tbody>
+
+      </table>
+
+    </div>
+
+
+    <!-- ===================================================
+         PAGINAÇÃO
+         =================================================== -->
+
+    <nav
+      class="pagination"
+      aria-label="Paginação da lista de empresas">
+
+      <button
+        type="button"
+        class="pagination-button"
+        disabled
+        aria-label="Página anterior">
+
+        ←
+
+      </button>
+
+
+      <button
+        type="button"
+        class="pagination-button is-current"
+        aria-current="page">
+
+        1
+
+      </button>
+
+
+      <button
+        type="button"
+        class="pagination-button">
+        2
+      </button>
+
+
+      <button
+        type="button"
+        class="pagination-button">
+        3
+      </button>
+
+
+      <span
+        class="pagination-ellipsis"
+        aria-hidden="true">
+
+        ...
+
+      </span>
+
+
+      <button
+        type="button"
+        class="pagination-button">
+        25
+      </button>
+
+
+      <button
+        type="button"
+        class="pagination-button"
+        aria-label="Próxima página">
+
+        →
+
+      </button>
+
+    </nav>
+
+  </section>
+
+</section>
+
+
+<!-- =====================================================
+     MODAL — DETALHES DA EMPRESA
+     ===================================================== -->
+
+@if (activeModal === 'details' && selectedCompany) {
+
+  <div
+    class="modal-backdrop"
+    (click)="closeAllModals()">
+
+    <section
+      class="company-modal"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="company-details-title"
+      (click)="$event.stopPropagation()">
+
+      <header class="modal-header">
+
+        <div>
+
+          <span class="page-eyebrow">
+            EMPRESA
+          </span>
+
+          <h2 id="company-details-title">
+            {{ selectedCompany.legalName }}
+          </h2>
+
+          <p>
+            CNPJ {{ selectedCompany.cnpj }}
+          </p>
+
+        </div>
+
+
+        <button
+          type="button"
+          class="modal-close"
+          aria-label="Fechar"
+          (click)="closeAllModals()">
+
+          ×
+
+        </button>
+
+      </header>
+
+
+      <div class="modal-content">
+
+        <div class="company-detail-grid">
+
+          <div class="detail-item">
+
+            <span>
+              Razão social
+            </span>
+
+            <strong>
+              {{ selectedCompany.legalName }}
+            </strong>
+
+          </div>
+
+
+          <div class="detail-item">
+
+            <span>
+              Nome fantasia
+            </span>
+
+            <strong>
+              {{ selectedCompany.tradeName }}
+            </strong>
+
+          </div>
+
+
+          <div class="detail-item">
+
+            <span>
+              CNPJ
+            </span>
+
+            <strong>
+              {{ selectedCompany.cnpj }}
+            </strong>
+
+          </div>
+
+
+          <div class="detail-item">
+
+            <span>
+              Setor
+            </span>
+
+            <strong>
+              {{ selectedCompany.sector }}
+            </strong>
+
+          </div>
+
+
+          <div class="detail-item">
+
+            <span>
+              Situação
+            </span>
+
+            <span class="status-badge status-active">
+              {{ selectedCompany.status === 'active' ? 'Ativa' : 'Inativa' }}
+            </span>
+
+          </div>
+
+
+          <div class="detail-item">
+
+            <span>
+              Ocorrências
+            </span>
+
+            <strong>
+              {{ selectedCompany.occurrences.length }}
+            </strong>
+
+          </div>
+
+        </div>
+
+
+        <div class="current-score-card">
+
+          <div>
+
+            <span>
+              SCORE ATUAL
+            </span>
+
+            @if (selectedCompany.score !== null) {
+
+              <strong
+                class="score"
+                [class.score-low]="selectedCompany.risk === 'low'"
+                [class.score-medium]="selectedCompany.risk === 'medium'"
+                [class.score-high]="selectedCompany.risk === 'high'">
+
+                {{ selectedCompany.score }}
+
+              </strong>
+
+            } @else {
+
+              <strong class="score score-empty">
+                Não calculado
+              </strong>
+
+            }
+
+          </div>
+
+
+          @if (selectedCompany.risk) {
+
+            <span
+              class="risk-badge"
+              [class.risk-low]="selectedCompany.risk === 'low'"
+              [class.risk-medium]="selectedCompany.risk === 'medium'"
+              [class.risk-high]="selectedCompany.risk === 'high'">
+
+              {{ getRiskLabel(selectedCompany.risk) }}
+
+            </span>
+
+          }
+
+        </div>
+
+
+        <div class="modal-section">
+
+          <h3>
+            Última avaliação
+          </h3>
+
+          <p>
+            {{ selectedCompany.lastScoreDate ?? 'Ainda não avaliada' }}
+          </p>
+
+        </div>
+
+      </div>
+
+
+      <footer class="modal-footer">
+
+        <button
+          type="button"
+          class="button button-secondary"
+          (click)="closeAllModals()">
+
+          Fechar
+
+        </button>
+
+
+        <button
+          type="button"
+          class="button button-primary"
+          (click)="openScoreCalculation(selectedCompany.id)">
+
+          {{ selectedCompany.score !== null
+            ? 'Recalcular score'
+            : 'Calcular score' }}
+
+        </button>
+
+      </footer>
+
+    </section>
+
+  </div>
+
+}
+
+
+<!-- =====================================================
+     MODAL — SCORE
+     ===================================================== -->
+
+@if (activeModal === 'score' && selectedCompany) {
+
+  <div
+    class="modal-backdrop"
+    (click)="closeAllModals()">
+
+    <section
+      class="company-modal score-modal"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="score-title"
+      (click)="$event.stopPropagation()">
+
+      <header class="modal-header">
+
+        <div>
+
+          <span class="page-eyebrow">
+            ANÁLISE DE RISCO
+          </span>
+
+          <h2 id="score-title">
+            Avaliação de risco
+          </h2>
+
+          <p>
+            {{ selectedCompany.legalName }}
+          </p>
+
+        </div>
+
+
+        <button
+          type="button"
+          class="modal-close"
+          aria-label="Fechar"
+          (click)="closeAllModals()">
+
+          ×
+
+        </button>
+
+      </header>
+
+
+      <div class="modal-content">
+
+        <div class="score-overview">
+
+          <span>
+            SCORE ATUAL
+          </span>
+
+
+          @if (selectedCompany.score !== null) {
+
+            <strong
+              class="large-score"
+              [class.score-low]="selectedCompany.risk === 'low'"
+              [class.score-medium]="selectedCompany.risk === 'medium'"
+              [class.score-high]="selectedCompany.risk === 'high'">
+
+              {{ selectedCompany.score }}
+
+            </strong>
+
+
+            <span
+              class="risk-badge"
+              [class.risk-low]="selectedCompany.risk === 'low'"
+              [class.risk-medium]="selectedCompany.risk === 'medium'"
+              [class.risk-high]="selectedCompany.risk === 'high'">
+
+              {{ getRiskLabel(selectedCompany.risk) }}
+
+            </span>
+
+          } @else {
+
+            <strong class="large-score score-empty">
+              Não calculado
+            </strong>
+
+          }
+
+        </div>
+
+
+        <div class="score-information">
+
+          <div class="score-information-item">
+
+            <span>
+              Última avaliação
+            </span>
+
+            <strong>
+              {{ selectedCompany.lastScoreDate ?? 'Não realizada' }}
+            </strong>
+
+          </div>
+
+
+          <div class="score-information-item">
+
+            <span>
+              Ocorrências consideradas
+            </span>
+
+            <strong>
+              {{ selectedCompany.occurrences.length }}
+            </strong>
+
+          </div>
+
+        </div>
+
+
+        <div class="calculation-information">
+
+          <h3>
+            Dados considerados
+          </h3>
+
+          <ul>
+
+            <li>
+              <span aria-hidden="true">✓</span>
+              Dados cadastrais
+            </li>
+
+            <li>
+              <span aria-hidden="true">✓</span>
+              Informações financeiras
+            </li>
+
+            <li>
+              <span aria-hidden="true">✓</span>
+              Ocorrências registradas
+            </li>
+
+            <li>
+              <span aria-hidden="true">✓</span>
+              Pesos configurados
+            </li>
+
+          </ul>
+
+        </div>
+
+      </div>
+
+
+      <footer class="modal-footer">
+
+        <button
+          type="button"
+          class="button button-secondary"
+          (click)="closeAllModals()">
+
+          Fechar
+
+        </button>
+
+
+        <button
+          type="button"
+          class="button button-primary"
+          (click)="openScoreCalculation(selectedCompany.id)">
+
+          {{ selectedCompany.score !== null
+            ? 'Recalcular score'
+            : 'Calcular score' }}
+
+        </button>
+
+      </footer>
+
+    </section>
+
+  </div>
+
+}
+
+
+<!-- =====================================================
+     MODAL — OCORRÊNCIAS
+     ===================================================== -->
+
+@if (activeModal === 'occurrences' && selectedCompany) {
+
+  <div
+    class="modal-backdrop"
+    (click)="closeAllModals()">
+
+    <section
+      class="company-modal occurrence-modal"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="occurrences-title"
+      (click)="$event.stopPropagation()">
+
+      <header class="modal-header">
+
+        <div>
+
+          <span class="page-eyebrow">
+            HISTÓRICO
+          </span>
+
+          <h2 id="occurrences-title">
+            Ocorrências
+          </h2>
+
+          <p>
+            {{ selectedCompany.legalName }}
+          </p>
+
+        </div>
+
+
+        <button
+          type="button"
+          class="modal-close"
+          aria-label="Fechar"
+          (click)="closeAllModals()">
+
+          ×
+
+        </button>
+
+      </header>
+
+
+      <div class="modal-content">
+
+        <div class="occurrence-summary">
+
+          <div>
+
+            <span>
+              Total de ocorrências
+            </span>
+
+            <strong>
+              {{ selectedCompany.occurrences.length }}
+            </strong>
+
+          </div>
+
+
+          <div>
+
+            <span>
+              Última ocorrência
+            </span>
+
+            <strong>
+              {{ selectedCompany.occurrences[0]?.date ?? 'Nenhuma' }}
+            </strong>
+
+          </div>
+
+        </div>
+
+
+        <div class="occurrence-list">
+
+          @if (selectedCompany.occurrences.length > 0) {
+
+            @for (
+              occurrence of selectedCompany.occurrences;
+              track occurrence.id
+            ) {
+
+              <article class="occurrence-item">
+
+                <div
+                  class="occurrence-indicator"
+                  [class.occurrence-low]="occurrence.severity === 'low'"
+                  [class.occurrence-warning]="occurrence.severity === 'medium'"
+                  [class.occurrence-danger]="occurrence.severity === 'high'">
+                </div>
+
+
+                <div class="occurrence-content">
+
+                  <div class="occurrence-header">
+
+                    <strong>
+                      {{ occurrence.type }}
+                    </strong>
+
+                    <time>
+                      {{ occurrence.date }}
+                    </time>
+
+                  </div>
+
+
+                  <p>
+                    {{ occurrence.description }}
+                  </p>
+
+                </div>
+
+              </article>
+
+            }
+
+          } @else {
+
+            <div class="empty-state">
+
+              <strong>
+                Nenhuma ocorrência registrada
+              </strong>
+
+              <p>
+                Esta empresa ainda não possui ocorrências cadastradas.
+              </p>
+
+            </div>
+
+          }
+
+        </div>
+
+      </div>
+
+
+      <footer class="modal-footer">
+
+        <button
+          type="button"
+          class="button button-secondary"
+          (click)="closeAllModals()">
+
+          Fechar
+
+        </button>
+
+
+        <button
+          type="button"
+          class="button button-primary"
+          (click)="openNewOccurrence(selectedCompany.id)">
+
+          <span aria-hidden="true">+</span>
+          Nova ocorrência
+
+        </button>
+
+      </footer>
+
+    </section>
+
+  </div>
+
+}
+
+
+<!-- =====================================================
+     MODAL — NOVA OCORRÊNCIA
+     ===================================================== -->
+
+@if (activeModal === 'new-occurrence' && selectedCompany) {
+
+  <div
+    class="modal-backdrop"
+    (click)="closeAllModals()">
+
+    <section
+      class="company-modal occurrence-form-modal"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="new-occurrence-title"
+      (click)="$event.stopPropagation()">
+
+      <header class="modal-header">
+
+        <div>
+
+          <span class="page-eyebrow">
+            REGISTRO
+          </span>
+
+          <h2 id="new-occurrence-title">
+            Nova ocorrência
+          </h2>
+
+          <p>
+            {{ selectedCompany.legalName }}
+          </p>
+
+        </div>
+
+
+        <button
+          type="button"
+          class="modal-close"
+          aria-label="Fechar"
+          (click)="closeAllModals()">
+
+          ×
+
+        </button>
+
+      </header>
+
+
+      <div class="modal-content">
+
+        <div class="selected-company">
+
+          <div class="company-icon">
+            {{ selectedCompany.legalName.charAt(0) }}
+          </div>
+
+          <div>
+
+            <span>
+              Empresa
+            </span>
+
+            <strong>
+              {{ selectedCompany.legalName }}
+            </strong>
+
+            <small>
+              CNPJ {{ selectedCompany.cnpj }}
+            </small>
+
+          </div>
+
+        </div>
+
+
+        <div class="occurrence-form">
+
+          <div class="form-field">
+
+            <label for="occurrence-type">
+              Tipo de ocorrência
+            </label>
+
+            <select id="occurrence-type">
+
+              <option value="">
+                Selecione o tipo
+              </option>
+
+              <option value="payment-delay">
+                Atraso de pagamento
+              </option>
+
+              <option value="financial-pending">
+                Pendência financeira
+              </option>
+
+              <option value="restriction">
+                Restrição identificada
+              </option>
+
+              <option value="consultation">
+                Consulta realizada
+              </option>
+
+              <option value="other">
+                Outro
+
+              </option>
+
+            </select>
+
+          </div>
+
+
+          <div class="form-field">
+
+            <label for="occurrence-severity">
+              Severidade
+            </label>
+
+            <select id="occurrence-severity">
+
+              <option value="">
+                Selecione a severidade
+              </option>
+
+              <option value="low">
+                Baixa
+              </option>
+
+              <option value="medium">
+                Média
+              </option>
+
+              <option value="high">
+                Alta
+              </option>
+
+            </select>
+
+          </div>
+
+
+          <div class="form-field">
+
+            <label for="occurrence-date">
+              Data da ocorrência
+            </label>
+
+            <input
+              id="occurrence-date"
+              type="date">
+
+          </div>
+
+
+          <div class="form-field form-field-full">
+
+            <label for="occurrence-description">
+              Descrição
+            </label>
+
+            <textarea
+              id="occurrence-description"
+              rows="4"
+              maxlength="500"
+              placeholder="Descreva a ocorrência registrada.">
+            </textarea>
+
+            <span class="field-help">
+              Informe os detalhes relevantes para a análise da empresa.
+            </span>
+
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <footer class="modal-footer">
+
+        <button
+          type="button"
+          class="button button-secondary"
+          (click)="closeAllModals()">
+
+          Cancelar
+
+        </button>
+
+
+        <button
+          type="button"
+          class="button button-primary"
+          (click)="registerOccurrence()">
+
+          Registrar ocorrência
+
+        </button>
+
+      </footer>
+
+    </section>
+
+  </div>
+
+}
+
+
+<!-- =====================================================
+     MODAL — EXCLUSÃO
+     ===================================================== -->
+
+@if (activeModal === 'delete' && selectedCompany) {
+
+  <div
+    class="modal-backdrop"
+    (click)="closeAllModals()">
+
+    <section
+      class="company-modal delete-modal"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="delete-company-title"
+      (click)="$event.stopPropagation()">
+
+      <header class="modal-header">
+
+        <div>
+
+          <span class="page-eyebrow page-eyebrow-danger">
+            ATENÇÃO
+          </span>
+
+          <h2 id="delete-company-title">
+            Excluir empresa
+          </h2>
+
+        </div>
+
+
+        <button
+          type="button"
+          class="modal-close"
+          aria-label="Fechar"
+          (click)="closeAllModals()">
+
+          ×
+
+        </button>
+
+      </header>
+
+
+      <div class="modal-content">
+
+        <div class="delete-warning">
+
+          <div class="delete-icon" aria-hidden="true">
+            !
+          </div>
+
+          <div>
+
+            <h3>
+              Excluir {{ selectedCompany.legalName }}?
+            </h3>
+
+            <p>
+              Esta ação removerá a empresa do cadastro do sistema.
+              Os dados relacionados também poderão ser afetados.
+            </p>
+
+          </div>
+
+        </div>
+
+
+        <div class="delete-company-summary">
+
+          <span>
+            Empresa
+          </span>
+
+          <strong>
+            {{ selectedCompany.legalName }}
+          </strong>
+
+          <small>
+            CNPJ {{ selectedCompany.cnpj }}
+          </small>
+
+        </div>
+
+
+        <p class="delete-warning-text">
+          Esta ação não poderá ser desfeita.
+        </p>
+
+      </div>
+
+
+      <footer class="modal-footer">
+
+        <button
+          type="button"
+          class="button button-secondary"
+          (click)="closeAllModals()">
+
+          Cancelar
+
+        </button>
+
+
+        <button
+          type="button"
+          class="button button-danger"
+          (click)="deleteCompany()">
+
+          Excluir empresa
+
+        </button>
+
+      </footer>
+
+    </section>
+
+  </div>
+
+}

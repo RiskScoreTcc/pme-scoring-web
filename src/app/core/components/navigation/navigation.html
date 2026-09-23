@@ -1,0 +1,275 @@
+<div class="application-shell">
+
+  <!-- =====================================================
+       NAVEGAÇÃO PRINCIPAL
+       ===================================================== -->
+
+  <aside
+    id="main-navigation"
+    class="main-navigation"
+    [class.is-collapsed]="!isNavigationOpen"
+    aria-label="Navegação principal">
+
+    <!-- Cabeçalho da navegação -->
+    <div class="navigation-header">
+
+      <a
+        routerLink="/overview"
+        class="application-brand"
+        aria-label="PME Scoring - Visão Geral">
+
+        <span class="brand-name">
+          PME Scoring
+        </span>
+
+        <span
+          class="brand-symbol"
+          aria-hidden="true">
+          PS
+        </span>
+
+      </a>
+
+
+      <!-- Botão para fechar no mobile -->
+      <button
+        type="button"
+        class="navigation-close"
+        (click)="closeNavigation()"
+        aria-label="Fechar menu de navegação">
+
+        <span aria-hidden="true">
+          ×
+        </span>
+
+      </button>
+
+    </div>
+
+
+    <!-- ===================================================
+         MENU DE NAVEGAÇÃO
+         =================================================== -->
+
+    <nav
+      class="navigation-menu"
+      aria-label="Menu principal">
+
+      <ul>
+
+        <!-- Visão Geral -->
+        <li>
+
+          <a
+            routerLink="/overview"
+            routerLinkActive="is-active"
+            [routerLinkActiveOptions]="{ exact: true }"
+            #overviewLink="routerLinkActive"
+            [attr.aria-current]="
+              overviewLink.isActive ? 'page' : null
+            "
+            (click)="closeNavigation()">
+
+            <span
+              class="navigation-icon"
+              aria-hidden="true">
+              ▦
+            </span>
+
+            <span class="navigation-label">
+              Visão Geral
+            </span>
+
+          </a>
+
+        </li>
+
+
+        <!-- Empresas -->
+        <li>
+
+          <a
+            routerLink="/companies"
+            routerLinkActive="is-active"
+            #companiesLink="routerLinkActive"
+            [attr.aria-current]="
+              companiesLink.isActive ? 'page' : null
+            "
+            (click)="closeNavigation()">
+
+            <span
+              class="navigation-icon"
+              aria-hidden="true">
+              ▣
+            </span>
+
+            <span class="navigation-label">
+              Empresas
+            </span>
+
+          </a>
+
+        </li>
+
+        <!-- Ocorrências -->
+        <li>
+
+          <a
+            routerLink="/occurrences"
+            routerLinkActive="is-active"
+            #occurrencesLink="routerLinkActive"
+            [attr.aria-current]="
+              occurrencesLink.isActive ? 'page' : null
+            "
+            (click)="closeNavigation()">
+
+            <span
+              class="navigation-icon"
+              aria-hidden="true">
+              !
+            </span>
+
+            <span class="navigation-label">
+              Ocorrências
+            </span>
+
+          </a>
+
+        </li>
+
+
+        <!-- Configuração de Pesos -->
+        <li>
+
+          <a
+            routerLink="/weights"
+            routerLinkActive="is-active"
+            #weightsLink="routerLinkActive"
+            [attr.aria-current]="
+              weightsLink.isActive ? 'page' : null
+            "
+            (click)="closeNavigation()">
+
+            <span
+              class="navigation-icon"
+              aria-hidden="true">
+              ⚖
+            </span>
+
+            <span class="navigation-label">
+              Configuração de Pesos
+            </span>
+
+          </a>
+
+        </li>
+
+
+        <!-- Usuários e Acessos -->
+        <li>
+
+          <a
+            routerLink="/users"
+            routerLinkActive="is-active"
+            #usersLink="routerLinkActive"
+            [attr.aria-current]="
+              usersLink.isActive ? 'page' : null
+            "
+            (click)="closeNavigation()">
+
+            <span
+              class="navigation-icon"
+              aria-hidden="true">
+              ♙
+            </span>
+
+            <span class="navigation-label">
+              Usuários e Acessos
+            </span>
+
+          </a>
+
+        </li>
+
+      </ul>
+
+    </nav>
+
+  </aside>
+
+
+  <!-- =====================================================
+       FUNDO SOBREPOSTO - MOBILE
+       ===================================================== -->
+
+  <button
+    type="button"
+    class="navigation-overlay"
+    [class.is-visible]="isNavigationOpen"
+    (click)="closeNavigation()"
+    aria-label="Fechar menu de navegação">
+  </button>
+
+
+  <!-- =====================================================
+       ÁREA PRINCIPAL DA APLICAÇÃO
+       ===================================================== -->
+
+  <div class="application-content">
+
+    <!-- Barra superior -->
+    <header class="application-header">
+
+      <button
+        type="button"
+        class="navigation-toggle"
+        (click)="toggleNavigation()"
+        [attr.aria-expanded]="isNavigationOpen"
+        aria-controls="main-navigation"
+        aria-label="Alternar menu de navegação">
+
+        <span aria-hidden="true">
+          ☰
+        </span>
+
+      </button>
+
+
+      <!-- Usuário autenticado -->
+      <div class="current-user">
+
+        <span class="current-user-name">
+          Administrador
+        </span>
+
+        <button
+          type="button"
+          class="current-user-avatar"
+          aria-label="Abrir opções do usuário">
+
+          <span aria-hidden="true">
+            AD
+          </span>
+
+        </button>
+
+      </div>
+
+    </header>
+
+
+    <!-- ===================================================
+         CONTEÚDO DAS ROTAS
+         =================================================== -->
+
+    <main
+      class="route-content"
+      id="main-content">
+
+      <router-outlet></router-outlet>
+
+    </main>
+
+  </div>
+
+</div>

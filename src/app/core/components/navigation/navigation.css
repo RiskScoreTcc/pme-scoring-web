@@ -1,0 +1,764 @@
+/* =========================================================
+   APPLICATION SHELL
+   ========================================================= */
+
+:host {
+  display: block;
+
+  width: 100%;
+  min-height: 100vh;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+
+/* =========================================================
+   ESTRUTURA PRINCIPAL
+   ========================================================= */
+
+.application-shell {
+  display: flex;
+
+  width: 100%;
+  min-height: 100vh;
+
+  background: #f8fafc;
+}
+
+
+/* =========================================================
+   NAVEGAÇÃO PRINCIPAL
+   ========================================================= */
+
+.main-navigation {
+  position: sticky;
+
+  top: 0;
+
+  width: 270px;
+  min-width: 270px;
+
+  height: 100vh;
+
+  display: flex;
+  flex-direction: column;
+
+  background: #0f172a;
+
+  color: #94a3b8;
+
+  border-right: 1px solid rgba(255, 255, 255, 0.06);
+
+  overflow: hidden;
+
+  z-index: 1000;
+
+  transition:
+    width 200ms ease,
+    min-width 200ms ease;
+}
+
+
+/* =========================================================
+   NAVEGAÇÃO RECOLHIDA
+   ========================================================= */
+
+.main-navigation.is-collapsed {
+  width: 76px;
+  min-width: 76px;
+}
+
+
+/* =========================================================
+   CABEÇALHO DA NAVEGAÇÃO
+   ========================================================= */
+
+.navigation-header {
+  height: 70px;
+  min-height: 70px;
+
+  display: flex;
+  align-items: center;
+
+  padding: 0 20px;
+
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+
+  overflow: hidden;
+}
+
+
+/* =========================================================
+   MARCA DA APLICAÇÃO
+   ========================================================= */
+
+.application-brand {
+  display: flex;
+  align-items: center;
+
+  gap: 12px;
+
+  color: #f8fafc;
+
+  text-decoration: none;
+
+  white-space: nowrap;
+}
+
+.application-brand:focus-visible {
+  outline: 3px solid #60a5fa;
+  outline-offset: 3px;
+
+  border-radius: 6px;
+}
+
+
+/* Nome completo */
+
+.brand-name {
+  color: #f8fafc;
+
+  font-size: 1.2rem;
+  font-weight: 700;
+}
+
+
+/* Símbolo quando menu está recolhido */
+
+.brand-symbol {
+  display: none;
+
+  width: 36px;
+  height: 36px;
+
+  align-items: center;
+  justify-content: center;
+
+  flex-shrink: 0;
+
+  border-radius: 8px;
+
+  background: #2563eb;
+
+  color: #ffffff;
+
+  font-size: 1rem;
+  font-weight: 800;
+}
+
+
+/* =========================================================
+   MARCA - NAVEGAÇÃO RECOLHIDA
+   ========================================================= */
+
+.main-navigation.is-collapsed .navigation-header {
+  justify-content: center;
+
+  padding: 0;
+}
+
+.main-navigation.is-collapsed .brand-name {
+  display: none;
+}
+
+.main-navigation.is-collapsed .brand-symbol {
+  display: flex;
+}
+
+
+/* =========================================================
+   BOTÃO FECHAR - MOBILE
+   ========================================================= */
+
+.navigation-close {
+  display: none;
+
+  width: 40px;
+  height: 40px;
+
+  align-items: center;
+  justify-content: center;
+
+  flex-shrink: 0;
+
+  padding: 0;
+
+  border: 0;
+  border-radius: 8px;
+
+  background: transparent;
+
+  color: #cbd5e1;
+
+  font-size: 30px;
+  line-height: 1;
+
+  cursor: pointer;
+}
+
+.navigation-close:hover {
+  background: rgba(255, 255, 255, 0.08);
+
+  color: #ffffff;
+}
+
+.navigation-close:focus-visible {
+  outline: 3px solid #60a5fa;
+  outline-offset: 2px;
+}
+
+
+/* =========================================================
+   MENU DE NAVEGAÇÃO
+   ========================================================= */
+
+.navigation-menu {
+  flex: 1;
+
+  min-height: 0;
+
+  padding: 20px 0;
+
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+.navigation-menu ul {
+  list-style: none;
+
+  padding: 0;
+  margin: 0;
+}
+
+.navigation-menu li {
+  margin: 5px 12px;
+}
+
+
+/* =========================================================
+   LINKS DE NAVEGAÇÃO
+   ========================================================= */
+
+.navigation-menu a {
+  min-height: 44px;
+
+  display: flex;
+  align-items: center;
+
+  gap: 12px;
+
+  padding: 10px 14px;
+
+  border-radius: 9px;
+
+  color: #94a3b8;
+
+  text-decoration: none;
+
+  font-size: 0.92rem;
+  font-weight: 500;
+
+  white-space: nowrap;
+
+  transition:
+    background-color 150ms ease,
+    color 150ms ease;
+}
+
+.navigation-menu a:hover {
+  background: rgba(255, 255, 255, 0.06);
+
+  color: #f8fafc;
+}
+
+.navigation-menu a:focus-visible {
+  outline: 3px solid #60a5fa;
+  outline-offset: 2px;
+}
+
+
+/* =========================================================
+   LINK ATIVO
+   ========================================================= */
+
+.navigation-menu a.is-active {
+  background: #2563eb;
+
+  color: #ffffff;
+
+  font-weight: 600;
+
+  box-shadow:
+    0 4px 12px rgba(37, 99, 235, 0.25);
+}
+
+
+/* =========================================================
+   ÍCONES DA NAVEGAÇÃO
+   ========================================================= */
+
+.navigation-icon {
+  width: 28px;
+  min-width: 28px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 1.15rem;
+}
+
+
+/* =========================================================
+   LABELS DA NAVEGAÇÃO
+   ========================================================= */
+
+.navigation-label {
+  display: inline;
+}
+
+
+/* =========================================================
+   NAVEGAÇÃO RECOLHIDA
+   ========================================================= */
+
+.main-navigation.is-collapsed .navigation-label {
+  display: none;
+}
+
+.main-navigation.is-collapsed .navigation-menu a {
+  justify-content: center;
+
+  padding-left: 10px;
+  padding-right: 10px;
+}
+
+.main-navigation.is-collapsed .navigation-menu li {
+  margin-left: 10px;
+  margin-right: 10px;
+}
+
+
+/* =========================================================
+   ÁREA PRINCIPAL DA APLICAÇÃO
+   ========================================================= */
+
+.application-content {
+  flex: 1;
+
+  min-width: 0;
+  min-height: 100vh;
+
+  display: flex;
+  flex-direction: column;
+
+  background: #f8fafc;
+}
+
+
+/* =========================================================
+   CABEÇALHO DA APLICAÇÃO
+   ========================================================= */
+
+.application-header {
+  height: 70px;
+  min-height: 70px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  padding: 0 30px;
+
+  background: #ffffff;
+
+  border-bottom: 1px solid #e2e8f0;
+
+  position: sticky;
+
+  top: 0;
+
+  z-index: 50;
+}
+
+
+/* =========================================================
+   BOTÃO DE ALTERNÂNCIA DA NAVEGAÇÃO
+   ========================================================= */
+
+.navigation-toggle {
+  width: 44px;
+  height: 44px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 0;
+
+  border: 0;
+  border-radius: 8px;
+
+  background: transparent;
+
+  color: #475569;
+
+  font-size: 1.25rem;
+
+  cursor: pointer;
+
+  transition:
+    background-color 150ms ease,
+    color 150ms ease;
+}
+
+.navigation-toggle:hover {
+  background: #f1f5f9;
+
+  color: #2563eb;
+}
+
+.navigation-toggle:focus-visible {
+  outline: 3px solid #2563eb;
+  outline-offset: 2px;
+}
+
+
+/* =========================================================
+   USUÁRIO ATUAL
+   ========================================================= */
+
+.current-user {
+  display: flex;
+  align-items: center;
+
+  gap: 12px;
+}
+
+
+/* Nome do usuário */
+
+.current-user-name {
+  color: #334155;
+
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+
+/* Avatar */
+
+.current-user-avatar {
+  width: 40px;
+  height: 40px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 0;
+
+  border: 0;
+  border-radius: 50%;
+
+  background: #2563eb;
+
+  color: #ffffff;
+
+  font-size: 0.8rem;
+  font-weight: 700;
+
+  cursor: pointer;
+}
+
+.current-user-avatar:focus-visible {
+  outline: 3px solid #2563eb;
+  outline-offset: 2px;
+}
+
+
+/* =========================================================
+   CONTEÚDO DAS ROTAS
+   ========================================================= */
+
+.route-content {
+  flex: 1;
+
+  min-width: 0;
+
+  padding: 30px;
+
+  /*
+   * O navegador controla o scroll principal.
+   * Evitamos criar um segundo scroll.
+   */
+  overflow: visible;
+}
+
+
+/* =========================================================
+   OVERLAY MOBILE
+   ========================================================= */
+
+.navigation-overlay {
+  display: none;
+
+  position: fixed;
+
+  inset: 0;
+
+  z-index: 900;
+
+  margin: 0;
+  padding: 0;
+
+  border: 0;
+
+  background: rgba(15, 23, 42, 0.45);
+
+  opacity: 0;
+
+  pointer-events: none;
+
+  transition:
+    opacity 200ms ease;
+}
+
+
+/* Overlay visível */
+
+.navigation-overlay.is-visible {
+  opacity: 1;
+
+  pointer-events: auto;
+}
+
+
+/* =========================================================
+   TABLET
+   ========================================================= */
+
+@media (max-width: 1024px) {
+
+  .main-navigation {
+    width: 240px;
+    min-width: 240px;
+  }
+
+  .main-navigation.is-collapsed {
+    width: 72px;
+    min-width: 72px;
+  }
+
+  .application-header {
+    padding: 0 24px;
+  }
+
+  .route-content {
+    padding: 24px;
+  }
+
+}
+
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media (max-width: 768px) {
+
+  /* -------------------------------------------------------
+     NAVEGAÇÃO
+     ------------------------------------------------------- */
+
+  .main-navigation {
+    position: fixed;
+
+    top: 0;
+    left: 0;
+    bottom: 0;
+
+    width: 280px;
+    min-width: 280px;
+
+    height: 100vh;
+
+    transform: translateX(0);
+
+    box-shadow:
+      8px 0 24px rgba(0, 0, 0, 0.18);
+
+    transition:
+      transform 200ms ease;
+  }
+
+
+  /*
+   * No mobile, recolhido significa
+   * completamente fora da tela.
+   */
+
+  .main-navigation.is-collapsed {
+    width: 280px;
+    min-width: 280px;
+
+    transform: translateX(-100%);
+  }
+
+
+  /*
+   * No mobile não existe estado compacto.
+   */
+
+  .main-navigation.is-collapsed .brand-name {
+    display: block;
+  }
+
+  .main-navigation.is-collapsed .brand-symbol {
+    display: none;
+  }
+
+  .main-navigation.is-collapsed .navigation-label {
+    display: inline;
+  }
+
+  .main-navigation.is-collapsed .navigation-menu a {
+    justify-content: flex-start;
+
+    padding-left: 14px;
+    padding-right: 14px;
+  }
+
+  .main-navigation.is-collapsed .navigation-menu li {
+    margin-left: 12px;
+    margin-right: 12px;
+  }
+
+
+  /* -------------------------------------------------------
+     CABEÇALHO DA NAVEGAÇÃO
+     ------------------------------------------------------- */
+
+  .navigation-header {
+    justify-content: space-between;
+
+    padding:
+      0
+      16px
+      0
+      20px;
+  }
+
+
+  /* -------------------------------------------------------
+     BOTÃO FECHAR
+     ------------------------------------------------------- */
+
+  .navigation-close {
+    display: inline-flex;
+  }
+
+
+  /* -------------------------------------------------------
+     OVERLAY
+     ------------------------------------------------------- */
+
+  .navigation-overlay {
+    display: block;
+  }
+
+
+  /* -------------------------------------------------------
+     ÁREA PRINCIPAL
+     ------------------------------------------------------- */
+
+  .application-content {
+    width: 100%;
+
+    min-width: 0;
+  }
+
+
+  /* -------------------------------------------------------
+     CABEÇALHO
+     ------------------------------------------------------- */
+
+  .application-header {
+    height: 64px;
+    min-height: 64px;
+
+    padding: 0 16px;
+
+    position: sticky;
+
+    top: 0;
+
+    z-index: 50;
+  }
+
+
+  /* -------------------------------------------------------
+     CONTEÚDO
+     ------------------------------------------------------- */
+
+  .route-content {
+    padding: 20px 16px;
+
+    overflow: visible;
+  }
+
+
+  /* -------------------------------------------------------
+     USUÁRIO
+     ------------------------------------------------------- */
+
+  .current-user-name {
+    display: none;
+  }
+
+}
+
+
+/* =========================================================
+   MOBILE PEQUENO
+   ========================================================= */
+
+@media (max-width: 480px) {
+
+  .main-navigation {
+    width: min(280px, 86vw);
+    min-width: min(280px, 86vw);
+  }
+
+  .main-navigation.is-collapsed {
+    width: min(280px, 86vw);
+    min-width: min(280px, 86vw);
+  }
+
+  .route-content {
+    padding: 16px 12px;
+  }
+
+  .application-header {
+    padding: 0 12px;
+  }
+
+}
+
+
+/* =========================================================
+   REDUÇÃO DE MOVIMENTO
+   ========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+
+  .main-navigation,
+  .navigation-overlay,
+  .navigation-menu a,
+  .navigation-toggle {
+    transition: none;
+  }
+
+}

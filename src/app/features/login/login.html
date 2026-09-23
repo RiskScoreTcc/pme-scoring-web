@@ -1,0 +1,303 @@
+<main class="login-page">
+
+  <section
+    class="login-container"
+    aria-labelledby="login-title"
+  >
+
+    <!-- Identidade -->
+
+    <div class="brand">
+
+      <div
+        class="brand-mark"
+        aria-hidden="true"
+      >
+        P
+      </div>
+
+      <div class="brand-name">
+        <strong>PME</strong>
+        <span>SCORING</span>
+      </div>
+
+    </div>
+
+
+    <!-- Cabeçalho -->
+
+    <header class="login-header">
+
+      <span class="eyebrow">
+        ACESSO AO SISTEMA
+      </span>
+
+      <h1 id="login-title">
+        Bem-vindo de volta
+      </h1>
+
+      <p>
+        Entre com suas credenciais para acessar
+        o PME Scoring.
+      </p>
+
+    </header>
+
+
+    <!-- Erro -->
+
+    @if (loginError()) {
+
+      <div
+        class="login-error"
+        role="alert"
+      >
+
+        <span
+          class="error-icon"
+          aria-hidden="true"
+        >
+          !
+        </span>
+
+        <div>
+          <strong>
+            Não foi possível entrar
+          </strong>
+
+          <p>
+            Verifique seu e-mail e senha e tente novamente.
+          </p>
+        </div>
+
+      </div>
+
+    }
+
+
+    <!-- Formulário -->
+
+    <form
+      [formGroup]="loginForm"
+      (ngSubmit)="onSubmit()"
+      novalidate
+    >
+
+      <!-- E-mail -->
+
+      <div class="field">
+
+        <label for="email">
+          E-mail
+          <span aria-hidden="true">*</span>
+        </label>
+
+        <input
+          id="email"
+          type="email"
+          formControlName="email"
+          autocomplete="username"
+          placeholder="seu.email@empresa.com"
+          [attr.aria-invalid]="isInvalid('email')"
+          [attr.aria-describedby]="
+            isInvalid('email')
+              ? 'email-error'
+              : null
+          "
+        />
+
+        @if (isInvalid('email')) {
+
+          <small
+            id="email-error"
+            class="field-error"
+          >
+
+            @if (
+              loginForm.controls.email.hasError('required')
+            ) {
+              Informe seu e-mail.
+            }
+
+            @if (
+              loginForm.controls.email.hasError('email')
+            ) {
+              Informe um e-mail válido.
+            }
+
+          </small>
+
+        }
+
+      </div>
+
+
+      <!-- Senha -->
+
+      <div class="field">
+
+        <div class="field-label-row">
+
+          <label for="password">
+            Senha
+            <span aria-hidden="true">*</span>
+          </label>
+
+        </div>
+
+
+        <div class="password-wrapper">
+
+          <input
+            id="password"
+            [type]="showPassword() ? 'text' : 'password'"
+            formControlName="password"
+            autocomplete="current-password"
+            placeholder="Digite sua senha"
+            [attr.aria-invalid]="isInvalid('password')"
+            [attr.aria-describedby]="
+              isInvalid('password')
+                ? 'password-error'
+                : null
+            "
+          />
+
+          <button
+            type="button"
+            class="password-toggle"
+            [attr.aria-label]="
+              showPassword()
+                ? 'Ocultar senha'
+                : 'Mostrar senha'
+            "
+            [attr.aria-pressed]="showPassword()"
+            (click)="togglePassword()"
+          >
+            {{ showPassword() ? 'Ocultar' : 'Mostrar' }}
+          </button>
+
+        </div>
+
+
+        @if (isInvalid('password')) {
+
+          <small
+            id="password-error"
+            class="field-error"
+          >
+
+            @if (
+              loginForm.controls.password.hasError('required')
+            ) {
+              Informe sua senha.
+            }
+
+            @if (
+              loginForm.controls.password.hasError('minlength')
+            ) {
+              A senha deve possuir pelo menos 8 caracteres.
+            }
+
+          </small>
+
+        }
+
+      </div>
+
+
+      <!-- Opções -->
+
+      <div class="login-options">
+
+        <label class="remember-option">
+
+          <input
+            type="checkbox"
+            formControlName="rememberMe"
+          />
+
+          <span>
+            Lembrar acesso
+          </span>
+
+        </label>
+
+        <button
+          type="button"
+          class="forgot-password"
+        >
+          Esqueci minha senha
+        </button>
+
+      </div>
+
+
+      <!-- Botão -->
+
+      <button
+        type="submit"
+        class="login-button"
+        [disabled]="isLoading()"
+      >
+
+        @if (isLoading()) {
+
+          <span
+            class="loading-spinner"
+            aria-hidden="true"
+          ></span>
+
+          Entrando...
+
+        } @else {
+
+          Entrar
+
+        }
+
+      </button>
+
+    </form>
+
+
+    <!-- Segurança -->
+
+    <div class="security-info">
+
+      <span
+        class="security-icon"
+        aria-hidden="true"
+      >
+        🔒
+      </span>
+
+      <p>
+        Ambiente protegido. Suas credenciais são
+        utilizadas exclusivamente para autenticação
+        no sistema.
+      </p>
+
+    </div>
+
+
+    <!-- Rodapé -->
+
+    <footer class="login-footer">
+
+      <span>
+        PME Scoring
+      </span>
+
+      <span aria-hidden="true">
+        •
+      </span>
+
+      <span>
+        Acesso restrito
+      </span>
+
+    </footer>
+
+  </section>
+
+</main>

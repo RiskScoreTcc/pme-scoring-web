@@ -6,23 +6,10 @@ import {
   Validators
 } from '@angular/forms';
 
-type UserType = 'ADMIN' | 'ANALYST' | 'CREDIT_ANALYST';
+import { User } from '../../core/models/users/user';
+import { UserType } from '../../core/models/users/user-type';
+import { ModalTypeUser } from '../../core/models/users/modal-type-user';
 
-type ModalType =
-  | 'details'
-  | 'new'
-  | 'edit'
-  | 'delete'
-  | null;
-
-interface User {
-  id: number;
-  email: string;
-  type: UserType;
-  status: 'active' | 'inactive';
-  createdAt: string;
-  lastAccess: string;
-}
 
 @Component({
   selector: 'app-users',
@@ -92,7 +79,7 @@ export class Users {
   });
 
   selectedUser: User | null = null;
-  activeModal: ModalType = null;
+  activeModal: ModalTypeUser = null;
 
   searchTerm = '';
   selectedType = '';

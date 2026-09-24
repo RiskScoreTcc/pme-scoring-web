@@ -6,29 +6,11 @@ import {
   ReactiveFormsModule,
   Validators
 } from '@angular/forms';
+import { ClassificationType } from '../../core/models/classification-type';
+import { Occurrence } from '../../core/models/occurences/occurrence';
+import { OccurrenceStatus } from '../../core/models/occurences/occurrence-status';
+import { ModalTypeOccurrence } from '../../core/models/occurences/modal-type-occurrence';
 
-type OccurrenceSeverity = 'low' | 'medium' | 'high';
-type OccurrenceStatus = 'open' | 'in_analysis' | 'resolved';
-
-type ModalType =
-  | 'details'
-  | 'new-occurrence'
-  | 'edit'
-  | 'delete'
-  | null;
-
-interface Occurrence {
-  id: number;
-  companyId: number;
-  companyName: string;
-  cnpj: string;
-  type: string;
-  description: string;
-  severity: OccurrenceSeverity;
-  status: OccurrenceStatus;
-  date: string;
-  notes?: string;
-}
 
 @Component({
   selector: 'app-occurrences',
@@ -116,7 +98,7 @@ export class Occurrences {
   readonly occurrenceForm = this.fb.group({
     companyId: ['', Validators.required],
     type: ['', Validators.required],
-    severity: ['medium' as OccurrenceSeverity, Validators.required],
+    severity: ['medium' as ClassificationType, Validators.required],
     date: ['', Validators.required],
     description: [
       '',
@@ -131,7 +113,7 @@ export class Occurrences {
 
   selectedOccurrence: Occurrence | null = null;
 
-  activeModal: ModalType = null;
+  activeModal: ModalTypeOccurrence = null;
 
   searchTerm = '';
   selectedSeverity = '';
@@ -174,9 +156,9 @@ export class Occurrences {
 
       const matchesSearch =
         !term ||
-        occurrence.companyName.toLowerCase().includes(term) ||
-        occurrence.cnpj.includes(term) ||
-        occurrence.type.toLowerCase().includes(term);
+        occurrence.companyName?.toLowerCase().includes(term) ||
+        occurrence.cnpj?.includes(term) ||
+        occurrence.type?.toLowerCase().includes(term);
 
       const matchesSeverity =
         !this.selectedSeverity ||
@@ -217,7 +199,9 @@ export class Occurrences {
 
   get recentOccurrences(): number {
     return this.occurrences.filter(
-      occurrence => occurrence.date >= '2026-08-24'
+        occurrence =>
+        occurrence.date !== undefined &&
+        occurrence.date >= '2026-08-24'
     ).length;
   }
 
@@ -244,7 +228,7 @@ export class Occurrences {
     this.selectedOccurrence = occurrence;
 
     this.occurrenceForm.patchValue({
-      companyId: occurrence.companyId.toString(),
+      companyId: occurrence.companyId?.toString() ?? '',
       type: occurrence.type,
       severity: occurrence.severity,
       date: occurrence.date,
@@ -354,8 +338,8 @@ export class Occurrences {
     this.closeModal();
   }
 
-  getSeverityLabel(severity: OccurrenceSeverity): string {
-    const labels: Record<OccurrenceSeverity, string> = {
+  getSeverityLabel(severity: ClassificationType): string {
+    const labels: Record<ClassificationType, string> = {
       low: 'Baixa',
       medium: 'Média',
       high: 'Alta'
@@ -364,7 +348,7 @@ export class Occurrences {
     return labels[severity];
   }
 
-  getSeverityClass(severity: OccurrenceSeverity): string {
+  getSeverityClass(severity: ClassificationType): string {
     return `severity-${severity}`;
   }
 

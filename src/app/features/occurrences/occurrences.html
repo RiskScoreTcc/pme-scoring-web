@@ -332,9 +332,9 @@
 
                 <span
                   class="badge"
-                  [class]="getSeverityClass(occurrence.severity)"
+                  [class]="occurrence.severity ? getSeverityClass(occurrence.severity) : 'Sem severity'"
                 >
-                  {{ getSeverityLabel(occurrence.severity) }}
+                  {{ occurrence.severity ? getSeverityLabel(occurrence.severity) : 'Sem severity' }}
                 </span>
 
               </td>
@@ -345,9 +345,9 @@
 
                 <span
                   class="badge"
-                  [class]="getStatusClass(occurrence.status)"
+                  [class]="occurrence.status ? getStatusClass(occurrence.status) : 'Sem status'"
                 >
-                  {{ getStatusLabel(occurrence.status) }}
+                  {{ occurrence.status ? getStatusLabel(occurrence.status) : 'Sem status' }}
                 </span>
 
               </td>
@@ -496,9 +496,9 @@
 
             <span
               class="badge"
-              [class]="getSeverityClass(selectedOccurrence.severity)"
+              [class]="selectedOccurrence.severity? getSeverityLabel(selectedOccurrence.severity): 'Sem severity' "
             >
-              {{ getSeverityLabel(selectedOccurrence.severity) }}
+              {{ selectedOccurrence.severity? getSeverityLabel(selectedOccurrence.severity): 'Sem severity'  }}
             </span>
           </div>
 
@@ -507,9 +507,13 @@
 
             <span
               class="badge"
-              [class]="getStatusClass(selectedOccurrence.status)"
+              [class]="selectedOccurrence.status
+    ? getStatusClass(selectedOccurrence.status)
+    : ''"
             >
-              {{ getStatusLabel(selectedOccurrence.status) }}
+              {{ selectedOccurrence.status
+    ? getStatusLabel(selectedOccurrence.status)
+    : 'Sem status'  }}
             </span>
           </div>
 

@@ -1,41 +1,9 @@
 import { Component } from '@angular/core';
 import { RouterLink } from '@angular/router';
-
-type RiskLevel = 'low' | 'medium' | 'high';
-type CompanyStatus = 'active' | 'inactive';
-
-type ModalType =
-  | 'details'
-  | 'score'
-  | 'occurrences'
-  | 'new-occurrence'
-  | 'delete'
-  | null;
-
-interface Occurrence {
-  id: number;
-  type: string;
-  description: string;
-  date: string;
-  severity: 'low' | 'medium' | 'high';
-}
-
-interface Company {
-  id: number;
-  legalName: string;
-  tradeName: string;
-  cnpj: string;
-  sector: string;
-
-  score: number | null;
-  risk: RiskLevel | null;
-
-  status: CompanyStatus;
-
-  lastScoreDate: string | null;
-
-  occurrences: Occurrence[];
-}
+import { ClassificationType } from '../../core/models/classification-type';
+import { ModalTypeCompanie } from '../../core/models/companies/modal-type-companie';
+import { Occurrence } from '../../core/models/occurences/occurrence';
+import { Company } from '../../core/models/companies/company';
 
 @Component({
   selector: 'app-companies',
@@ -198,7 +166,7 @@ export class Companies {
 
   selectedCompany: Company | null = null;
 
-  activeModal: ModalType = null;
+  activeModal: ModalTypeCompanie = null;
 
   toggleActionMenu(companyId: number): void {
     if (this.openActionMenu === companyId) {
@@ -288,7 +256,7 @@ export class Companies {
     this.closeAllModals();
   }
 
-  getRiskLabel(risk: RiskLevel | null): string {
+  getRiskLabel(risk: ClassificationType | null): string {
     switch (risk) {
       case 'low':
         return 'Baixo risco';
@@ -304,7 +272,7 @@ export class Companies {
     }
   }
 
-  getRiskClass(risk: RiskLevel | null): string {
+  getRiskClass(risk: ClassificationType | null): string {
     switch (risk) {
       case 'low':
         return 'risk-low';
@@ -332,6 +300,9 @@ export class Companies {
 
       case 'high':
         return 'occurrence-danger';
+        
+      default:
+      throw new Error(`Severidade de ocorrência inválida: ${severity}`);
     }
   }
 

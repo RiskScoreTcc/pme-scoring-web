@@ -5,9 +5,7 @@ import {
   Validators
 } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-
-
-type FormulaType = 'WEIGHTED_AVERAGE';
+import { FormulaType } from '../../core/models/weights/formula-type';
 
 @Component({
   selector: 'app-weights',

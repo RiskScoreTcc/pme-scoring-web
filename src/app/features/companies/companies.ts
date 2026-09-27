@@ -1,9 +1,12 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { ClassificationType } from '../../core/models/classification-type';
 import { ModalTypeCompanie } from '../../core/models/companies/modal-type-companie';
-import { Occurrence } from '../../core/models/occurences/occurrence';
 import { Company } from '../../core/models/companies/company';
+import { ClassificationType } from '../../core/models/classification-type';
+import { Occurrence } from '../../core/models/occurences/occurrence';
+import { CompanyService } from '../../core/services/companies/company-service';
+import { ScoreService } from '../../core/services/scores/score-service';
+import { OccurrenceService } from '../../core/services/occurences/occurrence-service';
 
 @Component({
   selector: 'app-companies',
@@ -13,154 +16,11 @@ import { Company } from '../../core/models/companies/company';
 })
 export class Companies {
 
-  readonly companies: Company[] = [
-    {
-      id: 1,
-      legalName: 'Alfa Comércio Ltda.',
-      tradeName: 'Alfa Comércio',
-      cnpj: '12.345.678/0001-90',
-      sector: 'Comércio varejista',
-      score: 824,
-      risk: 'low',
-      status: 'active',
-      lastScoreDate: '21/09/2026 às 14:32',
-      occurrences: [
-        {
-          id: 1,
-          type: 'Atraso de pagamento',
-          description: 'Registro de atraso em obrigação financeira.',
-          date: '18/09/2026',
-          severity: 'medium'
-        },
-        {
-          id: 2,
-          type: 'Consulta realizada',
-          description: 'Consulta registrada no histórico da empresa.',
-          date: '12/09/2026',
-          severity: 'low'
-        },
-        {
-          id: 3,
-          type: 'Pendência financeira',
-          description: 'Pendência registrada durante análise financeira.',
-          date: '05/09/2026',
-          severity: 'high'
-        }
-      ]
-    },
+  private readonly companyService = inject(CompanyService);
+  private readonly scoreService = inject(ScoreService);
+  private readonly occurrenceService = inject(OccurrenceService);
 
-    {
-      id: 2,
-      legalName: 'Beta Serviços S.A.',
-      tradeName: 'Beta Serviços',
-      cnpj: '23.456.789/0001-81',
-      sector: 'Serviços empresariais',
-      score: 641,
-      risk: 'medium',
-      status: 'active',
-      lastScoreDate: '20/09/2026 às 10:15',
-      occurrences: [
-        {
-          id: 4,
-          type: 'Atraso de pagamento',
-          description: 'Pagamento realizado após o vencimento.',
-          date: '17/09/2026',
-          severity: 'medium'
-        },
-        {
-          id: 5,
-          type: 'Consulta realizada',
-          description: 'Nova consulta registrada no histórico.',
-          date: '10/09/2026',
-          severity: 'low'
-        }
-      ]
-    },
-
-    {
-      id: 3,
-      legalName: 'Gamma Indústria Ltda.',
-      tradeName: 'Gamma Indústria',
-      cnpj: '34.567.890/0001-72',
-      sector: 'Indústria',
-      score: 312,
-      risk: 'high',
-      status: 'active',
-      lastScoreDate: '19/09/2026 às 16:48',
-      occurrences: [
-        {
-          id: 6,
-          type: 'Pendência financeira',
-          description: 'Pendência identificada durante análise financeira.',
-          date: '19/09/2026',
-          severity: 'high'
-        },
-        {
-          id: 7,
-          type: 'Atraso de pagamento',
-          description: 'Obrigação financeira em atraso.',
-          date: '15/09/2026',
-          severity: 'high'
-        },
-        {
-          id: 8,
-          type: 'Restrição identificada',
-          description: 'Restrição identificada durante consulta.',
-          date: '08/09/2026',
-          severity: 'high'
-        }
-      ]
-    },
-
-    {
-      id: 4,
-      legalName: 'Delta Tecnologia Ltda.',
-      tradeName: 'Delta Tecnologia',
-      cnpj: '45.678.901/0001-63',
-      sector: 'Tecnologia da informação',
-      score: 756,
-      risk: 'low',
-      status: 'active',
-      lastScoreDate: '18/09/2026 às 09:21',
-      occurrences: [
-        {
-          id: 9,
-          type: 'Consulta realizada',
-          description: 'Consulta registrada no histórico da empresa.',
-          date: '18/09/2026',
-          severity: 'low'
-        }
-      ]
-    },
-
-    {
-      id: 5,
-      legalName: 'Epsilon Logística S.A.',
-      tradeName: 'Epsilon Logística',
-      cnpj: '56.789.012/0001-54',
-      sector: 'Transporte e logística',
-      score: 587,
-      risk: 'medium',
-      status: 'active',
-      lastScoreDate: '17/09/2026 às 11:40',
-      occurrences: [
-        {
-          id: 10,
-          type: 'Atraso de pagamento',
-          description: 'Atraso identificado em obrigação financeira.',
-          date: '16/09/2026',
-          severity: 'medium'
-        },
-        {
-          id: 11,
-          type: 'Consulta realizada',
-          description: 'Consulta registrada no histórico.',
-          date: '11/09/2026',
-          severity: 'low'
-        }
-      ]
-    }
-  ];
+  readonly companies: Company[] = this.companyService.getAll();
 
   openActionMenu: number | null = null;
 
@@ -222,10 +82,7 @@ export class Companies {
       return;
     }
 
-    console.log(
-      'Calculando score da empresa:',
-      this.selectedCompany.legalName
-    );
+    this.scoreService.calculateScore(this.selectedCompany.id);
 
     this.closeAllModals();
   }
@@ -234,12 +91,11 @@ export class Companies {
     if (!this.selectedCompany) {
       return;
     }
+    
+    /*
 
-    console.log(
-      'Registrando nova ocorrência para:',
-      this.selectedCompany.legalName
-    );
-
+    this.occurrenceService.create(this.selectedCompany.id);
+    */
     this.closeAllModals();
   }
 
@@ -248,10 +104,7 @@ export class Companies {
       return;
     }
 
-    console.log(
-      'Excluindo empresa:',
-      this.selectedCompany.legalName
-    );
+    this.companyService.delete(this.selectedCompany.id);
 
     this.closeAllModals();
   }
@@ -288,28 +141,8 @@ export class Companies {
     }
   }
 
-  getOccurrenceSeverityClass(
-    severity: Occurrence['severity']
-  ): string {
-    switch (severity) {
-      case 'low':
-        return 'occurrence-low';
-
-      case 'medium':
-        return 'occurrence-warning';
-
-      case 'high':
-        return 'occurrence-danger';
-        
-      default:
-      throw new Error(`Severidade de ocorrência inválida: ${severity}`);
-    }
-  }
-
   private selectCompany(companyId: number): void {
-    this.selectedCompany =
-      this.companies.find(company => company.id === companyId) ?? null;
-
+    this.selectedCompany = this.companyService.getById(companyId);
     this.openActionMenu = null;
   }
 }

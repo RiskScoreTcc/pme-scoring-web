@@ -4,6 +4,8 @@ import {
   ReactiveFormsModule,
   Validators
 } from '@angular/forms';
+import { AuthService } from '../../core/services/auth/auth-service';
+import { AuthCredentials } from '../../core/models/auth/auth-credentials';
 
 @Component({
   selector: 'app-login',
@@ -14,6 +16,7 @@ import {
 export class Login {
 
   private readonly fb = inject(FormBuilder);
+  private readonly authService = inject(AuthService);
 
   readonly showPassword = signal(false);
   readonly isLoading = signal(false);
@@ -63,35 +66,21 @@ export class Login {
 
     const formValue = this.loginForm.getRawValue();
 
-    console.log('Login:', {
-      email: formValue.email,
-      password: formValue.password,
-      rememberMe: formValue.rememberMe
-    });
+    const authCredentials: AuthCredentials = {
+      email: formValue.email!,
+      password: formValue.password!
+    };
 
-    /*
-     * Futuramente:
-     *
-     * this.authService.login({
-     *   email: formValue.email!,
-     *   password: formValue.password!
-     * }).subscribe({
-     *   next: () => {
-     *     this.router.navigate(['/overview']);
-     *   },
-     *   error: () => {
-     *     this.loginError.set(true);
-     *     this.isLoading.set(false);
-     *   }
-     * });
-     */
-
-    setTimeout(() => {
-      this.isLoading.set(false);
-
-      // Apenas demonstração visual.
-      // Remover quando integrar com a API.
-      this.loginError.set(false);
-    }, 1000);
+    this.authService.login(authCredentials)
+      .subscribe({
+        next: () => {
+          this.isLoading.set(false);
+          // Redirecionar para a página principal após login bem-sucedido
+        },
+        error: () => {
+          this.loginError.set(true);
+          this.isLoading.set(false);
+        }
+      });
   }
 }

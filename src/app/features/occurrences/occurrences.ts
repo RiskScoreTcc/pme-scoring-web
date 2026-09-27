@@ -6,99 +6,29 @@ import {
   ReactiveFormsModule,
   Validators
 } from '@angular/forms';
-import { ClassificationType } from '../../core/models/classification-type';
 import { Occurrence } from '../../core/models/occurences/occurrence';
 import { OccurrenceStatus } from '../../core/models/occurences/occurrence-status';
 import { ModalTypeOccurrence } from '../../core/models/occurences/modal-type-occurrence';
-
+import { OccurrenceService } from '../../core/services/occurences/occurrence-service';
+import { CompanyService } from '../../core/services/companies/company-service';
+import { OccurrenceCreate } from '../../core/models/occurences/occurrence-create';
 
 @Component({
   selector: 'app-occurrences',
-  imports: [ReactiveFormsModule,FormsModule,CommonModule],
+  imports: [ReactiveFormsModule, FormsModule, CommonModule],
   templateUrl: './occurrences.html',
   styleUrl: './occurrences.css'
 })
 export class Occurrences {
 
+  private readonly occurrenceService = inject(OccurrenceService);
+  private readonly companyService = inject(CompanyService);
   private readonly fb = inject(FormBuilder);
-
-  readonly occurrences: Occurrence[] = [
-    {
-      id: 1,
-      companyId: 1,
-      companyName: 'Alfa Comércio Ltda.',
-      cnpj: '12.345.678/0001-90',
-      type: 'Atraso de pagamento',
-      description: 'Pagamento de obrigação financeira realizado após o prazo estabelecido.',
-      severity: 'medium',
-      status: 'resolved',
-      date: '2026-09-18',
-      notes: 'Ocorrência regularizada pela empresa.'
-    },
-    {
-      id: 2,
-      companyId: 3,
-      companyName: 'Gamma Indústria Ltda.',
-      cnpj: '34.567.890/0001-72',
-      type: 'Restrição financeira',
-      description: 'Identificada restrição financeira associada ao CNPJ da empresa.',
-      severity: 'high',
-      status: 'in_analysis',
-      date: '2026-09-20',
-      notes: 'Aguardando análise complementar.'
-    },
-    {
-      id: 3,
-      companyId: 2,
-      companyName: 'Beta Serviços S.A.',
-      cnpj: '23.456.789/0001-81',
-      type: 'Atraso de pagamento',
-      description: 'Registro de atraso em obrigação financeira.',
-      severity: 'low',
-      status: 'resolved',
-      date: '2026-09-12',
-      notes: 'Pagamento identificado posteriormente.'
-    },
-    {
-      id: 4,
-      companyId: 5,
-      companyName: 'Epsilon Logística S.A.',
-      cnpj: '56.789.012/0001-54',
-      type: 'Inconsistência cadastral',
-      description: 'Informação cadastral divergente identificada durante análise.',
-      severity: 'medium',
-      status: 'open',
-      date: '2026-09-21',
-      notes: 'Necessário validar informações cadastrais.'
-    },
-    {
-      id: 5,
-      companyId: 4,
-      companyName: 'Delta Tecnologia Ltda.',
-      cnpj: '45.678.901/0001-63',
-      type: 'Documento pendente',
-      description: 'Documento necessário para análise de risco ainda não foi disponibilizado.',
-      severity: 'low',
-      status: 'open',
-      date: '2026-09-22'
-    },
-    {
-      id: 6,
-      companyId: 3,
-      companyName: 'Gamma Indústria Ltda.',
-      cnpj: '34.567.890/0001-72',
-      type: 'Atraso de pagamento',
-      description: 'Atraso identificado em obrigação financeira da empresa.',
-      severity: 'high',
-      status: 'open',
-      date: '2026-09-22'
-    }
-  ];
+  readonly occurrences: Occurrence[] = this.occurrenceService.getAll();
 
   readonly occurrenceForm = this.fb.group({
     companyId: ['', Validators.required],
-    type: ['', Validators.required],
-    severity: ['medium' as ClassificationType, Validators.required],
+    averageRevenue: ['', Validators.required, Validators.min(0.01)],
     date: ['', Validators.required],
     description: [
       '',
@@ -108,7 +38,6 @@ export class Occurrences {
         Validators.maxLength(500)
       ]
     ],
-    notes: ['', Validators.maxLength(500)]
   });
 
   selectedOccurrence: Occurrence | null = null;
@@ -116,38 +45,11 @@ export class Occurrences {
   activeModal: ModalTypeOccurrence = null;
 
   searchTerm = '';
-  selectedSeverity = '';
   selectedStatus = '';
   selectedType = '';
 
   // Futuramente esses valores virão da API.
-  readonly companies = [
-    {
-      id: 1,
-      legalName: 'Alfa Comércio Ltda.',
-      cnpj: '12.345.678/0001-90'
-    },
-    {
-      id: 2,
-      legalName: 'Beta Serviços S.A.',
-      cnpj: '23.456.789/0001-81'
-    },
-    {
-      id: 3,
-      legalName: 'Gamma Indústria Ltda.',
-      cnpj: '34.567.890/0001-72'
-    },
-    {
-      id: 4,
-      legalName: 'Delta Tecnologia Ltda.',
-      cnpj: '45.678.901/0001-63'
-    },
-    {
-      id: 5,
-      legalName: 'Epsilon Logística S.A.',
-      cnpj: '56.789.012/0001-54'
-    }
-  ];
+  readonly companies = this.companyService.getAll();
 
   get filteredOccurrences(): Occurrence[] {
     const term = this.searchTerm.trim().toLowerCase();
@@ -160,9 +62,6 @@ export class Occurrences {
         occurrence.cnpj?.includes(term) ||
         occurrence.type?.toLowerCase().includes(term);
 
-      const matchesSeverity =
-        !this.selectedSeverity ||
-        occurrence.severity === this.selectedSeverity;
 
       const matchesStatus =
         !this.selectedStatus ||
@@ -174,7 +73,6 @@ export class Occurrences {
 
       return (
         matchesSearch &&
-        matchesSeverity &&
         matchesStatus &&
         matchesType
       );
@@ -191,15 +89,9 @@ export class Occurrences {
     ).length;
   }
 
-  get highSeverityOccurrences(): number {
-    return this.occurrences.filter(
-      occurrence => occurrence.severity === 'high'
-    ).length;
-  }
-
   get recentOccurrences(): number {
     return this.occurrences.filter(
-        occurrence =>
+      occurrence =>
         occurrence.date !== undefined &&
         occurrence.date >= '2026-08-24'
     ).length;
@@ -214,11 +106,9 @@ export class Occurrences {
     this.selectedOccurrence = null;
     this.occurrenceForm.reset({
       companyId: '',
-      type: '',
-      severity: 'medium',
+      averageRevenue: '',
       date: new Date().toISOString().split('T')[0],
       description: '',
-      notes: ''
     });
 
     this.activeModal = 'new-occurrence';
@@ -229,11 +119,9 @@ export class Occurrences {
 
     this.occurrenceForm.patchValue({
       companyId: occurrence.companyId?.toString() ?? '',
-      type: occurrence.type,
-      severity: occurrence.severity,
+      averageRevenue: occurrence.averageRevenue?.toString() ?? '',
       date: occurrence.date,
       description: occurrence.description,
-      notes: occurrence.notes ?? ''
     });
 
     this.activeModal = 'edit';
@@ -251,7 +139,6 @@ export class Occurrences {
 
   clearFilters(): void {
     this.searchTerm = '';
-    this.selectedSeverity = '';
     this.selectedStatus = '';
     this.selectedType = '';
   }
@@ -272,17 +159,22 @@ export class Occurrences {
 
     console.log('Ocorrência:', formValue);
 
-    /*
-      Futuramente:
+    const occurrenceData: OccurrenceCreate = {
+      companyId: Number(formValue.companyId),
+      averageRevenue: Number(formValue.averageRevenue),
+      date: formValue.date ?? '',
+      description: formValue.description ?? ''
+    };
 
-      this.occurrenceService.create(formValue)
-        .subscribe({
-          next: () => {
-            this.closeModal();
-            this.loadOccurrences();
-          }
-        });
-    */
+    this.occurrenceService.create(occurrenceData).subscribe({
+      next: (occurrence) => {
+        console.log('Ocorrência criada:', occurrence);
+      },
+      error: (error) => {
+        console.error('Erro ao cadastrar ocorrência:', error);
+      }
+    });
+
 
     this.closeModal();
   }
@@ -338,19 +230,7 @@ export class Occurrences {
     this.closeModal();
   }
 
-  getSeverityLabel(severity: ClassificationType): string {
-    const labels: Record<ClassificationType, string> = {
-      low: 'Baixa',
-      medium: 'Média',
-      high: 'Alta'
-    };
 
-    return labels[severity];
-  }
-
-  getSeverityClass(severity: ClassificationType): string {
-    return `severity-${severity}`;
-  }
 
   getStatusLabel(status: OccurrenceStatus): string {
     const labels: Record<OccurrenceStatus, string> = {

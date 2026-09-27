@@ -1,6 +1,7 @@
 import { Component, inject, signal } from '@angular/core';
+import { Router } from '@angular/router';
 import {
-  FormBuilder,
+  NonNullableFormBuilder,
   ReactiveFormsModule,
   Validators
 } from '@angular/forms';
@@ -15,43 +16,27 @@ import { AuthCredentials } from '../../core/models/auth/auth-credentials';
 })
 export class Login {
 
-  private readonly fb = inject(FormBuilder);
+  private readonly fb = inject(NonNullableFormBuilder);
   private readonly authService = inject(AuthService);
+  private readonly router = inject(Router);
 
   readonly showPassword = signal(false);
   readonly isLoading = signal(false);
   readonly loginError = signal(false);
 
   readonly loginForm = this.fb.group({
-    email: [
-      '',
-      [
-        Validators.required,
-        Validators.email
-      ]
-    ],
-
-    password: [
-      '',
-      [
-        Validators.required,
-        Validators.minLength(8)
-      ]
-    ],
-
+    email: ['', [Validators.required, Validators.email]],
+    password: ['', [Validators.required, Validators.minLength(8)]],
     rememberMe: [false]
   });
 
   isInvalid(controlName: string): boolean {
     const control = this.loginForm.get(controlName);
-
-    return !!control &&
-      control.invalid &&
-      control.touched;
+    return !!control && control.invalid && control.touched;
   }
 
   togglePassword(): void {
-    this.showPassword.update(value => !value);
+    this.showPassword.update((value) => !value);
   }
 
   onSubmit(): void {
@@ -66,21 +51,20 @@ export class Login {
 
     const formValue = this.loginForm.getRawValue();
 
-    const authCredentials: AuthCredentials = {
-      email: formValue.email!,
-      password: formValue.password!
+    const credentials: AuthCredentials = {
+      email: formValue.email,
+      password: formValue.password
     };
 
-    this.authService.login(authCredentials)
-      .subscribe({
-        next: () => {
-          this.isLoading.set(false);
-          // Redirecionar para a página principal após login bem-sucedido
-        },
-        error: () => {
-          this.loginError.set(true);
-          this.isLoading.set(false);
-        }
-      });
+    this.authService.login(credentials).subscribe({
+      next: () => {
+        this.isLoading.set(false);
+        this.router.navigate(['/overview']);
+      },
+      error: (err) => {
+        this.loginError.set(true);
+        this.isLoading.set(false);
+      }
+    });
   }
 }

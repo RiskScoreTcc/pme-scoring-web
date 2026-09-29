@@ -10,6 +10,19 @@ export class JwtDecoderService {
     private readonly tokenService = inject(TokenService);
     public user$ = this.userSubject.asObservable();
 
+    decodeToken(token: string): CurrentUser | null {
+        try {
+            const decodedUser = jwtDecode<CurrentUser>(token);
+            if (this.isTokenExpired(decodedUser)) {
+                return null;
+            }
+            return decodedUser;
+        } catch (error) {
+            console.error('Error decoding JWT token:', error);
+            return null;
+        }
+    }
+
     setUser(): CurrentUser | null {
         const token = this.tokenService.getTokenFromLocalStorage();
 

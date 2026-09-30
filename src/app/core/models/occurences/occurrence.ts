@@ -7,9 +7,8 @@ export interface Occurrence {
   companyName?: string;
   cnpj?: string;
   type?: string;
+  averageRevenue?: number;
   description?: string;
-  severity?: ClassificationType;
   status?: OccurrenceStatus;
   date?: string;
-  notes?: string;
 }

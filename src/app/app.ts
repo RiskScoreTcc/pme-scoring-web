@@ -1,6 +1,5 @@
 import {
   Component,
-  DestroyRef,
   inject,
   signal
 } from '@angular/core';
@@ -11,8 +10,8 @@ import {
   RouterOutlet
 } from '@angular/router';
 
-import { filter } from 'rxjs';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { filter, map, startWith } from 'rxjs';
+import { toSignal } from '@angular/core/rxjs-interop';
 
 import { Navigation } from './core/components/navigation/navigation';
 
@@ -33,32 +32,15 @@ export class App {
 
   private readonly router = inject(Router);
 
-  private readonly destroyRef = inject(DestroyRef);
-
-  /**
-   * Indica se a rota atual é a página de login.
-   */
-  readonly isLoginPage = signal(
-    this.router.url === '/login'
+  readonly isLoginPage = toSignal(
+    this.router.events.pipe(
+      filter((event): event is NavigationEnd => event instanceof NavigationEnd),
+      map(event => event.urlAfterRedirects.split('?')[0].startsWith('/login')),
+      startWith(window.location.pathname.startsWith('/login'))
+    ),
+    { initialValue: window.location.pathname.startsWith('/login') }
   );
 
-  constructor() {
 
-    this.router.events
-      .pipe(
-        filter(
-          event => event instanceof NavigationEnd
-        ),
-        takeUntilDestroyed(this.destroyRef)
-      )
-      .subscribe(event => {
-
-        this.isLoginPage.set(
-          event.urlAfterRedirects === '/login'
-        );
-
-      });
-
-  }
 
 }

@@ -13,11 +13,7 @@
       </p>
     </div>
 
-    <button
-      type="button"
-      class="button button-primary"
-      (click)="openNewOccurrence()"
-    >
+    <button type="button" class="button button-primary" (click)="openNewOccurrence()">
       <span aria-hidden="true">+</span>
       Nova ocorrência
     </button>
@@ -25,10 +21,7 @@
 
 
   <!-- Resumo -->
-  <section
-    class="summary-grid"
-    aria-label="Resumo das ocorrências"
-  >
+  <section class="summary-grid" aria-label="Resumo das ocorrências">
 
     <article class="summary-card">
       <div class="summary-card-header">
@@ -64,25 +57,6 @@
 
       <span class="summary-description">
         Aguardando tratamento
-      </span>
-    </article>
-
-
-    <article class="summary-card">
-      <div class="summary-card-header">
-        <span class="summary-label">Alta severidade</span>
-
-        <span class="summary-icon" aria-hidden="true">
-          ↑
-        </span>
-      </div>
-
-      <strong class="summary-value">
-        {{ highSeverityOccurrences }}
-      </strong>
-
-      <span class="summary-description">
-        Exigem maior atenção
       </span>
     </article>
 
@@ -127,84 +101,15 @@
           Buscar
         </label>
 
-        <input
-          id="search"
-          type="search"
-          placeholder="Empresa, CNPJ ou tipo"
-          [(ngModel)]="searchTerm"
-        />
+        <input id="search" type="search" placeholder="Empresa, CNPJ" [(ngModel)]="searchTerm" />
       </div>
-
-
-      <div class="field">
-        <label for="type">
-          Tipo
-        </label>
-
-        <select
-          id="type"
-          [(ngModel)]="selectedType"
-        >
-          <option value="">
-            Todos os tipos
-          </option>
-
-          <option value="Atraso de pagamento">
-            Atraso de pagamento
-          </option>
-
-          <option value="Restrição financeira">
-            Restrição financeira
-          </option>
-
-          <option value="Inconsistência cadastral">
-            Inconsistência cadastral
-          </option>
-
-          <option value="Documento pendente">
-            Documento pendente
-          </option>
-        </select>
-      </div>
-
-
-      <div class="field">
-        <label for="severity">
-          Severidade
-        </label>
-
-        <select
-          id="severity"
-          [(ngModel)]="selectedSeverity"
-        >
-          <option value="">
-            Todas
-          </option>
-
-          <option value="low">
-            Baixa
-          </option>
-
-          <option value="medium">
-            Média
-          </option>
-
-          <option value="high">
-            Alta
-          </option>
-        </select>
-      </div>
-
 
       <div class="field">
         <label for="status">
           Status
         </label>
 
-        <select
-          id="status"
-          [(ngModel)]="selectedStatus"
-        >
+        <select id="status" [(ngModel)]="selectedStatus">
           <option value="">
             Todos
           </option>
@@ -227,11 +132,7 @@
 
 
     <div class="filter-actions">
-      <button
-        type="button"
-        class="button button-secondary"
-        (click)="clearFilters()"
-      >
+      <button type="button" class="button button-secondary" (click)="clearFilters()">
         Limpar filtros
       </button>
     </div>
@@ -274,7 +175,6 @@
           <tr>
             <th scope="col">Empresa</th>
             <th scope="col">Ocorrência</th>
-            <th scope="col">Severidade</th>
             <th scope="col">Status</th>
             <th scope="col">Data</th>
             <th scope="col">
@@ -289,114 +189,91 @@
         <tbody>
 
           @for (
-            occurrence of filteredOccurrences;
-            track occurrence.id
+          occurrence of filteredOccurrences;
+          track occurrence.id
           ) {
 
-            <tr>
+          <tr>
 
-              <!-- Empresa -->
-              <td>
-                <div class="company-cell">
-
-                  <strong>
-                    {{ occurrence.companyName }}
-                  </strong>
-
-                  <span>
-                    {{ occurrence.cnpj }}
-                  </span>
-
-                </div>
-              </td>
-
-
-              <!-- Ocorrência -->
-              <td>
-                <div class="occurrence-cell">
-
-                  <strong>
-                    {{ occurrence.type }}
-                  </strong>
-
-                  <span>
-                    {{ occurrence.description }}
-                  </span>
-
-                </div>
-              </td>
-
-
-              <!-- Severidade -->
-              <td>
-
-                <span
-                  class="badge"
-                  [class]="occurrence.severity ? getSeverityClass(occurrence.severity) : 'Sem severity'"
-                >
-                  {{ occurrence.severity ? getSeverityLabel(occurrence.severity) : 'Sem severity' }}
-                </span>
-
-              </td>
-
-
-              <!-- Status -->
-              <td>
-
-                <span
-                  class="badge"
-                  [class]="occurrence.status ? getStatusClass(occurrence.status) : 'Sem status'"
-                >
-                  {{ occurrence.status ? getStatusLabel(occurrence.status) : 'Sem status' }}
-                </span>
-
-              </td>
-
-
-              <!-- Data -->
-              <td>
-                <time [attr.datetime]="occurrence.date">
-                  {{ occurrence.date | date:'dd/MM/yyyy' }}
-                </time>
-              </td>
-
-
-              <!-- Ações -->
-              <td class="actions-cell">
-
-                <button
-                  type="button"
-                  class="table-action"
-                  [attr.aria-label]="'Ações para ocorrência de ' + occurrence.companyName"
-                  (click)="openDetails(occurrence)"
-                >
-                  Ver detalhes
-                </button>
-
-              </td>
-
-            </tr>
-
-          } @empty {
-
-            <tr>
-
-              <td
-                colspan="6"
-                class="empty-state"
-              >
+            <!-- Empresa -->
+            <td>
+              <div class="company-cell">
 
                 <strong>
-                  Nenhuma ocorrência encontrada
+                  {{ occurrence.companyName }}
                 </strong>
 
                 <span>
-                  Tente alterar os filtros utilizados.
+                  {{ occurrence.cnpj }}
                 </span>
 
-              </td>
+              </div>
+            </td>
 
-            </tr>
+
+            <!-- Ocorrência -->
+            <td>
+              <div class="occurrence-cell">
+
+                <strong>
+                  {{ occurrence.type }}
+                </strong>
+
+                <span>
+                  {{ occurrence.description }}
+                </span>
+
+              </div>
+            </td>
+
+            <!-- Status -->
+            <td>
+
+              <span class="badge" [class]="occurrence.status ? getStatusClass(occurrence.status) : 'Sem status'">
+                {{ occurrence.status ? getStatusLabel(occurrence.status) : 'Sem status' }}
+              </span>
+
+            </td>
+
+
+            <!-- Data -->
+            <td>
+              <time [attr.datetime]="occurrence.date">
+                {{ occurrence.date | date:'dd/MM/yyyy' }}
+              </time>
+            </td>
+
+
+            <!-- Ações -->
+            <td class="actions-cell">
+
+              <button type="button" class="table-action"
+                [attr.aria-label]="'Ações para ocorrência de ' + occurrence.companyName"
+                (click)="openDetails(occurrence)">
+                Ver detalhes
+              </button>
+
+            </td>
+
+          </tr>
+
+          } @empty {
+
+          <tr>
+
+            <td colspan="6" class="empty-state">
+
+              <strong>
+                Nenhuma ocorrência encontrada
+              </strong>
+
+              <span>
+                Tente alterar os filtros utilizados.
+              </span>
+
+            </td>
+
+          </tr>
 
           }
 
@@ -413,538 +290,343 @@
 
 <!-- Modal de detalhes -->
 @if (
-  activeModal === 'details' &&
-  selectedOccurrence
+activeModal === 'details' &&
+selectedOccurrence
 ) {
 
-  <div
-    class="modal-backdrop"
-    role="presentation"
-    (click)="closeModal()"
-  >
+<div class="modal-backdrop" role="presentation" (click)="closeModal()">
 
-    <section
-      class="modal modal-large"
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="occurrence-details-title"
-      (click)="$event.stopPropagation()"
-    >
+  <section class="modal modal-large" role="dialog" aria-modal="true" aria-labelledby="occurrence-details-title"
+    (click)="$event.stopPropagation()">
 
-      <header class="modal-header">
+    <header class="modal-header">
 
-        <div>
-          <span class="modal-eyebrow">
-            DETALHES DA OCORRÊNCIA
-          </span>
+      <div>
+        <span class="modal-eyebrow">
+          DETALHES DA OCORRÊNCIA
+        </span>
 
-          <h2 id="occurrence-details-title">
-            {{ selectedOccurrence.type }}
-          </h2>
+        <h2 id="occurrence-details-title">
+          {{ selectedOccurrence.type }}
+        </h2>
 
-          <p>
+        <p>
+          {{ selectedOccurrence.companyName }}
+        </p>
+      </div>
+
+      <button type="button" class="modal-close" aria-label="Fechar" (click)="closeModal()">
+        ×
+      </button>
+
+    </header>
+
+
+    <div class="modal-body">
+
+      <div class="detail-grid">
+
+        <div class="detail-item">
+          <span>Empresa</span>
+          <strong>
             {{ selectedOccurrence.companyName }}
-          </p>
+          </strong>
         </div>
 
-        <button
-          type="button"
-          class="modal-close"
-          aria-label="Fechar"
-          (click)="closeModal()"
-        >
-          ×
-        </button>
+        <div class="detail-item">
+          <span>CNPJ</span>
+          <strong>
+            {{ selectedOccurrence.cnpj }}
+          </strong>
+        </div>
 
-      </header>
+        <div class="detail-item">
+          <span>Data</span>
+          <strong>
+            {{ selectedOccurrence.date | date:'dd/MM/yyyy' }}
+          </strong>
+        </div>
+        <div class="detail-item">
+          <span>Status</span>
 
-
-      <div class="modal-body">
-
-        <div class="detail-grid">
-
-          <div class="detail-item">
-            <span>Empresa</span>
-            <strong>
-              {{ selectedOccurrence.companyName }}
-            </strong>
-          </div>
-
-          <div class="detail-item">
-            <span>CNPJ</span>
-            <strong>
-              {{ selectedOccurrence.cnpj }}
-            </strong>
-          </div>
-
-          <div class="detail-item">
-            <span>Tipo</span>
-            <strong>
-              {{ selectedOccurrence.type }}
-            </strong>
-          </div>
-
-          <div class="detail-item">
-            <span>Data</span>
-            <strong>
-              {{ selectedOccurrence.date | date:'dd/MM/yyyy' }}
-            </strong>
-          </div>
-
-          <div class="detail-item">
-            <span>Severidade</span>
-
-            <span
-              class="badge"
-              [class]="selectedOccurrence.severity? getSeverityLabel(selectedOccurrence.severity): 'Sem severity' "
-            >
-              {{ selectedOccurrence.severity? getSeverityLabel(selectedOccurrence.severity): 'Sem severity'  }}
-            </span>
-          </div>
-
-          <div class="detail-item">
-            <span>Status</span>
-
-            <span
-              class="badge"
-              [class]="selectedOccurrence.status
+          <span class="badge" [class]="selectedOccurrence.status
     ? getStatusClass(selectedOccurrence.status)
-    : ''"
-            >
-              {{ selectedOccurrence.status
-    ? getStatusLabel(selectedOccurrence.status)
-    : 'Sem status'  }}
-            </span>
-          </div>
-
-        </div>
-
-
-        <div class="detail-description">
-
-          <span>
-            Descrição
+    : ''">
+            {{ selectedOccurrence.status
+            ? getStatusLabel(selectedOccurrence.status)
+            : 'Sem status' }}
           </span>
-
-          <p>
-            {{ selectedOccurrence.description }}
-          </p>
-
         </div>
-
-
-        @if (selectedOccurrence.notes) {
-
-          <div class="detail-description">
-
-            <span>
-              Observações
-            </span>
-
-            <p>
-              {{ selectedOccurrence.notes }}
-            </p>
-
-          </div>
-
-        }
 
       </div>
 
 
-      <footer class="modal-footer">
+      <div class="detail-description">
 
-        <button
-          type="button"
-          class="button button-secondary"
-          (click)="openEdit(selectedOccurrence)"
-        >
-          Editar
-        </button>
+        <span>
+          Descrição
+        </span>
 
-        <button
-          type="button"
-          class="button button-danger"
-          (click)="openDeleteConfirmation(selectedOccurrence)"
-        >
-          Excluir
-        </button>
+        <p>
+          {{ selectedOccurrence.description }}
+        </p>
 
-      </footer>
+      </div>
 
-    </section>
+    </div>
 
-  </div>
+
+    <footer class="modal-footer">
+
+      <button type="button" class="button button-secondary" (click)="openEdit(selectedOccurrence)">
+        Editar
+      </button>
+
+      <button type="button" class="button button-danger" (click)="openDeleteConfirmation(selectedOccurrence)">
+        Excluir
+      </button>
+
+    </footer>
+
+  </section>
+
+</div>
 
 }
 
 
 <!-- Modal nova ocorrência / edição -->
 @if (
-  activeModal === 'new-occurrence' ||
-  activeModal === 'edit'
+activeModal === 'new-occurrence' ||
+activeModal === 'edit'
 ) {
 
-  <div
-    class="modal-backdrop"
-    role="presentation"
-    (click)="closeModal()"
-  >
+<div class="modal-backdrop" role="presentation" (click)="closeModal()">
 
-    <section
-      class="modal modal-large"
-      role="dialog"
-      aria-modal="true"
-      [attr.aria-labelledby]="
+  <section class="modal modal-large" role="dialog" aria-modal="true" [attr.aria-labelledby]="
         activeModal === 'edit'
           ? 'edit-occurrence-title'
           : 'new-occurrence-title'
-      "
-      (click)="$event.stopPropagation()"
-    >
+      " (click)="$event.stopPropagation()">
 
-      <header class="modal-header">
+    <header class="modal-header">
 
-        <div>
+      <div>
 
-          <span class="modal-eyebrow">
-            GESTÃO DE OCORRÊNCIAS
-          </span>
+        <span class="modal-eyebrow">
+          GESTÃO DE OCORRÊNCIAS
+        </span>
 
-          <h2
-            [id]="
+        <h2 [id]="
               activeModal === 'edit'
                 ? 'edit-occurrence-title'
                 : 'new-occurrence-title'
-            "
-          >
-            {{
-              activeModal === 'edit'
-                ? 'Editar ocorrência'
-                : 'Nova ocorrência'
-            }}
-          </h2>
+            ">
+          {{
+          activeModal === 'edit'
+          ? 'Editar ocorrência'
+          : 'Nova ocorrência'
+          }}
+        </h2>
 
-          <p>
-            Registre informações relevantes para a análise de risco.
-          </p>
+        <p>
+          Registre informações relevantes para a análise de risco.
+        </p>
 
-        </div>
+      </div>
 
-        <button
-          type="button"
-          class="modal-close"
-          aria-label="Fechar"
-          (click)="closeModal()"
-        >
-          ×
-        </button>
+      <button type="button" class="modal-close" aria-label="Fechar" (click)="closeModal()">
+        ×
+      </button>
 
-      </header>
+    </header>
 
 
-      <form
-        [formGroup]="occurrenceForm"
-        (ngSubmit)="
+    <form [formGroup]="occurrenceForm" (ngSubmit)="
           activeModal === 'edit'
             ? updateOccurrence()
             : onSubmit()
-        "
-      >
+        ">
 
-        <div class="modal-body">
+      <div class="modal-body">
 
-          <div class="form-grid">
+        <div class="form-grid">
 
-            <!-- Empresa -->
-            <div class="field field-full">
+          <!-- Empresa -->
+          <div class="field field-full">
 
-              <label for="companyId">
-                Empresa
-                <span aria-hidden="true">*</span>
-              </label>
+            <label for="companyId">
+              Empresa
+              <span aria-hidden="true">*</span>
+            </label>
 
-              <select
-                id="companyId"
-                formControlName="companyId"
-                [attr.aria-invalid]="isInvalid('companyId')"
-              >
+            <select id="companyId" formControlName="companyId" [attr.aria-invalid]="isInvalid('companyId')">
 
-                <option value="">
-                  Selecione uma empresa
-                </option>
+              <option value="">
+                Selecione uma empresa
+              </option>
 
-                @for (company of companies; track company.id) {
+              @for (company of companies; track company.id) {
 
-                  <option [value]="company.id">
-                    {{ company.legalName }} —
-                    {{ company.cnpj }}
-                  </option>
-
-                }
-
-              </select>
-
-              @if (isInvalid('companyId')) {
-                <span class="field-error">
-                  Selecione a empresa.
-                </span>
-              }
-
-            </div>
-
-
-            <!-- Tipo -->
-            <div class="field">
-
-              <label for="occurrenceType">
-                Tipo
-                <span aria-hidden="true">*</span>
-              </label>
-
-              <select
-                id="occurrenceType"
-                formControlName="type"
-                [attr.aria-invalid]="isInvalid('type')"
-              >
-
-                <option value="">
-                  Selecione o tipo
-                </option>
-
-                <option value="Atraso de pagamento">
-                  Atraso de pagamento
-                </option>
-
-                <option value="Restrição financeira">
-                  Restrição financeira
-                </option>
-
-                <option value="Inconsistência cadastral">
-                  Inconsistência cadastral
-                </option>
-
-                <option value="Documento pendente">
-                  Documento pendente
-                </option>
-
-              </select>
-
-              @if (isInvalid('type')) {
-                <span class="field-error">
-                  Informe o tipo da ocorrência.
-                </span>
-              }
-
-            </div>
-
-
-            <!-- Severidade -->
-            <div class="field">
-
-              <label for="occurrenceSeverity">
-                Severidade
-                <span aria-hidden="true">*</span>
-              </label>
-
-              <select
-                id="occurrenceSeverity"
-                formControlName="severity"
-              >
-
-                <option value="low">
-                  Baixa
-                </option>
-
-                <option value="medium">
-                  Média
-                </option>
-
-                <option value="high">
-                  Alta
-                </option>
-
-              </select>
-
-            </div>
-
-
-            <!-- Data -->
-            <div class="field">
-
-              <label for="occurrenceDate">
-                Data
-                <span aria-hidden="true">*</span>
-              </label>
-
-              <input
-                id="occurrenceDate"
-                type="date"
-                formControlName="date"
-                [attr.aria-invalid]="isInvalid('date')"
-              />
-
-              @if (isInvalid('date')) {
-                <span class="field-error">
-                  Informe a data.
-                </span>
-              }
-
-            </div>
-
-
-            <!-- Descrição -->
-            <div class="field field-full">
-
-              <label for="description">
-                Descrição
-                <span aria-hidden="true">*</span>
-              </label>
-
-              <textarea
-                id="description"
-                rows="5"
-                maxlength="500"
-                placeholder="Descreva o ocorrido..."
-                formControlName="description"
-                [attr.aria-invalid]="isInvalid('description')"
-              ></textarea>
-
-              @if (isInvalid('description')) {
-
-                <span class="field-error">
-                  Informe uma descrição com pelo menos 10 caracteres.
-                </span>
+              <option [value]="company.id">
+                {{ company.legalName }} —
+                {{ company.cnpj }}
+              </option>
 
               }
 
-            </div>
+            </select>
+
+            @if (isInvalid('companyId')) {
+            <span class="field-error">
+              Selecione a empresa.
+            </span>
+            }
+
+          </div>
+
+          <!-- Data -->
+          <div class="field">
+
+            <label for="occurrenceDate">
+              Data
+              <span aria-hidden="true">*</span>
+            </label>
+
+            <input id="occurrenceDate" type="date" formControlName="date" [attr.aria-invalid]="isInvalid('date')" />
+
+            @if (isInvalid('date')) {
+            <span class="field-error">
+              Informe a data.
+            </span>
+            }
+
+          </div>
+
+          <!-- Valor da dívida -->
+          <div class="field">
+
+            <label for="averageRevenue">
+              Valor da dívida
+              <span aria-hidden="true">*</span>
+            </label>
+
+            <input id="averageRevenue" type="number" step="0.01" placeholder="Ex: 4500.00"
+              formControlName="averageRevenue" [attr.aria-invalid]="isInvalid('averageRevenue')" />
+
+            @if (isInvalid('averageRevenue')) {
+            <span class="field-error">
+              O Valor da dívida é obrigatório e deve ser maior que zero.
+            </span>
+            }
+
+          </div>
 
 
-            <!-- Observações -->
-            <div class="field field-full">
+          <!-- Descrição -->
+          <div class="field field-full">
 
-              <label for="notes">
-                Observações
-              </label>
+            <label for="description">
+              Descrição
+              <span aria-hidden="true">*</span>
+            </label>
 
-              <textarea
-                id="notes"
-                rows="4"
-                maxlength="500"
-                placeholder="Adicione informações complementares, se necessário."
-                formControlName="notes"
-              ></textarea>
+            <textarea id="description" rows="5" maxlength="500" placeholder="Descreva o ocorrido..."
+              formControlName="description" [attr.aria-invalid]="isInvalid('description')"></textarea>
 
-            </div>
+            @if (isInvalid('description')) {
+
+            <span class="field-error">
+              Informe uma descrição com pelo menos 10 caracteres.
+            </span>
+
+            }
 
           </div>
 
         </div>
 
+      </div>
 
-        <footer class="modal-footer">
 
-          <button
-            type="button"
-            class="button button-secondary"
-            (click)="closeModal()"
-          >
-            Cancelar
-          </button>
+      <footer class="modal-footer">
 
-          <button
-            type="submit"
-            class="button button-primary"
-          >
-            {{
-              activeModal === 'edit'
-                ? 'Salvar alterações'
-                : 'Registrar ocorrência'
-            }}
-          </button>
+        <button type="button" class="button button-secondary" (click)="closeModal()">
+          Cancelar
+        </button>
 
-        </footer>
+        <button type="submit" class="button button-primary">
+          {{
+          activeModal === 'edit'
+          ? 'Salvar alterações'
+          : 'Registrar ocorrência'
+          }}
+        </button>
 
-      </form>
+      </footer>
 
-    </section>
+    </form>
 
-  </div>
+  </section>
+
+</div>
 
 }
 
 
 <!-- Modal de exclusão -->
 @if (
-  activeModal === 'delete' &&
-  selectedOccurrence
+activeModal === 'delete' &&
+selectedOccurrence
 ) {
 
-  <div
-    class="modal-backdrop"
-    role="presentation"
-    (click)="closeModal()"
-  >
+<div class="modal-backdrop" role="presentation" (click)="closeModal()">
 
-    <section
-      class="modal modal-confirm"
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="delete-occurrence-title"
-      (click)="$event.stopPropagation()"
-    >
+  <section class="modal modal-confirm" role="dialog" aria-modal="true" aria-labelledby="delete-occurrence-title"
+    (click)="$event.stopPropagation()">
 
-      <div class="confirm-icon" aria-hidden="true">
-        !
-      </div>
+    <div class="confirm-icon" aria-hidden="true">
+      !
+    </div>
 
-      <span class="modal-eyebrow">
-        EXCLUSÃO DE OCORRÊNCIA
-      </span>
+    <span class="modal-eyebrow">
+      EXCLUSÃO DE OCORRÊNCIA
+    </span>
 
-      <h2 id="delete-occurrence-title">
-        Excluir esta ocorrência?
-      </h2>
+    <h2 id="delete-occurrence-title">
+      Excluir esta ocorrência?
+    </h2>
 
-      <p>
-        Você está prestes a excluir a ocorrência
-        <strong>
-          {{ selectedOccurrence.type }}
-        </strong>
-        registrada para
-        <strong>
-          {{ selectedOccurrence.companyName }}
-        </strong>.
-      </p>
+    <p>
+      Você está prestes a excluir a ocorrência
+      <strong>
+        {{ selectedOccurrence.type }}
+      </strong>
+      registrada para
+      <strong>
+        {{ selectedOccurrence.companyName }}
+      </strong>.
+    </p>
 
-      <div class="warning-box">
-        Esta ação não poderá ser desfeita.
-      </div>
+    <div class="warning-box">
+      Esta ação não poderá ser desfeita.
+    </div>
 
 
-      <footer class="modal-footer">
+    <footer class="modal-footer">
 
-        <button
-          type="button"
-          class="button button-secondary"
-          (click)="closeModal()"
-        >
-          Cancelar
-        </button>
+      <button type="button" class="button button-secondary" (click)="closeModal()">
+        Cancelar
+      </button>
 
-        <button
-          type="button"
-          class="button button-danger"
-          (click)="deleteOccurrence()"
-        >
-          Excluir ocorrência
-        </button>
+      <button type="button" class="button button-danger" (click)="deleteOccurrence()">
+        Excluir ocorrência
+      </button>
 
-      </footer>
+    </footer>
 
-    </section>
+  </section>
 
-  </div>
+</div>
 
 }

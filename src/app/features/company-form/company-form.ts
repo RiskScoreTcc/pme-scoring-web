@@ -1,10 +1,12 @@
 import { Component, inject } from '@angular/core';
 import {
-  FormBuilder,
+  NonNullableFormBuilder,
   ReactiveFormsModule,
   Validators
 } from '@angular/forms';
 import { RouterLink } from '@angular/router';
+import { CompanyService } from '../../core/services/companies/company-service';
+import { CompanyCreate } from '../../core/models/companies/company-create';
 
 @Component({
   selector: 'app-company-form',
@@ -17,120 +19,57 @@ import { RouterLink } from '@angular/router';
 })
 export class CompanyForm {
 
-  private readonly fb = inject(FormBuilder);
+  private readonly fb = inject(NonNullableFormBuilder);
+  private readonly companyService = inject(CompanyService);
 
   readonly companyForm = this.fb.group({
-    companyData: this.fb.group({
-      legalName: [
-        '',
-        [
-          Validators.required,
-          Validators.minLength(3)
-        ]
-      ],
-
-      tradeName: [
-        ''
-      ],
-
-      cnpj: [
-        '',
-        [
-          Validators.required
-        ]
-      ],
-
-      legalNature: [
-        '',
-        [
-          Validators.required
-        ]
-      ],
-
-      businessSector: [
-        '',
-        [
-          Validators.required
-        ]
-      ],
-
-      openingDate: [
-        '',
-        [
-          Validators.required
-        ]
+    userId: [
+      1,
+      [
+        Validators.required,
+        Validators.min(1)
       ]
-    }),
+    ],
 
-    address: this.fb.group({
-      zipCode: [
-        '',
-        [
-          Validators.required
-        ]
-      ],
-
-      state: [
-        '',
-        [
-          Validators.required
-        ]
-      ],
-
-      city: [
-        '',
-        [
-          Validators.required
-        ]
-      ],
-
-      neighborhood: [
-        '',
-        [
-          Validators.required
-        ]
-      ],
-
-      street: [
-        '',
-        [
-          Validators.required
-        ]
-      ],
-
-      number: [
-        '',
-        [
-          Validators.required
-        ]
+    cnpj: [
+      '',
+      [
+        Validators.required
       ]
-    }),
+    ],
 
-    contact: this.fb.group({
-      email: [
-        '',
-        [
-          Validators.required,
-          Validators.email
-        ]
-      ],
-
-      phone: [
-        '',
-        [
-          Validators.required
-        ]
+    registeredCompanyName: [
+      '',
+      [
+        Validators.required,
+        Validators.minLength(3),
+        Validators.maxLength(255)
       ]
-    }),
+    ],
 
-    additional: this.fb.group({
-      notes: [
-        '',
-        [
-          Validators.maxLength(500)
-        ]
+    averageRevenue: [
+      0,
+      [
+        Validators.required,
+        Validators.min(0)
       ]
-    })
+    ],
+
+    ageInMonths: [
+      0,
+      [
+        Validators.required,
+        Validators.min(0)
+      ]
+    ],
+
+    numberOfEmployees: [
+      0,
+      [
+        Validators.required,
+        Validators.min(0)
+      ]
+    ]
   });
 
   onSubmit(): void {
@@ -141,24 +80,23 @@ export class CompanyForm {
 
     const formValue = this.companyForm.getRawValue();
 
-    console.log('Dados da empresa:', formValue);
+    const companyData: CompanyCreate = {
+      ...formValue,
+      userId: 1
+    };
 
-    /*
-      Futuramente:
-
-      this.companyService.create(formValue).subscribe({
-        next: () => {
-          ...
-        },
-        error: () => {
-          ...
-        }
-      });
-    */
+    this.companyService.create(formValue).subscribe({
+      next: (company) => {
+        console.log('Empresa criada:', company);
+      },
+      error: (error) => {
+        console.error('Erro ao cadastrar empresa:', error);
+      }
+    });
   }
 
-  isInvalid(controlPath: string): boolean {
-    const control = this.companyForm.get(controlPath);
+  isInvalid(controlName: string): boolean {
+    const control = this.companyForm.get(controlName);
 
     return !!control && control.invalid && control.touched;
   }

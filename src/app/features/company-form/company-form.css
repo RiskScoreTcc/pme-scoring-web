@@ -1,32 +1,40 @@
+/* =========================================================
+   PAGE
+   ========================================================= */
+
 .company-form-page {
   width: 100%;
   max-width: 1180px;
   margin: 0 auto;
-  padding: 32px 32px 48px;
+  padding: 36px 32px 48px;
   box-sizing: border-box;
 }
 
 
-/* =========================================
-   CABEÇALHO
-   ========================================= */
+/* =========================================================
+   HEADER
+   ========================================================= */
 
 .page-header {
   margin-bottom: 28px;
 }
 
-.page-header-content {
+.page-header-main {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
   gap: 32px;
 }
 
+.page-title {
+  max-width: 720px;
+}
+
 .eyebrow {
-  display: block;
+  display: inline-block;
   margin-bottom: 8px;
 
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -34,57 +42,77 @@
   color: #64748b;
 }
 
-.page-header h1 {
+.page-title h1 {
   margin: 0;
 
   font-size: 30px;
   line-height: 1.2;
   font-weight: 700;
+  letter-spacing: -0.02em;
 
   color: #0f172a;
 }
 
-.page-header p {
-  max-width: 700px;
+.page-title p {
+  max-width: 680px;
   margin: 10px 0 0;
 
-  font-size: 15px;
+  font-size: 14px;
   line-height: 1.6;
 
   color: #64748b;
 }
+
+
+/* =========================================================
+   BACK LINK
+   ========================================================= */
 
 .back-link {
   display: inline-flex;
   align-items: center;
   gap: 8px;
 
+  margin-top: 8px;
   padding: 9px 12px;
 
+  border: 1px solid #e2e8f0;
   border-radius: 8px;
 
-  color: #334155;
-  text-decoration: none;
+  background: #ffffff;
 
-  font-size: 14px;
+  color: #334155;
+  font-size: 13px;
   font-weight: 600;
 
-  white-space: nowrap;
+  text-decoration: none;
+
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease,
+    color 0.15s ease;
 }
 
 .back-link:hover {
-  background: #f1f5f9;
+  background: #f8fafc;
+  border-color: #cbd5e1;
+  color: #1d4ed8;
 }
 
 .back-link:focus-visible {
-  outline: 3px solid rgba(37, 99, 235, 0.25);
+  outline: 3px solid rgb(29 78 216 / 20%);
   outline-offset: 2px;
 }
 
+.back-icon {
+  font-size: 16px;
+  line-height: 1;
+}
 
-/* =========================================
-   FORMULÁRIO
-   ========================================= */
+
+/* =========================================================
+   FORM CARD
+   ========================================================= */
 
 .company-form {
   display: flex;
@@ -92,33 +120,59 @@
   gap: 20px;
 }
 
-
-/* =========================================
-   SEÇÕES
-   ========================================= */
-
-.form-section {
-  padding: 28px;
-
-  background: #ffffff;
+.form-card {
+  overflow: hidden;
 
   border: 1px solid #e2e8f0;
   border-radius: 12px;
+
+  background: #ffffff;
+
+  box-shadow:
+    0 1px 2px rgb(15 23 42 / 4%);
+}
+
+
+/* =========================================================
+   CARD HEADER
+   ========================================================= */
+
+.form-card-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+
+  padding: 24px 26px;
+
+  border-bottom: 1px solid #e2e8f0;
+  background: #f8fafc;
+}
+
+.section-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  flex: 0 0 40px;
+  width: 40px;
+  height: 40px;
+
+  border: 1px solid #dbeafe;
+  border-radius: 9px;
+
+  background: #eff6ff;
+
+  font-size: 18px;
 }
 
 .section-heading {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 24px;
-
-  margin-bottom: 24px;
+  flex: 1;
 }
 
 .section-heading h2 {
   margin: 0;
 
-  font-size: 18px;
+  font-size: 16px;
   line-height: 1.4;
   font-weight: 700;
 
@@ -126,54 +180,52 @@
 }
 
 .section-heading p {
-  margin: 6px 0 0;
+  margin: 4px 0 0;
 
-  font-size: 14px;
+  font-size: 13px;
   line-height: 1.5;
 
   color: #64748b;
 }
 
 .required-hint {
+  flex-shrink: 0;
+
+  margin-top: 3px;
+
   font-size: 12px;
   color: #64748b;
-  white-space: nowrap;
 }
 
-.required {
-  color: #b91c1c;
+.required-hint span {
+  color: #dc2626;
+  font-weight: 700;
 }
 
 
-/* =========================================
-   GRID
-   ========================================= */
+/* =========================================================
+   FORM FIELDS
+   ========================================================= */
 
-.form-grid {
+.form-fields {
   display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 24px;
 
-  grid-template-columns:
-    repeat(2, minmax(0, 1fr));
-
-  gap: 20px;
+  padding: 28px 26px 30px;
 }
-
-
-/* =========================================
-   CAMPOS
-   ========================================= */
 
 .form-field {
-  display: flex;
-  flex-direction: column;
   min-width: 0;
 }
 
 .form-field-wide {
-  grid-column: span 2;
+  grid-column: 1 / -1;
 }
 
 .form-field label {
+  display: block;
+
   margin-bottom: 7px;
 
   font-size: 13px;
@@ -182,11 +234,25 @@
   color: #334155;
 }
 
-.form-field input,
-.form-field select,
-.form-field textarea {
+.required {
+  margin-left: 3px;
+  color: #dc2626;
+}
+
+
+/* =========================================================
+   INPUT
+   ========================================================= */
+
+.form-field input {
+  display: block;
+
   width: 100%;
+  height: 44px;
+
   box-sizing: border-box;
+
+  padding: 0 13px;
 
   border: 1px solid #cbd5e1;
   border-radius: 8px;
@@ -194,82 +260,93 @@
   background: #ffffff;
 
   color: #0f172a;
-
   font-family: inherit;
   font-size: 14px;
 
+  outline: none;
+
   transition:
-    border-color 150ms ease,
-    box-shadow 150ms ease,
-    background-color 150ms ease;
+    border-color 0.15s ease,
+    box-shadow 0.15s ease,
+    background-color 0.15s ease;
 }
 
-.form-field input,
-.form-field select {
-  height: 44px;
-  padding: 0 13px;
-}
-
-.form-field textarea {
-  min-height: 120px;
-  padding: 12px 13px;
-
-  resize: vertical;
-}
-
-.form-field input::placeholder,
-.form-field textarea::placeholder {
+.form-field input::placeholder {
   color: #94a3b8;
 }
 
+.form-field input:hover {
+  border-color: #94a3b8;
+}
 
-/* =========================================
-   FOCO
-   ========================================= */
-
-.form-field input:focus,
-.form-field select:focus,
-.form-field textarea:focus {
-  outline: none;
-
+.form-field input:focus {
   border-color: #2563eb;
 
   box-shadow:
-    0 0 0 3px rgba(37, 99, 235, 0.12);
+    0 0 0 3px rgb(37 99 235 / 12%);
 }
 
-
-/* =========================================
-   ESTADO INVÁLIDO
-   ========================================= */
-
-.form-field input.ng-invalid.ng-touched,
-.form-field select.ng-invalid.ng-touched,
-.form-field textarea.ng-invalid.ng-touched {
+.form-field input[aria-invalid="true"] {
   border-color: #dc2626;
-
-  background: #fffafa;
 }
 
-.form-field input.ng-invalid.ng-touched:focus,
-.form-field select.ng-invalid.ng-touched:focus,
-.form-field textarea.ng-invalid.ng-touched:focus {
-  border-color: #dc2626;
-
+.form-field input[aria-invalid="true"]:focus {
   box-shadow:
-    0 0 0 3px rgba(220, 38, 38, 0.12);
+    0 0 0 3px rgb(220 38 38 / 12%);
 }
 
 
-/* =========================================
-   MENSAGENS
-   ========================================= */
+/* =========================================================
+   INPUT PREFIX / SUFFIX
+   ========================================================= */
+
+.input-with-prefix,
+.input-with-suffix {
+  position: relative;
+}
+
+.input-with-prefix input {
+  padding-left: 42px;
+}
+
+.input-with-suffix input {
+  padding-right: 95px;
+}
+
+.input-prefix,
+.input-suffix {
+  position: absolute;
+  top: 50%;
+
+  transform: translateY(-50%);
+
+  color: #64748b;
+  font-size: 13px;
+  font-weight: 600;
+
+  pointer-events: none;
+}
+
+.input-prefix {
+  left: 13px;
+}
+
+.input-suffix {
+  right: 13px;
+}
+
+
+/* =========================================================
+   HELP / ERROR
+   ========================================================= */
 
 .field-help {
+  display: block;
+
   margin-top: 6px;
 
   font-size: 12px;
-  line-height: 1.4;
+  line-height: 1.45;
 
   color: #64748b;
 }
@@ -280,61 +357,101 @@
   margin-top: 6px;
 
   font-size: 12px;
-  line-height: 1.4;
+  line-height: 1.45;
   font-weight: 500;
 
-  color: #b91c1c;
+  color: #dc2626;
 }
 
 
-/* =========================================
-   AÇÕES
-   ========================================= */
+/* =========================================================
+   ACTIONS
+   ========================================================= */
 
 .form-actions {
   display: flex;
   align-items: center;
-  justify-content: flex-end;
-  gap: 12px;
+  justify-content: space-between;
+  gap: 24px;
 
-  padding-top: 4px;
+  padding: 18px 20px;
+
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+
+  background: #ffffff;
 }
+
+.form-actions-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  max-width: 560px;
+
+  font-size: 12px;
+  line-height: 1.45;
+
+  color: #64748b;
+}
+
+.info-icon {
+  flex-shrink: 0;
+
+  font-size: 14px;
+  color: #64748b;
+}
+
+.form-actions-buttons {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  flex-shrink: 0;
+}
+
+
+/* =========================================================
+   BUTTONS
+   ========================================================= */
 
 .button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  gap: 8px;
 
-  min-height: 44px;
+  min-height: 42px;
 
-  padding: 0 18px;
+  padding: 0 16px;
 
   border-radius: 8px;
 
   font-family: inherit;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 600;
 
   text-decoration: none;
-
   cursor: pointer;
 
   transition:
-    background-color 150ms ease,
-    border-color 150ms ease,
-    box-shadow 150ms ease;
+    background-color 0.15s ease,
+    border-color 0.15s ease,
+    box-shadow 0.15s ease,
+    transform 0.1s ease;
 }
 
-.button-primary {
-  border: 1px solid #1d4ed8;
-
-  background: #2563eb;
-  color: #ffffff;
+.button:active {
+  transform: translateY(1px);
 }
 
-.button-primary:hover {
-  background: #1d4ed8;
+.button:focus-visible {
+  outline: 3px solid rgb(37 99 235 / 18%);
+  outline-offset: 2px;
 }
+
+
+/* Secondary */
 
 .button-secondary {
   border: 1px solid #cbd5e1;
@@ -344,88 +461,135 @@
 }
 
 .button-secondary:hover {
+  border-color: #94a3b8;
   background: #f8fafc;
 }
 
-.button:focus-visible {
-  outline: 3px solid rgba(37, 99, 235, 0.25);
-  outline-offset: 2px;
+
+/* Primary */
+
+.button-primary {
+  border: 1px solid #1d4ed8;
+
+  background: #1d4ed8;
+  color: #ffffff;
+}
+
+.button-primary:hover {
+  border-color: #1e40af;
+  background: #1e40af;
+}
+
+.button-primary:focus-visible {
+  box-shadow:
+    0 0 0 3px rgb(29 78 216 / 18%);
 }
 
 
-/* =========================================
-   RESPONSIVIDADE
-   ========================================= */
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
 
-@media (max-width: 900px) {
+@media (max-width: 800px) {
 
   .company-form-page {
-    padding: 28px 24px 40px;
+    padding: 28px 20px 40px;
   }
 
-  .page-header-content {
+  .page-header-main {
     flex-direction: column;
     gap: 18px;
   }
 
-  .form-grid {
+  .back-link {
+    margin-top: 0;
+  }
+
+  .form-fields {
     grid-template-columns: 1fr;
   }
 
   .form-field-wide {
-    grid-column: span 1;
-  }
-
-}
-
-
-@media (max-width: 600px) {
-
-  .company-form-page {
-    padding: 20px 16px 32px;
-  }
-
-  .page-header h1 {
-    font-size: 25px;
-  }
-
-  .page-header p {
-    font-size: 14px;
-  }
-
-  .form-section {
-    padding: 20px 16px;
-    border-radius: 10px;
-  }
-
-  .section-heading {
-    flex-direction: column;
-    gap: 8px;
+    grid-column: auto;
   }
 
   .required-hint {
-    white-space: normal;
+    display: none;
   }
 
   .form-actions {
-    flex-direction: column-reverse;
     align-items: stretch;
+    flex-direction: column;
   }
 
-  .button {
+  .form-actions-info {
+    max-width: none;
+  }
+
+  .form-actions-buttons {
     width: 100%;
   }
 
+  .form-actions-buttons .button {
+    flex: 1;
+  }
 }
 
 
+@media (max-width: 560px) {
+
+  .company-form-page {
+    padding: 22px 14px 32px;
+  }
+
+  .page-title h1 {
+    font-size: 25px;
+  }
+
+  .page-title p {
+    font-size: 13px;
+  }
+
+  .form-card-header {
+    padding: 20px;
+  }
+
+  .form-fields {
+    padding: 22px 20px 24px;
+    gap: 20px;
+  }
+
+  .section-icon {
+    display: none;
+  }
+
+  .form-actions {
+    padding: 16px;
+  }
+
+  .form-actions-buttons {
+    flex-direction: column-reverse;
+  }
+
+  .form-actions-buttons .button {
+    width: 100%;
+  }
+}
+
+
+/* =========================================================
+   REDUCED MOTION
+   ========================================================= */
+
 @media (prefers-reduced-motion: reduce) {
 
+  .back-link,
   .form-field input,
-  .form-field select,
-  .form-field textarea,
   .button {
     transition: none;
   }
 
+  .button:active {
+    transform: none;
+  }
 }

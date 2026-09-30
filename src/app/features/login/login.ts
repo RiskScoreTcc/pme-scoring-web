@@ -1,5 +1,5 @@
 import { Component, inject, signal } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import {
   NonNullableFormBuilder,
   ReactiveFormsModule,
@@ -19,6 +19,7 @@ export class Login {
   private readonly fb = inject(NonNullableFormBuilder);
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
+  private readonly route = inject(ActivatedRoute);
 
   readonly showPassword = signal(false);
   readonly isLoading = signal(false);
@@ -56,10 +57,12 @@ export class Login {
       password: formValue.password
     };
 
+    const returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/overview';
+
     this.authService.login(credentials).subscribe({
       next: () => {
         this.isLoading.set(false);
-        this.router.navigate(['/overview']);
+        this.router.navigateByUrl(returnUrl);
       },
       error: (err) => {
         this.loginError.set(true);

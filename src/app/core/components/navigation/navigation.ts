@@ -39,7 +39,7 @@ export class Navigation implements OnInit {
    * - true  → menu aberto
    * - false → menu fechado
    */
-  isNavigationOpen = true;
+  isNavigationOpen = false;
 
   private readonly mobileBreakpoint = 768;
 
@@ -55,7 +55,7 @@ export class Navigation implements OnInit {
      * No desktop a navegação começa aberta.
      * No mobile começa fechada.
      */
-    this.isNavigationOpen = !this.isMobile();
+    this.isNavigationOpen = false;
 
 
     /*
@@ -119,7 +119,7 @@ export class Navigation implements OnInit {
   onResize(): void {
 
     if (!this.isMobile()) {
-      this.isNavigationOpen = true;
+      this.isNavigationOpen = false;
     }
 
   }

@@ -5,12 +5,14 @@ import { map, tap, catchError } from 'rxjs/operators';
 import { AuthCredentials } from '../../models/auth/auth-credentials';
 import { TokenService } from '../token/token-service';
 import { AuthResponse } from '../../models/auth/auth-response';
+import { JwtDecoderService } from '../jwt-decoder/jwt-decoder-service';
 
 @Service()
 export class AuthService {
     private readonly API_URL = 'http://localhost:8080';
     private readonly http = inject(HttpClient);
     private readonly tokenService = inject(TokenService);
+    private readonly jwtDecoderService = inject(JwtDecoderService);
     private readonly isAuthenticated = signal(this.tokenService.hasToken());
     readonly isLoggedIn = this.isAuthenticated.asReadonly();
 
@@ -21,6 +23,7 @@ export class AuthService {
                 if (response?.token) {
                     const token = response?.token;
                     this.tokenService.addTokenToLocalStorage(token);
+                    this.jwtDecoderService.setUser();
                     this.isAuthenticated.set(true);
                 }
             }),

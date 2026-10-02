@@ -12,7 +12,6 @@ import {
 
 import { filter, map, startWith } from 'rxjs';
 import { toSignal } from '@angular/core/rxjs-interop';
-
 import { Navigation } from './core/components/navigation/navigation';
 
 @Component({

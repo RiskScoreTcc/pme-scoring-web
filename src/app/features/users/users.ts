@@ -1,15 +1,17 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import {
   FormBuilder,
   FormsModule,
   ReactiveFormsModule,
   Validators
 } from '@angular/forms';
-
-import { User } from '../../core/models/users/user';
+import { Router } from '@angular/router';
+import { UserResponse } from '../../core/models/users/user-response';
 import { UserType } from '../../core/models/users/user-type';
 import { ModalTypeUser } from '../../core/models/users/modal-type-user';
-
+import { UserService } from '../../core/services/users/user-service';
+import { NotificationService } from '../../shared/services/notification/notification-service';
+import { Page } from '../../core/models/Page';
 
 @Component({
   selector: 'app-users',
@@ -17,45 +19,20 @@ import { ModalTypeUser } from '../../core/models/users/modal-type-user';
   templateUrl: './users.html',
   styleUrl: './users.css'
 })
-export class Users {
+export class Users implements OnInit {
 
   private readonly fb = inject(FormBuilder);
+  private readonly userService = inject(UserService);
+  private readonly router = inject(Router);
+  private readonly notificationService = inject(NotificationService);
 
-  readonly users: User[] = [
-    {
-      id: 1,
-      email: 'admin@pmescoring.com',
-      type: 'ADMIN',
-      status: 'active',
-      createdAt: '2026-01-15',
-      lastAccess: '2026-09-22T14:32:00'
-    },
-    {
-      id: 2,
-      email: 'analista@pmescoring.com',
-      type: 'ANALYST',
-      status: 'active',
-      createdAt: '2026-03-10',
-      lastAccess: '2026-09-22T11:18:00'
-    },
-    {
-      id: 3,
-      email: 'credito@pmescoring.com',
-      type: 'CREDIT_ANALYST',
-      status: 'active',
-      createdAt: '2026-04-02',
-      lastAccess: '2026-09-21T16:45:00'
-    },
-    {
-      id: 4,
-      email: 'operacao@pmescoring.com',
-      type: 'ANALYST',
-      status: 'inactive',
-      createdAt: '2026-05-18',
-      lastAccess: '2026-08-30T09:21:00'
-    }
-  ];
+  // Estados com Signals
+  protected readonly users = signal<Page<UserResponse> | null>(null);
+  protected readonly isLoading = signal<boolean>(false);
 
+  // Filtros / Estado da Paginação
+  protected readonly currentPage = signal<number>(0);
+  protected readonly pageSize = signal<number>(20);
   readonly userForm = this.fb.group({
     email: [
       '',
@@ -68,6 +45,7 @@ export class Users {
     password: [
       '',
       [
+        Validators.required,
         Validators.minLength(8)
       ]
     ],
@@ -78,17 +56,44 @@ export class Users {
     ]
   });
 
-  selectedUser: User | null = null;
+  selectedUser: UserResponse | null = null;
   activeModal: ModalTypeUser = null;
 
   searchTerm = '';
   selectedType = '';
   selectedStatus = '';
 
-  get filteredUsers(): User[] {
+  ngOnInit(): void {
+    this.loadUsers(this.currentPage());
+  }
+
+  loadUsers(pageIndex: number): void {
+    this.isLoading.set(true);
+
+    // Dispara a busca paginada no backend
+    this.userService.searchUsers(undefined, pageIndex, this.pageSize(), 'email,asc').subscribe({
+      next: (data) => {
+        this.users.set(data);
+        this.currentPage.set(data.number);
+        this.isLoading.set(false);
+      },
+      error: (err) => {
+        console.error('Error fetching users:', err);
+        this.isLoading.set(false);
+      }
+    });
+  }
+
+  changePage(newPage: number): void {
+    if (newPage >= 0 && newPage !== this.currentPage()) {
+      this.loadUsers(newPage);
+    }
+  }
+
+  get filteredUsers(): UserResponse[] {
     const term = this.searchTerm.trim().toLowerCase();
 
-    return this.users.filter(user => {
+    return this.users()?.content?.filter(user => {
       const matchesSearch =
         !term ||
         user.email.toLowerCase().includes(term);
@@ -96,44 +101,44 @@ export class Users {
       const matchesType =
         !this.selectedType ||
         user.type === this.selectedType;
-
-      const matchesStatus =
-        !this.selectedStatus ||
-        user.status === this.selectedStatus;
-
+      /*
+            const matchesStatus =
+              !this.selectedStatus ||
+              user.status === this.selectedStatus;
+      */
       return (
         matchesSearch &&
-        matchesType &&
-        matchesStatus
+        matchesType /* &&
+        matchesStatus*/
       );
-    });
+    }) ?? [];
   }
 
   get totalUsers(): number {
-    return this.users.length;
+    return this.users()?.totalElements || 0;
   }
 
   get activeUsers(): number {
-    return this.users.filter(
-      user => user.status === 'active'
-    ).length;
+    /* return this.users()?.content.filter(
+       user => user.status === 'active'
+     ).length || 0;*/
+    return 0;
+
   }
 
   get adminUsers(): number {
-    return this.users.filter(
+    return this.users()?.content?.filter(
       user => user.type === 'ADMIN'
-    ).length;
+    ).length || 0;
   }
 
   get analystUsers(): number {
-    return this.users.filter(
-      user =>
-        user.type === 'ANALYST' ||
-        user.type === 'CREDIT_ANALYST'
-    ).length;
+    return this.users()?.content?.filter(
+      user => user.type === 'CREDIT_ANALYST'
+    ).length || 0;
   }
 
-  openDetails(user: User): void {
+  openDetails(user: UserResponse): void {
     this.selectedUser = user;
     this.activeModal = 'details';
   }
@@ -150,7 +155,7 @@ export class Users {
     this.activeModal = 'new';
   }
 
-  openEdit(user: User): void {
+  openEdit(user: UserResponse): void {
     this.selectedUser = user;
 
     this.userForm.reset({
@@ -162,7 +167,7 @@ export class Users {
     this.activeModal = 'edit';
   }
 
-  openDeleteConfirmation(user: User): void {
+  openDeleteConfirmation(user: UserResponse): void {
     this.selectedUser = user;
     this.activeModal = 'delete';
   }
@@ -189,7 +194,6 @@ export class Users {
   getTypeLabel(type: UserType): string {
     const labels: Record<UserType, string> = {
       ADMIN: 'Administrador',
-      ANALYST: 'Analista',
       CREDIT_ANALYST: 'Analista de Crédito'
     };
 
@@ -200,14 +204,16 @@ export class Users {
     return `user-type-${type.toLowerCase()}`;
   }
 
-  getStatusLabel(status: User['status']): string {
-    return status === 'active'
-      ? 'Ativo'
-      : 'Inativo';
+  getStatusLabel(status: UserResponse/*['status']*/): string {
+    /* return status === 'active'
+       ? 'Ativo'
+       : 'Inativo';*/
+    return '';
   }
 
-  getStatusClass(status: User['status']): string {
-    return `status-${status}`;
+  getStatusClass(status: UserResponse/*['status']*/): string {
+    /*return `status-${status}`;*/
+    return '';
   }
 
   formatDate(date: string): string {
@@ -231,16 +237,21 @@ export class Users {
 
     const formValue = this.userForm.getRawValue();
 
-    const request = {
-      email: formValue.email,
-      password: formValue.password || undefined,
-      type: formValue.type
+    const createPayload = {
+      email: formValue.email!,
+      password: formValue.password!,
+      type: formValue.type as UserType
     };
 
-    console.log('Novo usuário:', request);
-
-    // Futuramente:
-    // this.userService.create(request).subscribe(...)
+    this.userService.create(createPayload).subscribe({
+      next: async (response) => {
+        await this.notificationService.success('Sucesso!', `Usuário ${response.email} criado.`);
+        this.loadUsers(this.currentPage());
+      },
+      error: (err: Error) => {
+        this.notificationService.error('Falha no Cadastro', err.message);
+      }
+    });
 
     this.closeModal();
   }
@@ -258,19 +269,21 @@ export class Users {
     const formValue = this.userForm.getRawValue();
 
     const request = {
-      email: formValue.email,
+      email: formValue.email || undefined,
       password: formValue.password || undefined,
-      type: formValue.type
+      type: (formValue.type || undefined) as UserType | undefined
     };
 
-    console.log(
-      'Atualizar usuário:',
-      this.selectedUser.id,
-      request
-    );
 
-    // Futuramente:
-    // this.userService.update(this.selectedUser.id, request)
+    this.userService.update(this.selectedUser.id.toString(), request).subscribe({
+      next: async (response) => {
+        await this.notificationService.success('Sucesso!', `Usuário ${response.email} atualizado.`);
+        this.loadUsers(this.currentPage());
+      },
+      error: (err: Error) => {
+        this.notificationService.error('Falha no Cadastro', err.message);
+      }
+    });
 
     this.closeModal();
   }
@@ -280,13 +293,15 @@ export class Users {
       return;
     }
 
-    console.log(
-      'Excluir usuário:',
-      this.selectedUser.id
-    );
-
-    // Futuramente:
-    // this.userService.delete(this.selectedUser.id)
+    this.userService.delete(this.selectedUser.id.toString()).subscribe({
+      next: async (response) => {
+        await this.notificationService.success('Sucesso!', `Usuário ${response.email} excluído.`);
+      },
+      error: (err: Error) => {
+        this.notificationService.error('Falha na Exclusão', err.message);
+      }
+    });
+    this.loadUsers(this.currentPage());
 
     this.closeModal();
   }

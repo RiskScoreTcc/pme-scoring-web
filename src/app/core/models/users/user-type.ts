@@ -1,1 +1,1 @@
-export type UserType = 'ADMIN' | 'ANALYST' | 'CREDIT_ANALYST';
+export type UserType = 'ADMIN' | 'CREDIT_ANALYST';

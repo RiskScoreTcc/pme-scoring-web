@@ -1,4 +1,4 @@
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, computed, inject, signal, OnInit } from '@angular/core';
 import {
   FormBuilder,
   ReactiveFormsModule,
@@ -6,6 +6,11 @@ import {
 } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { FormulaType } from '../../core/models/weights/formula-type';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { NotificationService } from '../../shared/services/notification/notification-service';
+import { WeightsService } from '../../core/services/weights/weights-service';
+import { WeightRequest } from '../../core/models/weights/weight-request';
+import { JwtDecoderService } from '../../core/services/jwt-decoder/jwt-decoder-service';
 
 @Component({
   selector: 'app-weights',
@@ -13,30 +18,40 @@ import { FormulaType } from '../../core/models/weights/formula-type';
   templateUrl: './weights.html',
   styleUrl: './weights.css'
 })
-export class Weights {
+export class Weights implements OnInit {
 
   private readonly fb = inject(FormBuilder);
+  private readonly weightsService = inject(WeightsService);
+  private readonly notificationService = inject(NotificationService);
+  private readonly jwtDecoderService = inject(JwtDecoderService);
 
   readonly currentConfiguration = signal({
-    formulaType: 'WEIGHTED_AVERAGE' as FormulaType,
+    formulaType: '' as FormulaType,
 
-    revenueWeight: 0.40,
-    timeWeight: 0.30,
-    defaultWeight: 0.30,
+    revenueWeight: 0.00,
+    timeWeight: 0.00,
+    defaultWeight: 0.00,
 
-    maxRevenueReference: 500000,
-    maxTimeReferenceMonths: 60,
+    maxRevenueReference: 0,
+    maxTimeReferenceMonths: 0,
 
-    lowRiskThreshold: 75,
-    mediumRiskThreshold: 50,
+    lowRiskThreshold: 0,
+    mediumRiskThreshold: 0,
 
-    updatedByUserId: 1,
-    updatedAt: '2026-09-20'
+    updatedByUserId: 0,
+    creationDate: '0000-00-00'
   });
+
+  readonly formulaOptions: Array<{ value: FormulaType; label: string }> = [
+    {
+      value: 'LINEAR_WEIGHTED_V1',
+      label: 'Média Ponderada Linear (v1)'
+    }
+  ];
 
   readonly weightsForm = this.fb.group({
     formulaType: [
-      'WEIGHTED_AVERAGE' as FormulaType,
+      'LINEAR_WEIGHTED_V1' as FormulaType,
       Validators.required
     ],
 
@@ -84,37 +99,62 @@ export class Weights {
     ],
 
     lowRiskThreshold: [
-      75,
+      750,
       [
         Validators.required,
         Validators.min(1),
-        Validators.max(100)
+        Validators.max(1000)
       ]
     ],
 
     mediumRiskThreshold: [
-      50,
+      500,
       [
         Validators.required,
         Validators.min(1),
-        Validators.max(100)
+        Validators.max(1000)
       ]
     ]
   });
 
-  readonly totalWeight = computed(() => {
-    const value = this.weightsForm.getRawValue();
+  readonly formValues = toSignal(
+    this.weightsForm.valueChanges,
+    { initialValue: this.weightsForm.getRawValue() }
+  );
 
-    return (
-      Number(value.revenueWeight ?? 0) +
-      Number(value.timeWeight ?? 0) +
-      Number(value.defaultWeight ?? 0)
-    );
+  readonly totalWeight = computed(() => {
+    const val = this.formValues();
+    const rev = Number(val.revenueWeight || 0);
+    const time = Number(val.timeWeight || 0);
+    const def = Number(val.defaultWeight || 0);
+
+    return rev + time + def;
   });
 
   readonly weightsAreValid = computed(() => {
     return Math.abs(this.totalWeight() - 1) < 0.0001;
   });
+
+  ngOnInit(): void {
+    this.loadInitialData();
+  }
+
+  private loadInitialData(): void {
+    this.weightsService.searchWeightsActive().subscribe({
+      next: (response) => {
+        this.currentConfiguration.set(response);
+        this.resetForm();
+      },
+      error: (error) => {
+        console.error('Error fetching active weight configuration:', error);
+
+        this.notificationService.error(
+          'Falha ao carregar a configuração',
+          'Não foi possível carregar a configuração de pesos ativa.'
+        );
+      }
+    });
+  }
 
   isInvalid(controlName: string): boolean {
     const control = this.weightsForm.get(controlName);
@@ -132,40 +172,48 @@ export class Weights {
       return;
     }
 
-    if (!this.weightsAreValid()) {
-      this.weightsForm.markAllAsTouched();
-      return;
-    }
-
     const formValue = this.weightsForm.getRawValue();
 
-    const request = {
-      ...formValue,
-
-      /*
-       * Este valor futuramente deverá vir
-       * do usuário autenticado.
-       */
-      updatedByUserId: 1
+    const request: WeightRequest = {
+      formulaType: formValue.formulaType ?? 'LINEAR_WEIGHTED_V1',
+      revenueWeight: formValue.revenueWeight ?? 0,
+      timeWeight: formValue.timeWeight ?? 0,
+      defaultWeight: formValue.defaultWeight ?? 0,
+      maxRevenueReference: formValue.maxRevenueReference ?? 0,
+      maxTimeReferenceMonths: formValue.maxTimeReferenceMonths ?? 0,
+      lowRiskThreshold: formValue.lowRiskThreshold ?? 0,
+      mediumRiskThreshold: formValue.mediumRiskThreshold ?? 0,
+      updatedByUserId: this.jwtDecoderService.getUser()?.id ?? 1
     };
 
-    console.log('Nova configuração de pesos:', request);
+    this.weightsService.saveConfiguration(request).subscribe({
+      next: (response) => {
+        this.currentConfiguration.set(response);
+        this.resetForm();
+        this.notificationService.success(
+          'Configuração salva',
+          'A nova configuração de pesos foi salva com sucesso.'
+        );
+      },
+      error: (error) => {
+        console.error('Error saving weight configuration:', error);
 
-    /*
-     * Futuramente:
-     *
-     * this.weightConfigurationService
-     *   .create(request)
-     *   .subscribe({
-     *      next: configuration => {
-     *        ...
-     *      }
-     *   });
-     */
+        this.notificationService.error(
+          'Falha ao salvar a configuração',
+          'Não foi possível salvar a nova configuração de pesos.'
+        );
+      }
+    });
+
   }
 
   resetForm(): void {
     const configuration = this.currentConfiguration();
+    if (!configuration) {
+      this.weightsForm.reset();
+      return;
+    }
+
 
     this.weightsForm.reset({
       formulaType: configuration.formulaType,
@@ -187,4 +235,20 @@ export class Weights {
         configuration.mediumRiskThreshold
     });
   }
+
+  readonly formattedWeights = computed(() => {
+    const config = this.currentConfiguration();
+
+    if (!config) {
+      return '0% · 0% · 0%';
+    }
+
+    const rev = Math.round((config.revenueWeight ?? 0) * 100);
+    const time = Math.round((config.timeWeight ?? 0) * 100);
+    const def = Math.round((config.defaultWeight ?? 0) * 100);
+
+    return `${rev}% · ${time}% · ${def}%`;
+
+
+  });
 }

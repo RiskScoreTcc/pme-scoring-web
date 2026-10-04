@@ -1,11 +1,11 @@
 import { UserType } from './user-type';
 import { UserStatus } from './user-status';
 
-export interface User {
+export interface UserResponse {
   id: number;
   email: string;
   type: UserType;
   status: UserStatus;
-  createdAt: string;
+  creationDate: string;
   lastAccess: string;
 }

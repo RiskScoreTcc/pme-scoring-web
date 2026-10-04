@@ -1,6 +1,9 @@
 <div class="weights-page">
 
-  <!-- Cabeçalho -->
+  <!-- =========================================================
+       HEADER
+  ========================================================== -->
+
   <header class="page-header">
 
     <div class="page-heading">
@@ -23,17 +26,17 @@
   </header>
 
 
-  <!-- Aviso -->
-  <section
-    class="configuration-alert"
-    aria-label="Informação importante"
-  >
+  <!-- =========================================================
+       ALERTA
+  ========================================================== -->
+
+  <section class="configuration-alert" aria-label="Informação importante">
 
     <div class="alert-icon" aria-hidden="true">
       !
     </div>
 
-    <div>
+    <div class="alert-content">
 
       <strong>
         Atenção ao alterar esta configuração
@@ -49,8 +52,11 @@
   </section>
 
 
-  <!-- Configuração atual -->
-  <section class="current-configuration">
+  <!-- =========================================================
+       CONFIGURAÇÃO ATUAL
+  ========================================================== -->
+
+  <section class="current-configuration" aria-labelledby="current-configuration-title">
 
     <div class="section-header">
 
@@ -60,9 +66,14 @@
           CONFIGURAÇÃO ATUAL
         </span>
 
-        <h2>
+        <h2 id="current-configuration-title">
           Parâmetros ativos
         </h2>
+
+        <p>
+          Valores atualmente utilizados pelo mecanismo de
+          cálculo de score.
+        </p>
 
       </div>
 
@@ -82,7 +93,11 @@
         </span>
 
         <strong>
-          Média ponderada
+          {{
+          currentConfiguration()?.formulaType === 'LINEAR_WEIGHTED_V1'
+          ? 'Média Ponderada Linear (v1)'
+          : '—'
+          }}
         </strong>
 
       </div>
@@ -95,7 +110,7 @@
         </span>
 
         <strong>
-          40% · 30% · 30%
+          {{ formattedWeights() }}
         </strong>
 
       </div>
@@ -108,7 +123,11 @@
         </span>
 
         <strong>
-          R$ 500.000,00
+          R$
+          {{
+          currentConfiguration()?.maxRevenueReference
+          | number:'1.2-2'
+          }}
         </strong>
 
       </div>
@@ -121,7 +140,8 @@
         </span>
 
         <strong>
-          60 meses
+          {{ currentConfiguration()?.maxTimeReferenceMonths }}
+          meses
         </strong>
 
       </div>
@@ -134,7 +154,8 @@
         </span>
 
         <strong>
-          ≥ 75
+          ≥ {{ currentConfiguration()?.lowRiskThreshold ?? 0 }}
+          pts
         </strong>
 
       </div>
@@ -147,7 +168,8 @@
         </span>
 
         <strong>
-          ≥ 50
+          ≥ {{ currentConfiguration()?.mediumRiskThreshold ?? 0 }}
+          pts
         </strong>
 
       </div>
@@ -159,12 +181,16 @@
 
       <span>
         Última atualização:
-        <strong>20/09/2026</strong>
+        <strong>
+          {{ currentConfiguration()?.creationDate }}
+        </strong>
       </span>
 
       <span>
         Administrador:
-        <strong>#1</strong>
+        <strong>
+          {{ currentConfiguration()?.updatedByUserId }}
+        </strong>
       </span>
 
     </div>
@@ -172,15 +198,18 @@
   </section>
 
 
-  <!-- Formulário -->
-  <form
-    class="configuration-form"
-    [formGroup]="weightsForm"
-    (ngSubmit)="onSubmit()"
-  >
+  <!-- =========================================================
+       FORMULÁRIO
+  ========================================================== -->
 
-    <!-- Fórmula -->
-    <section class="form-section">
+  <form class="configuration-form" [formGroup]="weightsForm" (ngSubmit)="onSubmit()" novalidate>
+
+
+    <!-- =======================================================
+         01 · MÉTODO
+    ======================================================== -->
+
+    <section class="form-section" aria-labelledby="formula-section-title">
 
       <div class="section-header">
 
@@ -190,7 +219,7 @@
             01 · MÉTODO
           </span>
 
-          <h2>
+          <h2 id="formula-section-title">
             Fórmula de cálculo
           </h2>
 
@@ -210,23 +239,37 @@
           Tipo de fórmula
         </label>
 
-        <select
-          id="formulaType"
-          formControlName="formulaType"
-          [attr.aria-invalid]="isInvalid('formulaType')"
-        >
+        <select id="formulaType" formControlName="formulaType" [attr.aria-invalid]="isInvalid('formulaType')"
+          [attr.aria-describedby]="
+            isInvalid('formulaType')
+              ? 'formulaType-error'
+              : null
+          ">
 
-          <option value="WEIGHTED_AVERAGE">
-            Média ponderada
+          <option value="" disabled>
+            Selecione a fórmula
           </option>
+
+          @for (
+          option of formulaOptions;
+          track option.value
+          ) {
+
+          <option [value]="option.value">
+            {{ option.label }}
+          </option>
+
+          }
 
         </select>
 
         @if (isInvalid('formulaType')) {
 
-          <span class="field-error">
-            Selecione o tipo de fórmula.
-          </span>
+        <span id="formulaType-error" class="field-error" role="alert">
+
+          Selecione o tipo de fórmula.
+
+        </span>
 
         }
 
@@ -235,8 +278,11 @@
     </section>
 
 
-    <!-- Pesos -->
-    <section class="form-section">
+    <!-- =======================================================
+         02 · PESOS
+    ======================================================== -->
+
+    <section class="form-section" aria-labelledby="weights-section-title">
 
       <div class="section-header">
 
@@ -246,22 +292,23 @@
             02 · PESOS
           </span>
 
-          <h2>
+          <h2 id="weights-section-title">
             Distribuição dos fatores
           </h2>
 
           <p>
             Informe o peso de cada fator utilizado no cálculo
-            do score. A soma deve ser exatamente 100%.
+            do score.
           </p>
 
         </div>
 
 
-        <div
-          class="weight-total"
-          [class.invalid]="!weightsAreValid()"
-        >
+        <div class="weight-total" [class.invalid]="!weightsAreValid()" [attr.aria-label]="
+            weightsAreValid()
+              ? 'Total dos pesos: 100 por cento'
+              : 'Total dos pesos inválido'
+          ">
 
           <span>
             Total
@@ -278,7 +325,9 @@
 
       <div class="weights-grid">
 
+
         <!-- Receita -->
+
         <article class="weight-card">
 
           <div class="weight-card-header">
@@ -296,9 +345,11 @@
             </div>
 
             <strong>
-              {{ getWeightPercentage(
-                weightsForm.get('revenueWeight')?.value
-              ) }}%
+              {{
+              getWeightPercentage(
+              weightsForm.get('revenueWeight')?.value
+              )
+              }}%
             </strong>
 
           </div>
@@ -318,17 +369,16 @@
 
             <div class="input-suffix">
 
-              <input
-                id="revenueWeight"
-                type="number"
-                min="0"
-                max="1"
-                step="0.01"
-                formControlName="revenueWeight"
-                [attr.aria-invalid]="isInvalid('revenueWeight')"
-              />
+              <input id="revenueWeight" type="number" min="0" max="1" step="0.01" formControlName="revenueWeight"
+                inputmode="decimal" [attr.aria-invalid]="
+                  isInvalid('revenueWeight')
+                " [attr.aria-describedby]="
+                  isInvalid('revenueWeight')
+                    ? 'revenueWeight-error'
+                    : null
+                " />
 
-              <span>
+              <span aria-hidden="true">
                 0–1
               </span>
 
@@ -336,9 +386,11 @@
 
             @if (isInvalid('revenueWeight')) {
 
-              <span class="field-error">
-                Informe um valor entre 0,00 e 1,00.
-              </span>
+            <span id="revenueWeight-error" class="field-error" role="alert">
+
+              Informe um valor entre 0,00 e 1,00.
+
+            </span>
 
             }
 
@@ -348,6 +400,7 @@
 
 
         <!-- Tempo -->
+
         <article class="weight-card">
 
           <div class="weight-card-header">
@@ -365,9 +418,11 @@
             </div>
 
             <strong>
-              {{ getWeightPercentage(
-                weightsForm.get('timeWeight')?.value
-              ) }}%
+              {{
+              getWeightPercentage(
+              weightsForm.get('timeWeight')?.value
+              )
+              }}%
             </strong>
 
           </div>
@@ -387,17 +442,16 @@
 
             <div class="input-suffix">
 
-              <input
-                id="timeWeight"
-                type="number"
-                min="0"
-                max="1"
-                step="0.01"
-                formControlName="timeWeight"
-                [attr.aria-invalid]="isInvalid('timeWeight')"
-              />
+              <input id="timeWeight" type="number" min="0" max="1" step="0.01" formControlName="timeWeight"
+                inputmode="decimal" [attr.aria-invalid]="
+                  isInvalid('timeWeight')
+                " [attr.aria-describedby]="
+                  isInvalid('timeWeight')
+                    ? 'timeWeight-error'
+                    : null
+                " />
 
-              <span>
+              <span aria-hidden="true">
                 0–1
               </span>
 
@@ -405,9 +459,11 @@
 
             @if (isInvalid('timeWeight')) {
 
-              <span class="field-error">
-                Informe um valor entre 0,00 e 1,00.
-              </span>
+            <span id="timeWeight-error" class="field-error" role="alert">
+
+              Informe um valor entre 0,00 e 1,00.
+
+            </span>
 
             }
 
@@ -417,6 +473,7 @@
 
 
         <!-- Ocorrências -->
+
         <article class="weight-card">
 
           <div class="weight-card-header">
@@ -434,9 +491,11 @@
             </div>
 
             <strong>
-              {{ getWeightPercentage(
-                weightsForm.get('defaultWeight')?.value
-              ) }}%
+              {{
+              getWeightPercentage(
+              weightsForm.get('defaultWeight')?.value
+              )
+              }}%
             </strong>
 
           </div>
@@ -456,17 +515,16 @@
 
             <div class="input-suffix">
 
-              <input
-                id="defaultWeight"
-                type="number"
-                min="0"
-                max="1"
-                step="0.01"
-                formControlName="defaultWeight"
-                [attr.aria-invalid]="isInvalid('defaultWeight')"
-              />
+              <input id="defaultWeight" type="number" min="0" max="1" step="0.01" formControlName="defaultWeight"
+                inputmode="decimal" [attr.aria-invalid]="
+                  isInvalid('defaultWeight')
+                " [attr.aria-describedby]="
+                  isInvalid('defaultWeight')
+                    ? 'defaultWeight-error'
+                    : null
+                " />
 
-              <span>
+              <span aria-hidden="true">
                 0–1
               </span>
 
@@ -474,9 +532,11 @@
 
             @if (isInvalid('defaultWeight')) {
 
-              <span class="field-error">
-                Informe um valor entre 0,00 e 1,00.
-              </span>
+            <span id="defaultWeight-error" class="field-error" role="alert">
+
+              Informe um valor entre 0,00 e 1,00.
+
+            </span>
 
             }
 
@@ -485,30 +545,14 @@
         </article>
 
       </div>
-
-
-      @if (!weightsAreValid()) {
-
-        <div class="form-warning">
-
-          <strong>
-            A soma dos pesos deve ser 100%.
-          </strong>
-
-          <span>
-            Ajuste os valores de Receita, Tempo e Ocorrências
-            antes de salvar.
-          </span>
-
-        </div>
-
-      }
-
     </section>
 
 
-    <!-- Referências -->
-    <section class="form-section">
+    <!-- =======================================================
+         03 · NORMALIZAÇÃO
+    ======================================================== -->
+
+    <section class="form-section" aria-labelledby="normalization-section-title">
 
       <div class="section-header">
 
@@ -518,7 +562,7 @@
             03 · NORMALIZAÇÃO
           </span>
 
-          <h2>
+          <h2 id="normalization-section-title">
             Valores de referência
           </h2>
 
@@ -534,7 +578,9 @@
 
       <div class="form-grid">
 
-        <!-- Receita máxima -->
+
+        <!-- Receita -->
+
         <div class="field">
 
           <label for="maxRevenueReference">
@@ -543,40 +589,41 @@
 
           <div class="input-prefix">
 
-            <span>
+            <span aria-hidden="true">
               R$
             </span>
 
-            <input
-              id="maxRevenueReference"
-              type="number"
-              min="0.01"
-              step="0.01"
-              formControlName="maxRevenueReference"
-              [attr.aria-invalid]="
+            <input id="maxRevenueReference" type="number" min="0.01" step="0.01" formControlName="maxRevenueReference"
+              inputmode="decimal" [attr.aria-invalid]="
                 isInvalid('maxRevenueReference')
-              "
-            />
+              " [attr.aria-describedby]="
+                isInvalid('maxRevenueReference')
+                  ? 'maxRevenueReference-help maxRevenueReference-error'
+                  : 'maxRevenueReference-help'
+              " />
 
           </div>
 
-          <small>
+          <small id="maxRevenueReference-help">
             Valor máximo utilizado como referência para
             normalização da receita.
           </small>
 
           @if (isInvalid('maxRevenueReference')) {
 
-            <span class="field-error">
-              Informe uma receita de referência maior que zero.
-            </span>
+          <span id="maxRevenueReference-error" class="field-error" role="alert">
+
+            Informe uma receita de referência maior que zero.
+
+          </span>
 
           }
 
         </div>
 
 
-        <!-- Tempo máximo -->
+        <!-- Tempo -->
+
         <div class="field">
 
           <label for="maxTimeReferenceMonths">
@@ -585,33 +632,33 @@
 
           <div class="input-suffix">
 
-            <input
-              id="maxTimeReferenceMonths"
-              type="number"
-              min="1"
-              step="1"
-              formControlName="maxTimeReferenceMonths"
-              [attr.aria-invalid]="
+            <input id="maxTimeReferenceMonths" type="number" min="1" step="1" formControlName="maxTimeReferenceMonths"
+              inputmode="numeric" [attr.aria-invalid]="
                 isInvalid('maxTimeReferenceMonths')
-              "
-            />
+              " [attr.aria-describedby]="
+                isInvalid('maxTimeReferenceMonths')
+                  ? 'maxTimeReferenceMonths-help maxTimeReferenceMonths-error'
+                  : 'maxTimeReferenceMonths-help'
+              " />
 
-            <span>
+            <span aria-hidden="true">
               meses
             </span>
 
           </div>
 
-          <small>
+          <small id="maxTimeReferenceMonths-help">
             Tempo máximo considerado para normalização
             do fator de idade da empresa.
           </small>
 
           @if (isInvalid('maxTimeReferenceMonths')) {
 
-            <span class="field-error">
-              Informe um valor maior que zero.
-            </span>
+          <span id="maxTimeReferenceMonths-error" class="field-error" role="alert">
+
+            Informe um valor maior que zero.
+
+          </span>
 
           }
 
@@ -622,8 +669,11 @@
     </section>
 
 
-    <!-- Risco -->
-    <section class="form-section">
+    <!-- =======================================================
+         04 · CLASSIFICAÇÃO
+    ======================================================== -->
+
+    <section class="form-section" aria-labelledby="risk-section-title">
 
       <div class="section-header">
 
@@ -633,7 +683,7 @@
             04 · CLASSIFICAÇÃO
           </span>
 
-          <h2>
+          <h2 id="risk-section-title">
             Faixas de risco
           </h2>
 
@@ -649,6 +699,9 @@
 
       <div class="risk-thresholds">
 
+
+        <!-- Baixo -->
+
         <div class="risk-card risk-low">
 
           <div class="risk-indicator">
@@ -663,19 +716,16 @@
 
             <div class="input-suffix">
 
-              <input
-                id="lowRiskThreshold"
-                type="number"
-                min="1"
-                max="100"
-                step="1"
-                formControlName="lowRiskThreshold"
-                [attr.aria-invalid]="
+              <input id="lowRiskThreshold" type="number" min="1" max="1000" step="1" formControlName="lowRiskThreshold"
+                inputmode="numeric" [attr.aria-invalid]="
                   isInvalid('lowRiskThreshold')
-                "
-              />
+                " [attr.aria-describedby]="
+                  isInvalid('lowRiskThreshold')
+                    ? 'lowRiskThreshold-error'
+                    : null
+                " />
 
-              <span>
+              <span aria-hidden="true">
                 pontos
               </span>
 
@@ -683,9 +733,11 @@
 
             @if (isInvalid('lowRiskThreshold')) {
 
-              <span class="field-error">
-                Informe um valor entre 1 e 100.
-              </span>
+            <span id="lowRiskThreshold-error" class="field-error" role="alert">
+
+              Informe um valor entre 1 e 1000.
+
+            </span>
 
             }
 
@@ -698,6 +750,8 @@
 
         </div>
 
+
+        <!-- Médio -->
 
         <div class="risk-card risk-medium">
 
@@ -713,19 +767,16 @@
 
             <div class="input-suffix">
 
-              <input
-                id="mediumRiskThreshold"
-                type="number"
-                min="1"
-                max="100"
-                step="1"
-                formControlName="mediumRiskThreshold"
-                [attr.aria-invalid]="
+              <input id="mediumRiskThreshold" type="number" min="1" max="1000" step="1"
+                formControlName="mediumRiskThreshold" inputmode="numeric" [attr.aria-invalid]="
                   isInvalid('mediumRiskThreshold')
-                "
-              />
+                " [attr.aria-describedby]="
+                  isInvalid('mediumRiskThreshold')
+                    ? 'mediumRiskThreshold-error'
+                    : null
+                " />
 
-              <span>
+              <span aria-hidden="true">
                 pontos
               </span>
 
@@ -733,9 +784,11 @@
 
             @if (isInvalid('mediumRiskThreshold')) {
 
-              <span class="field-error">
-                Informe um valor entre 1 e 100.
-              </span>
+            <span id="mediumRiskThreshold-error" class="field-error" role="alert">
+
+              Informe um valor entre 1 e 1000.
+
+            </span>
 
             }
 
@@ -750,6 +803,8 @@
         </div>
 
 
+        <!-- Alto -->
+
         <div class="risk-card risk-high">
 
           <div class="risk-indicator">
@@ -759,7 +814,8 @@
           <div class="risk-preview">
 
             <strong>
-              Abaixo de {{ weightsForm.get('mediumRiskThreshold')?.value || 50 }}
+              Abaixo de
+              {{ weightsForm.get('mediumRiskThreshold')?.value || 50 }}
             </strong>
 
             <span>
@@ -780,26 +836,22 @@
     </section>
 
 
-    <!-- Ações -->
+    <!-- =======================================================
+         AÇÕES
+    ======================================================== -->
+
     <footer class="form-actions">
 
-      <button
-        type="button"
-        class="button button-secondary"
-        (click)="resetForm()"
-      >
+      <button type="button" class="button button-secondary" (click)="resetForm()">
+
         Restaurar atual
+
       </button>
 
-      <button
-        type="submit"
-        class="button button-primary"
-        [disabled]="
-          weightsForm.invalid ||
-          !weightsAreValid()
-        "
-      >
+      <button type="submit" class="button button-primary" [disabled]="weightsForm.invalid">
+
         Salvar configuração
+
       </button>
 
     </footer>

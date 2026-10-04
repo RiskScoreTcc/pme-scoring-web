@@ -1,1 +1,1 @@
-export type FormulaType = 'WEIGHTED_AVERAGE' | 'exponential' | 'logarithmic';
+export type FormulaType = 'LINEAR_WEIGHTED_V1';

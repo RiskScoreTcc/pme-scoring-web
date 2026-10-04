@@ -1,1 +1,1 @@
-export type UserStatus = 'active' | 'inactive';
+export type UserStatus = 'ACTIVE' | 'INACTIVE' | 'DELETED';

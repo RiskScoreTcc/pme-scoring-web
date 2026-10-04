@@ -5,6 +5,7 @@ import { catchError } from 'rxjs/operators';
 import { UserCreate } from '../../models/users/user-create';
 import { UserUpdate } from '../../models/users/user-update';
 import { UserResponse } from '../../models/users/user-response';
+import { UserFilter } from '../../models/users/user-filter';
 import { ApiErrorResponse } from '../../models/api-error-response';
 import { Page } from '../../models/Page';
 
@@ -66,6 +67,36 @@ export class UserService {
 
         return this.http
             .get<Page<UserResponse>>(`${this.API_URL}/api/v1/users?${params}`)
+            .pipe(
+                catchError((errorResponse: HttpErrorResponse) => {
+                    const apiError = errorResponse.error as ApiErrorResponse;
+                    const message =
+                        apiError?.message ||
+                        'An unexpected error occurred while searching for users.';
+                    return throwError(() => new Error(message));
+                })
+            );
+    }
+
+    searchUsersFilter(userFilter: UserFilter, pageIndex: number, pageSize: number, sort: string): Observable<Page<UserResponse>> {
+        const params = new URLSearchParams({
+            page: pageIndex.toString(),
+            size: pageSize.toString()
+        });
+
+        // Add filter parameters if they exist
+        if (userFilter.email) {
+            params.set('email', userFilter.email);
+        }
+        if (userFilter.type) {
+            params.set('type', userFilter.type);
+        }
+        if (userFilter.status) {
+            params.set('status', userFilter.status);
+        }
+
+        return this.http
+            .get<Page<UserResponse>>(`${this.API_URL}/api/v1/users/filter?${params}`)
             .pipe(
                 catchError((errorResponse: HttpErrorResponse) => {
                     const apiError = errorResponse.error as ApiErrorResponse;

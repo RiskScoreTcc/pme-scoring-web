@@ -6,8 +6,22 @@ import {
   ViewChild,
   computed,
   inject,
-  signal
+  signal,
+  DestroyRef
 } from '@angular/core';
+
+import {
+  toObservable,
+  takeUntilDestroyed
+} from '@angular/core/rxjs-interop';
+
+import {
+  combineLatest,
+  debounceTime,
+  switchMap,
+  distinctUntilChanged,
+  BehaviorSubject
+} from 'rxjs';
 
 import {
   FormBuilder,
@@ -17,6 +31,7 @@ import {
 } from '@angular/forms';
 
 import { UserResponse } from '../../core/models/users/user-response';
+import { UserUpdate } from '../../core/models/users/user-update';
 import { UserType } from '../../core/models/users/user-type';
 import { ModalTypeUser } from '../../core/models/users/modal-type-user';
 import { UserService } from '../../core/services/users/user-service';
@@ -38,6 +53,7 @@ export class Users implements OnInit {
   private readonly formBuilder = inject(FormBuilder);
   private readonly userService = inject(UserService);
   private readonly notificationService = inject(NotificationService);
+  private readonly destroyRef = inject(DestroyRef); // Injetado
 
   @ViewChild('modalFirstControl')
   private modalFirstControl?: ElementRef<HTMLElement>;
@@ -56,7 +72,15 @@ export class Users implements OnInit {
     signal<UserType | ''>('');
 
   protected readonly selectedStatus =
-    signal<UserResponse['status'] | ''>('');
+    signal<UserResponse['status'] | ''>('ACTIVE');
+
+  private readonly forceReload$ = new BehaviorSubject<number>(0);
+
+  private readonly searchTerm$ = toObservable(this.searchTerm);
+  private readonly selectedType$ = toObservable(this.selectedType);
+  private readonly selectedStatus$ = toObservable(this.selectedStatus);
+  private readonly currentPage$ = toObservable(this.currentPage);
+  private readonly pageSize$ = toObservable(this.pageSize);
 
   selectedUser: UserResponse | null = null;
 
@@ -94,45 +118,6 @@ export class Users implements OnInit {
 
   });
 
-  protected readonly filteredUsers = computed(() => {
-
-    const users =
-      this.users()?.content ?? [];
-
-    const term =
-      this.searchTerm()
-        .trim()
-        .toLowerCase();
-
-    const type =
-      this.selectedType();
-
-    const status =
-      this.selectedStatus();
-
-    return users.filter(user => {
-
-      const matchesSearch =
-        !term ||
-        user.email
-          .toLowerCase()
-          .includes(term);
-
-      const matchesType =
-        !type ||
-        user.type === type;
-
-      const matchesStatus =
-        !status ||
-        user.status === status;
-
-      return (
-        matchesSearch &&
-        matchesType &&
-        matchesStatus
-      );
-    });
-  });
 
   protected readonly totalUsers =
     computed(() =>
@@ -161,49 +146,70 @@ export class Users implements OnInit {
     );
 
   ngOnInit(): void {
-    this.loadUsers(0);
+    this.setupReactiveSearchPipeline();
   }
 
-  loadUsers(pageIndex: number): void {
 
-    this.isLoading.set(true);
+  private setupReactiveSearchPipeline(): void {
 
-    this.userService
-      .searchUsers(
-        undefined,
-        pageIndex,
-        this.pageSize(),
-        'email,asc'
-      )
-      .subscribe({
+    combineLatest([
+      this.searchTerm$,
+      this.selectedType$,
+      this.selectedStatus$,
+      this.currentPage$,
+      this.pageSize$,
+      this.forceReload$
+    ]).pipe(
+      debounceTime(300),
+      distinctUntilChanged((prev, curr) => JSON.stringify(prev) === JSON.stringify(curr)),
+      switchMap(([email, type, status, page, size]) => {
 
-        next: page => {
+        this.isLoading.set(true);
 
-          this.users.set(page);
+        const filter = {
+          email: email || undefined,
+          type: type || undefined,
+          status: status || undefined
+        };
 
-          this.currentPage.set(
-            page.number
-          );
+        return this.userService.searchUsersFilter(
+          filter,
+          page,
+          size,
+          'email,asc'
+        );
+      }),
+      takeUntilDestroyed(this.destroyRef)
+    ).subscribe({
 
-          this.isLoading.set(false);
-        },
+      next: page => {
 
-        error: error => {
+        this.users.set(page);
 
-          console.error(
-            'Error fetching users:',
-            error
-          );
+        this.isLoading.set(false);
+      },
 
-          this.isLoading.set(false);
+      error: error => {
 
-          this.notificationService.error(
-            'Falha ao carregar usuários',
-            'Não foi possível carregar a lista de usuários.'
-          );
-        }
+        console.error(
+          'Error fetching users:',
+          error
+        );
 
-      });
+        this.isLoading.set(false);
+
+        this.notificationService.error(
+          'Falha ao carregar usuários',
+          'Não foi possível carregar a lista de usuários.'
+        );
+      }
+
+    });
+  }
+
+
+  private reloadUsersManually(): void {
+    this.forceReload$.next(Date.now());
   }
 
   changePage(page: number): void {
@@ -223,7 +229,7 @@ export class Users implements OnInit {
       return;
     }
 
-    this.loadUsers(page);
+    this.currentPage.set(page);
   }
 
   openDetails(user: UserResponse): void {
@@ -323,6 +329,8 @@ export class Users implements OnInit {
     this.selectedType.set('');
 
     this.selectedStatus.set('');
+
+    this.currentPage.set(0);
   }
 
   isInvalid(controlName: string): boolean {
@@ -480,9 +488,7 @@ export class Users implements OnInit {
 
           this.closeModal();
 
-          this.loadUsers(
-            this.currentPage()
-          );
+          this.reloadUsersManually();
         },
 
         error: error => {
@@ -517,25 +523,24 @@ export class Users implements OnInit {
     const formValue =
       this.userForm.getRawValue();
 
-    const request = {
+    const request: Partial<UserUpdate> = {};
 
-      email:
-        formValue.email ||
-        undefined,
+    if (formValue.email && formValue.email !== this.selectedUser.email) {
+      request.email = formValue.email;
+    }
 
-      password:
-        formValue.password ||
-        undefined,
+    if (formValue.type && formValue.type !== this.selectedUser.type) {
+      request.type = formValue.type as UserType;
+    }
 
-      type:
-        formValue.type as UserType ||
-        undefined,
+    const isCurrentlyInactive = this.selectedUser.status === 'INACTIVE';
+    if (formValue.isDeactivate !== null && formValue.isDeactivate !== isCurrentlyInactive) {
+      request.isDeactivate = formValue.isDeactivate;
+    }
 
-      isDeactivate:
-        formValue.isDeactivate ??
-        undefined
-
-    };
+    if (formValue.password && formValue.password.trim() !== '') {
+      request.password = formValue.password;
+    }
 
     this.isLoading.set(true);
 
@@ -557,9 +562,7 @@ export class Users implements OnInit {
 
           this.closeModal();
 
-          this.loadUsers(
-            this.currentPage()
-          );
+          this.reloadUsersManually();
         },
 
         error: error => {
@@ -585,26 +588,26 @@ export class Users implements OnInit {
     const userId =
       this.selectedUser.id.toString();
 
+    const userEmail = this.selectedUser.email;
+
     this.isLoading.set(true);
 
     this.userService
       .delete(userId)
       .subscribe({
 
-        next: async response => {
+        next: () => {
 
           this.isLoading.set(false);
 
-          await this.notificationService.success(
+          this.notificationService.success(
             'Usuário excluído',
-            `Usuário ${response.email} excluído com sucesso.`
+            `Usuário ${userEmail} excluído com sucesso.`
           );
 
           this.closeModal();
 
-          this.loadUsers(
-            this.currentPage()
-          );
+          this.reloadUsersManually();
         },
 
         error: error => {

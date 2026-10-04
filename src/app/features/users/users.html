@@ -224,7 +224,7 @@
 
       <span class="results-count">
 
-        {{ filteredUsers().length }}
+        {{ users()?.content.length }}
         usuário(s)
 
       </span>
@@ -278,7 +278,7 @@
         <tbody>
 
           @for (
-          user of filteredUsers();
+          user of users()?.content ?? [];
           track user.id
           ) {
 
@@ -425,7 +425,7 @@
 
 
           @if (
-          filteredUsers().length === 0
+          users()?.content.length === 0
           ) {
 
           <tr>

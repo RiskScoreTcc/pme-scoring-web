@@ -1,115 +1,158 @@
 <div class="users-page">
 
-  <header class="page-header">
-    <div>
-      <span class="eyebrow">CONTROLE DE ACESSO</span>
+  <!-- =========================================================
+       CABEÇALHO
+       ========================================================= -->
 
-      <h1>Usuários e Acessos</h1>
+  <header class="page-header">
+
+    <div>
+
+      <span class="eyebrow">
+        CONTROLE DE ACESSO
+      </span>
+
+      <h1>
+        Usuários e Acessos
+      </h1>
 
       <p>
         Gerencie os usuários autorizados e seus respectivos
         perfis de acesso ao PME Scoring.
       </p>
+
     </div>
 
-    <button type="button" class="primary-button" (click)="openNewUser()">
-      <span aria-hidden="true">+</span>
+    <button #newUserButton type="button" class="primary-button" (click)="openNewUser()">
+
       Novo usuário
+
     </button>
+
   </header>
 
 
-  <!-- Resumo -->
+  <!-- =========================================================
+       RESUMO
+       ========================================================= -->
 
   <section class="summary-grid" aria-label="Resumo dos usuários">
 
     <article class="summary-card">
-      <span class="summary-label">Total de usuários</span>
+
+      <span class="summary-label">
+        Total de usuários
+      </span>
 
       <strong class="summary-value">
-        {{ totalUsers }}
+        {{ totalUsers() }}
       </strong>
 
       <span class="summary-description">
         Contas cadastradas
       </span>
+
     </article>
 
 
     <article class="summary-card">
-      <span class="summary-label">Usuários ativos</span>
+
+      <span class="summary-label">
+        Usuários ativos
+      </span>
 
       <strong class="summary-value">
-        {{ activeUsers }}
+        {{ activeUsers() }}
       </strong>
 
       <span class="summary-description">
         Com acesso habilitado
       </span>
+
     </article>
 
 
     <article class="summary-card">
-      <span class="summary-label">Administradores</span>
+
+      <span class="summary-label">
+        Administradores
+      </span>
 
       <strong class="summary-value">
-        {{ adminUsers }}
+        {{ adminUsers() }}
       </strong>
 
       <span class="summary-description">
         Acesso administrativo
       </span>
+
     </article>
 
 
     <article class="summary-card">
-      <span class="summary-label">Analistas</span>
+
+      <span class="summary-label">
+        Analistas
+      </span>
 
       <strong class="summary-value">
-        {{ analystUsers }}
+        {{ analystUsers() }}
       </strong>
 
       <span class="summary-description">
         Perfis operacionais
       </span>
+
     </article>
 
   </section>
 
 
-  <!-- Filtros -->
+  <!-- =========================================================
+       FILTROS
+       ========================================================= -->
 
   <section class="filters-card">
 
     <div class="filters-header">
+
       <div>
-        <h2>Usuários cadastrados</h2>
+
+        <h2>
+          Usuários cadastrados
+        </h2>
 
         <p>
           Consulte e gerencie as contas de acesso.
         </p>
+
       </div>
+
     </div>
 
 
     <div class="filters-grid">
 
       <div class="field field-search">
+
         <label for="user-search">
           Buscar usuário
         </label>
 
-        <input id="user-search" type="search" [(ngModel)]="searchTerm" placeholder="E-mail do usuário"
-          autocomplete="off" />
+        <input id="user-search" type="search" [ngModel]="searchTerm()" (ngModelChange)="searchTerm.set($event)"
+          placeholder="E-mail do usuário" autocomplete="off" />
+
       </div>
 
 
       <div class="field">
+
         <label for="user-type-filter">
           Perfil
         </label>
 
-        <select id="user-type-filter" [(ngModel)]="selectedType">
+        <select id="user-type-filter" [ngModel]="selectedType()" (ngModelChange)="selectedType.set($event)">
+
           <option value="">
             Todos os perfis
           </option>
@@ -121,35 +164,49 @@
           <option value="CREDIT_ANALYST">
             Analista de Crédito
           </option>
+
         </select>
+
       </div>
 
 
       <div class="field">
+
         <label for="user-status-filter">
           Situação
         </label>
 
-        <select id="user-status-filter" [(ngModel)]="selectedStatus">
+        <select id="user-status-filter" [ngModel]="selectedStatus()" (ngModelChange)="selectedStatus.set($event)">
+
           <option value="">
             Todas
           </option>
 
-          <option value="active">
+          <option value="ACTIVE">
             Ativo
           </option>
 
-          <option value="inactive">
+          <option value="INACTIVE">
             Inativo
           </option>
+
+          <option value="DELETED">
+            Deletado
+          </option>
+
         </select>
+
       </div>
 
 
       <div class="filter-action">
+
         <button type="button" class="secondary-button" (click)="clearFilters()">
+
           Limpar filtros
+
         </button>
+
       </div>
 
     </div>
@@ -157,135 +214,316 @@
   </section>
 
 
-  <!-- Tabela -->
+  <!-- =========================================================
+       TABELA
+       ========================================================= -->
 
   <section class="table-card">
 
     <div class="table-header">
 
-      <div>
-        <span class="results-count">
-          {{ filteredUsers.length }} usuário(s)
-        </span>
-      </div>
+      <span class="results-count">
+
+        {{ filteredUsers().length }}
+        usuário(s)
+
+      </span>
 
     </div>
 
 
     <div class="table-wrapper">
+
       <table>
+
         <caption class="sr-only">
           Lista de usuários cadastrados
         </caption>
 
         <thead>
+
           <tr>
-            <th scope="col">Usuário</th>
-            <th scope="col">Perfil</th>
-            <th scope="col">Situação</th>
-            <th scope="col">Último acesso</th>
-            <th scope="col">Cadastro</th>
-            <th scope="col" class="actions-column">Ações</th>
+
+            <th scope="col">
+              Usuário
+            </th>
+
+            <th scope="col">
+              Perfil
+            </th>
+
+            <th scope="col">
+              Situação
+            </th>
+
+            <th scope="col">
+              Último acesso
+            </th>
+
+            <th scope="col">
+              Cadastro
+            </th>
+
+            <th scope="col">
+
+              Ações
+
+            </th>
+
           </tr>
+
         </thead>
 
+
         <tbody>
-          @for (user of users()?.content; track user.id) {
+
+          @for (
+          user of filteredUsers();
+          track user.id
+          ) {
+
           <tr>
+
             <td>
+
               <div class="user-cell">
+
                 <div class="user-avatar" aria-hidden="true">
+
                   {{ user.email.charAt(0).toUpperCase() }}
+
                 </div>
+
                 <div>
-                  <strong>{{ user.email }}</strong>
-                  <span>ID #{{ user.id }}</span>
+
+                  <strong>
+                    {{ user.email }}
+                  </strong>
+
+                  <span>
+                    ID #{{ user.id }}
+                  </span>
+
                 </div>
+
               </div>
+
             </td>
 
+
             <td>
+
               <span class="type-badge" [class]="getTypeClass(user.type)">
+
                 {{ getTypeLabel(user.type) }}
+
               </span>
+
             </td>
 
+
             <td>
-              <span class="status-badge">
-                <span class="status-dot" aria-hidden="true"></span>
+
+              <span class="status-badge" [class]="getStatusClass(user.status)">
+
+                <span class="status-dot" aria-hidden="true">
+                </span>
+
+                {{ getStatusLabel(user.status) }}
+
               </span>
+
             </td>
 
-            <td>
-              <span class="date-value"></span>
-            </td>
 
             <td>
-              <span class="date-value"></span>
+
+              <time class="date-value" [attr.datetime]="user.lastAccess">
+
+                {{ formatLastAccess(user.lastAccess) }}
+
+              </time>
+
             </td>
+
+
+            <td>
+
+              <time class="date-value" [attr.datetime]="user.creationDate">
+
+                {{ formatDate(user.creationDate) }}
+
+              </time>
+
+            </td>
+
 
             <td class="actions-cell">
-              <div class="row-actions">
-                <button type="button" class="icon-button" title="Ver usuário"
-                  [attr.aria-label]="'Ver usuário ' + user.email" (click)="openDetails(user)">
-                  👁
+
+              <div class="actions-menu">
+
+                <button type="button" class="actions-trigger" aria-label="Abrir ações do usuário"
+                  [attr.aria-expanded]="openUserActions === user.id" (click)="toggleActions(user.id)">
+
+                  <span aria-hidden="true">⋮</span>
+
                 </button>
-                <button type="button" class="icon-button" title="Editar usuário"
-                  [attr.aria-label]="'Editar usuário ' + user.email" (click)="openEdit(user)">
-                  ✎
-                </button>
-                <button type="button" class="icon-button danger" title="Excluir usuário"
-                  [attr.aria-label]="'Excluir usuário ' + user.email" (click)="openDeleteConfirmation(user)">
-                  🗑
-                </button>
+
+                @if (openUserActions === user.id) {
+
+                <div class="actions-dropdown">
+
+                  <button type="button" class="actions-item" (click)="openDetails(user); closeActions()">
+
+                    Visualizar
+
+                  </button>
+
+                  <button type="button" class="actions-item" (click)="openEdit(user); closeActions()">
+
+                    Editar
+
+                  </button>
+<!--
+                  @if (user.status === 'ACTIVE') {
+
+                  <button type="button" class="actions-item" (click)="openDeactivate(user); closeActions()">
+
+                    Inativar
+
+                  </button>
+
+                  } @else {
+
+                  <button type="button" class="actions-item" (click)="openActivate(user); closeActions()">
+
+                    Ativar
+
+                  </button>
+
+                  }
+-->
+                  <div class="actions-divider"></div>
+
+                  <button type="button" class="actions-item actions-item-danger"
+                    (click)="openDeleteConfirmation(user); closeActions()">
+
+                    Excluir
+
+                  </button>
+
+                </div>
+
+                }
+
               </div>
+
             </td>
           </tr>
+
           }
 
-          @if (!users() || users()?.content?.length === 0) {
+
+          @if (
+          filteredUsers().length === 0
+          ) {
+
           <tr>
+
             <td colspan="6" class="empty-state">
-              <strong>Nenhum usuário encontrado</strong>
-              <span>Tente alterar os filtros utilizados.</span>
+
+              <strong>
+                Nenhum usuário encontrado
+              </strong>
+
+              <span>
+                Tente alterar os filtros utilizados.
+              </span>
+
             </td>
+
           </tr>
+
           }
+
         </tbody>
+
       </table>
 
-      <!-- Barra de Paginação -->
+
+      <!-- =====================================================
+           PAGINAÇÃO
+           ===================================================== -->
+
       @if (users(); as page) {
+
       <div class="pagination-container">
 
         <div class="pagination-info">
-          Showing
-          <strong>{{ (page.number * page.size) + (page.numberOfElements > 0 ? 1 : 0) }}</strong>
-          to
-          <strong>{{ (page.number * page.size) + page.numberOfElements }}</strong>
-          of
-          <strong>{{ page.totalElements }}</strong>
-          users
+
+          Mostrando
+
+          <strong>
+            {{ getFirstResult(page) }}
+          </strong>
+
+          até
+
+          <strong>
+            {{ getLastResult(page) }}
+          </strong>
+
+          de
+
+          <strong>
+            {{ page.totalElements }}
+          </strong>
+
+          usuários
+
         </div>
 
+
         <div class="pagination-controls">
+
           <button type="button" class="btn-page" [disabled]="page.first || isLoading()"
-            (click)="changePage(page.number - 1)">
-            &laquo; Previous
+            (click)="changePage(page.number - 1)" aria-label="Ir para a página anterior">
+
+            Anterior
+
           </button>
 
-          <span class="page-indicator">
-            Page <strong>{{ page.number + 1 }}</strong> of <strong>{{ page.totalPages || 1 }}</strong>
+
+          <span class="page-indicator" aria-live="polite">
+
+            Página
+
+            <strong>
+              {{ page.number + 1 }}
+            </strong>
+
+            de
+
+            <strong>
+              {{ page.totalPages || 1 }}
+            </strong>
+
           </span>
 
+
           <button type="button" class="btn-page" [disabled]="page.last || isLoading()"
-            (click)="changePage(page.number + 1)">
-            Next &raquo;
+            (click)="changePage(page.number + 1)" aria-label="Ir para a próxima página">
+
+            Próxima
+
           </button>
+
         </div>
 
       </div>
+
       }
+
     </div>
 
   </section>
@@ -293,9 +531,14 @@
 </div>
 
 
-<!-- Modal: detalhes -->
+<!-- =========================================================
+     MODAL — DETALHES
+     ========================================================= -->
 
-@if (activeModal === 'details' && selectedUser) {
+@if (
+activeModal === 'details' &&
+selectedUser
+) {
 
 <div class="modal-backdrop" role="presentation" (click)="closeModal()">
 
@@ -305,15 +548,21 @@
     <header class="modal-header">
 
       <div>
-        <span class="eyebrow">DETALHES</span>
+
+        <span class="eyebrow">
+          DETALHES
+        </span>
 
         <h2 id="details-title">
           Dados do usuário
         </h2>
+
       </div>
 
-      <button type="button" class="modal-close" aria-label="Fechar" (click)="closeModal()">
-        ×
+      <button #modalFirstControl type="button" class="modal-close-button" (click)="closeModal()">
+
+        Fechar
+
       </button>
 
     </header>
@@ -322,35 +571,72 @@
     <div class="details-content">
 
       <div class="detail-row">
-        <span>E-mail</span>
-        <strong>{{ selectedUser.email }}</strong>
+
+        <span>
+          E-mail
+        </span>
+
+        <strong>
+          {{ selectedUser.email }}
+        </strong>
+
       </div>
 
+
       <div class="detail-row">
-        <span>Perfil de acesso</span>
+
+        <span>
+          Perfil de acesso
+        </span>
+
         <strong>
           {{ getTypeLabel(selectedUser.type) }}
         </strong>
+
       </div>
 
-      <div class="detail-row">
-        <span>Situação</span>
 
-        <span class="status-badge" >
-          <span class="status-dot" aria-hidden="true"></span>
+      <div class="detail-row">
+
+        <span>
+          Situação
         </span>
+
+        <span class="status-badge" [class]="getStatusClass(selectedUser.status)">
+
+          <span class="status-dot" aria-hidden="true">
+          </span>
+
+          {{ getStatusLabel(selectedUser.status) }}
+
+        </span>
+
       </div>
 
-      <div class="detail-row">
-        <span>Cadastrado em</span>
-        <strong>
-        </strong>
-      </div>
 
       <div class="detail-row">
-        <span>Último acesso</span>
+
+        <span>
+          Cadastrado em
+        </span>
+
         <strong>
+          {{ formatDate(selectedUser.creationDate) }}
         </strong>
+
+      </div>
+
+
+      <div class="detail-row">
+
+        <span>
+          Último acesso
+        </span>
+
+        <strong>
+          {{ formatLastAccess(selectedUser.lastAccess) }}
+        </strong>
+
       </div>
 
     </div>
@@ -359,7 +645,9 @@
     <footer class="modal-footer">
 
       <button type="button" class="secondary-button" (click)="closeModal()">
+
         Fechar
+
       </button>
 
     </footer>
@@ -371,7 +659,9 @@
 }
 
 
-<!-- Modal: novo / edição -->
+<!-- =========================================================
+     MODAL — NOVO / EDIÇÃO
+     ========================================================= -->
 
 @if (
 activeModal === 'new' ||
@@ -399,17 +689,21 @@ activeModal === 'edit'
                 ? 'new-user-title'
                 : 'edit-user-title'
             ">
+
           {{
           activeModal === 'new'
           ? 'Novo usuário'
           : 'Editar usuário'
           }}
+
         </h2>
 
       </div>
 
-      <button type="button" class="modal-close" aria-label="Fechar" (click)="closeModal()">
-        ×
+      <button #modalFirstControl type="button" class="modal-close-button" (click)="closeModal()">
+
+        Fechar
+
       </button>
 
     </header>
@@ -419,18 +713,19 @@ activeModal === 'edit'
           activeModal === 'new'
             ? onSubmit()
             : updateUser()
-        ">
+        " novalidate>
 
       <div class="form-content">
 
 
+        <!-- =================================================
+               AVISO DE SEGURANÇA
+               ================================================= -->
+
         <div class="security-notice">
 
-          <span class="security-icon" aria-hidden="true">
-            🔒
-          </span>
-
           <div>
+
             <strong>
               Dados de acesso
             </strong>
@@ -439,37 +734,59 @@ activeModal === 'edit'
               O e-mail será utilizado como identificador
               para autenticação no sistema.
             </p>
+
           </div>
 
         </div>
 
 
+        <!-- =================================================
+               E-MAIL
+               ================================================= -->
+
         <div class="field">
 
           <label for="user-email">
+
             E-mail
-            <span aria-hidden="true">*</span>
+
+            <span aria-hidden="true">
+              *
+            </span>
+
           </label>
+
 
           <input id="user-email" type="email" formControlName="email" autocomplete="email"
             placeholder="usuario@empresa.com" [attr.aria-invalid]="
                 isInvalid('email')
+              " [attr.aria-describedby]="
+                isInvalid('email')
+                  ? 'user-email-error'
+                  : null
               " />
 
-          @if (isInvalid('email')) {
 
-          <small class="error-message">
+          @if (
+          isInvalid('email')
+          ) {
+
+          <small id="user-email-error" class="error-message" role="alert">
 
             @if (
             userForm.controls.email.hasError('required')
             ) {
+
             Informe o e-mail do usuário.
+
             }
 
             @if (
             userForm.controls.email.hasError('email')
             ) {
+
             Informe um e-mail válido.
+
             }
 
           </small>
@@ -479,37 +796,62 @@ activeModal === 'edit'
         </div>
 
 
+        <!-- =================================================
+               SENHA
+               ================================================= -->
+
         <div class="field">
 
           <label for="user-password">
+
             {{
             activeModal === 'new'
             ? 'Senha'
             : 'Nova senha'
             }}
 
-            @if (activeModal === 'new') {
-            <span aria-hidden="true">*</span>
+            @if (
+            activeModal === 'new'
+            ) {
+
+            <span aria-hidden="true">
+              *
+            </span>
+
             }
+
           </label>
+
 
           <input id="user-password" type="password" formControlName="password" autocomplete="new-password"
             placeholder="Mínimo de 8 caracteres" [attr.aria-invalid]="
                 isInvalid('password')
+              " [attr.aria-describedby]="
+                isInvalid('password')
+                  ? 'user-password-hint user-password-error'
+                  : 'user-password-hint'
               " />
 
-          <small class="field-hint">
+
+          <small id="user-password-hint" class="field-hint">
+
             {{
             activeModal === 'edit'
             ? 'Deixe em branco para manter a senha atual.'
             : 'A senha deve possuir pelo menos 8 caracteres.'
             }}
+
           </small>
 
-          @if (isInvalid('password')) {
 
-          <small class="error-message">
+          @if (
+          isInvalid('password')
+          ) {
+
+          <small id="user-password-error" class="error-message" role="alert">
+
             A senha deve possuir pelo menos 8 caracteres.
+
           </small>
 
           }
@@ -517,15 +859,29 @@ activeModal === 'edit'
         </div>
 
 
+        <!-- =================================================
+               PERFIL
+               ================================================= -->
+
         <div class="field">
 
           <label for="user-type">
+
             Perfil de acesso
-            <span aria-hidden="true">*</span>
+
+            <span aria-hidden="true">
+              *
+            </span>
+
           </label>
+
 
           <select id="user-type" formControlName="type" [attr.aria-invalid]="
                 isInvalid('type')
+              " [attr.aria-describedby]="
+                isInvalid('type')
+                  ? 'user-type-hint user-type-error'
+                  : 'user-type-hint'
               ">
 
             <option value="">
@@ -543,13 +899,65 @@ activeModal === 'edit'
           </select>
 
 
-          <small class="field-hint">
+          <small id="user-type-hint" class="field-hint">
+
             O perfil determina quais funcionalidades
             o usuário poderá acessar.
+
           </small>
+
+
+          @if (
+          isInvalid('type')
+          ) {
+
+          <small id="user-type-error" class="error-message" role="alert">
+
+            Selecione o perfil de acesso.
+
+          </small>
+
+          }
 
         </div>
 
+
+        <!-- =================================================
+               STATUS
+               ================================================= -->
+
+        @if (
+        activeModal === 'edit'
+        ) {
+
+        <div class="field">
+
+          <label for="user-is-deactivate">
+
+            Situação do usuário
+
+          </label>
+
+          <select id="user-is-deactivate" formControlName="isDeactivate">
+
+            <option [ngValue]="false">
+              Ativo
+            </option>
+
+            <option [ngValue]="true">
+              Desativado
+            </option>
+
+          </select>
+
+        </div>
+
+        }
+
+
+        <!-- =================================================
+               AVISO DE PERMISSÕES
+               ================================================= -->
 
         <div class="permission-warning">
 
@@ -570,16 +978,29 @@ activeModal === 'edit'
 
       <footer class="modal-footer">
 
-        <button type="button" class="secondary-button" (click)="closeModal()">
+        <button type="button" class="secondary-button" [disabled]="isLoading()" (click)="closeModal()">
+
           Cancelar
+
         </button>
 
-        <button type="submit" class="primary-button">
+
+        <button type="submit" class="primary-button" [disabled]="isLoading()">
+
+          @if (isLoading()) {
+
+          Salvando...
+
+          } @else {
+
           {{
           activeModal === 'new'
           ? 'Cadastrar usuário'
           : 'Salvar alterações'
           }}
+
+          }
+
         </button>
 
       </footer>
@@ -593,9 +1014,14 @@ activeModal === 'edit'
 }
 
 
-<!-- Modal: exclusão -->
+<!-- =========================================================
+     MODAL — EXCLUSÃO
+     ========================================================= -->
 
-@if (activeModal === 'delete' && selectedUser) {
+@if (
+activeModal === 'delete' &&
+selectedUser
+) {
 
 <div class="modal-backdrop" role="presentation" (click)="closeModal()">
 
@@ -605,15 +1031,21 @@ activeModal === 'edit'
     <header class="modal-header">
 
       <div>
-        <span class="eyebrow">AÇÃO IRREVERSÍVEL</span>
+
+        <span class="eyebrow eyebrow-danger">
+          AÇÃO IRREVERSÍVEL
+        </span>
 
         <h2 id="delete-user-title">
           Excluir usuário?
         </h2>
+
       </div>
 
-      <button type="button" class="modal-close" aria-label="Fechar" (click)="closeModal()">
-        ×
+      <button #modalFirstControl type="button" class="modal-close-button" (click)="closeModal()">
+
+        Fechar
+
       </button>
 
     </header>
@@ -621,22 +1053,29 @@ activeModal === 'edit'
 
     <div class="delete-content">
 
-      <div class="delete-icon" aria-hidden="true">
+      <div class="delete-warning-symbol" aria-hidden="true">
+
         !
+
       </div>
+
 
       <p>
         Você está prestes a excluir o acesso de:
       </p>
 
+
       <strong>
         {{ selectedUser.email }}
       </strong>
 
+
       <p class="delete-warning">
+
         O usuário perderá o acesso ao PME Scoring.
         Essa ação deve ser realizada somente quando
         tiver certeza.
+
       </p>
 
     </div>
@@ -644,12 +1083,25 @@ activeModal === 'edit'
 
     <footer class="modal-footer">
 
-      <button type="button" class="secondary-button" (click)="closeModal()">
+      <button type="button" class="secondary-button" [disabled]="isLoading()" (click)="closeModal()">
+
         Cancelar
+
       </button>
 
-      <button type="button" class="danger-button" (click)="deleteUser()">
+
+      <button type="button" class="danger-button" [disabled]="isLoading()" (click)="deleteUser()">
+
+        @if (isLoading()) {
+
+        Excluindo...
+
+        } @else {
+
         Excluir usuário
+
+        }
+
       </button>
 
     </footer>

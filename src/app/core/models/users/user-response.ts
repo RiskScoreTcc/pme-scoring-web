@@ -5,7 +5,7 @@ export interface UserResponse {
   id: number;
   email: string;
   type: UserType;
-  //status: UserStatus;
-  //createdAt: string;
-  //lastAccess: string;
+  status: UserStatus;
+  creationDate: string;
+  lastAccess: string;
 }

@@ -1,17 +1,23 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, signal, OnInit, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
+  FormControl,
   FormBuilder,
   FormsModule,
   ReactiveFormsModule,
   Validators
 } from '@angular/forms';
+import { debounceTime, distinctUntilChanged, filter, switchMap, tap, catchError } from 'rxjs/operators';
+import { of } from 'rxjs';
 import { Occurrence } from '../../core/models/occurences/occurrence';
 import { OccurrenceStatus } from '../../core/models/occurences/occurrence-status';
 import { ModalTypeOccurrence } from '../../core/models/occurences/modal-type-occurrence';
 import { OccurrenceService } from '../../core/services/occurences/occurrence-service';
 import { CompanyService } from '../../core/services/companies/company-service';
 import { OccurrenceCreate } from '../../core/models/occurences/occurrence-create';
+import { Company } from '../../core/models/companies/company';
+import { Page } from '../../core/models/Page';
+
 
 @Component({
   selector: 'app-occurrences',
@@ -19,13 +25,19 @@ import { OccurrenceCreate } from '../../core/models/occurences/occurrence-create
   templateUrl: './occurrences.html',
   styleUrl: './occurrences.css'
 })
-export class Occurrences {
+export class Occurrences implements OnInit {
 
   private readonly occurrenceService = inject(OccurrenceService);
   private readonly companyService = inject(CompanyService);
   private readonly fb = inject(FormBuilder);
-  readonly occurrences: Occurrence[] = this.occurrenceService.getAll();
 
+  readonly occurrences: Occurrence[] = this.occurrenceService.getAll();
+  readonly companySearchControl = new FormControl('');
+  readonly companySearchResults = signal<Company[]>([]);
+  readonly isSearchingCompanies = signal<boolean>(false);
+  readonly showCompanyDropdown = signal<boolean>(false);
+  readonly totalCompaniesFound = signal<number>(0);
+  readonly hasMoreResults = computed(() => this.totalCompaniesFound() > this.companySearchResults().length);
   readonly occurrenceForm = this.fb.group({
     companyId: ['', Validators.required],
     averageRevenue: ['', Validators.required, Validators.min(0.01)],
@@ -49,7 +61,52 @@ export class Occurrences {
   selectedType = '';
 
   // Futuramente esses valores virão da API.
-  readonly companies = this.companyService.getAll();
+  protected readonly companies = signal<Page<Company> | null>(null);
+
+  ngOnInit(): void {
+    this.setupCompanySearch();
+  }
+
+  private setupCompanySearch(): void {
+    this.companySearchControl.valueChanges.pipe(
+      debounceTime(300),
+      distinctUntilChanged(),
+      tap(term => {
+        if (!term || term.length < 2) {
+          this.companySearchResults.set([]);
+          this.showCompanyDropdown.set(false);
+          this.occurrenceForm.patchValue({ companyId: null });
+          this.occurrenceForm.get('companyId')?.markAsDirty();
+        } else {
+          this.isSearchingCompanies.set(true);
+        }
+      }),
+      filter((term): term is string => !!term && term.length >= 2),
+      switchMap(term =>
+
+        this.companyService.searchCompanies(term, 0, 10).pipe(
+          catchError(() => of({ content: [], totalElements: 0 }))
+        )
+
+      )
+    ).subscribe(page => {
+      this.companySearchResults.set(page.content);
+      this.isSearchingCompanies.set(false);
+      this.totalCompaniesFound.set(page.totalElements);
+      this.showCompanyDropdown.set(true);
+    });
+  }
+
+  selectCompany(company: Company): void {
+    // Atualiza o ID no formulário principal
+    this.occurrenceForm.patchValue({ companyId: company.id.toString() });
+    this.occurrenceForm.get('companyId')?.markAsDirty();
+
+    // Preenche o campo visual com o nome formatado e fecha a lista
+    this.companySearchControl.setValue(`${company.registeredCompanyName} — ${company.cnpj}`, { emitEvent: false });
+    this.showCompanyDropdown.set(false);
+  }
+
 
   get filteredOccurrences(): Occurrence[] {
     const term = this.searchTerm.trim().toLowerCase();

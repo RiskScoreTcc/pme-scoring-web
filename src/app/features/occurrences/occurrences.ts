@@ -1,4 +1,5 @@
 import { Component, inject, signal, OnInit, computed } from '@angular/core';
+import { toObservable, takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import {
   FormControl,
@@ -8,7 +9,7 @@ import {
   Validators
 } from '@angular/forms';
 import { debounceTime, distinctUntilChanged, filter, switchMap, tap, catchError } from 'rxjs/operators';
-import { of } from 'rxjs';
+import { combineLatest, of } from 'rxjs';
 import { Occurrence } from '../../core/models/occurences/occurrence';
 import { OccurrenceStatus } from '../../core/models/occurences/occurrence-status';
 import { ModalTypeOccurrence } from '../../core/models/occurences/modal-type-occurrence';
@@ -16,6 +17,7 @@ import { OccurrenceService } from '../../core/services/occurences/occurrence-ser
 import { CompanyService } from '../../core/services/companies/company-service';
 import { OccurrenceCreate } from '../../core/models/occurences/occurrence-create';
 import { Company } from '../../core/models/companies/company';
+import { NotificationService } from '../../shared/services/notification/notification-service';
 import { Page } from '../../core/models/Page';
 
 
@@ -30,8 +32,19 @@ export class Occurrences implements OnInit {
   private readonly occurrenceService = inject(OccurrenceService);
   private readonly companyService = inject(CompanyService);
   private readonly fb = inject(FormBuilder);
+  private readonly notificationService = inject(NotificationService);
 
-  readonly occurrences: Occurrence[] = this.occurrenceService.getAll();
+  protected readonly isLoading = signal(false);
+  protected readonly currentPage = signal(0);
+  protected readonly pageSize = signal(20);
+  
+  private readonly forceReload$ = new BehaviorSubject<number>(0);
+
+  private readonly currentPage$ = toObservable(this.currentPage);
+  private readonly pageSize$ = toObservable(this.pageSize);
+
+
+  readonly occurrencesSearchResults = signal<Page<Occurrence> | null>(null);
   readonly companySearchControl = new FormControl('');
   readonly companySearchResults = signal<Company[]>([]);
   readonly isSearchingCompanies = signal<boolean>(false);
@@ -56,15 +69,49 @@ export class Occurrences implements OnInit {
 
   activeModal: ModalTypeOccurrence = null;
 
-  searchTerm = '';
-  selectedStatus = '';
-  selectedType = '';
+  searchTerm = signal('');
+  selectedStatus = signal('');
+  selectedType = signal('');
 
-  // Futuramente esses valores virão da API.
   protected readonly companies = signal<Page<Company> | null>(null);
 
   ngOnInit(): void {
     this.setupCompanySearch();
+  }
+
+  private setupOccurrenceSearch(): void {
+    combineLatest([
+      this.currentPage$,
+      this.pageSize$,
+      this.forceReload$
+    ]).pipe(
+      switchMap(([page, size]) => {
+        /* Liga o loading da tabela
+        this.isLoading.set(true);*/
+        return this.occurrenceService.searchOccurrences(page, size, 'dateOccurrence,desc');
+      }),
+      takeUntilDestroyed(this.destroyRef)
+    ).subscribe({
+      next: (pageResponse) => {
+        // Atualiza o Signal da tabela com os dados do banco
+        this.occurrencesSearchResults.set(pageResponse);
+        /*this.isLoading.set(false);*/
+
+=
+        this.notificationService.success(
+          'Dados carregados',
+          'A lista de ocorrências foi carregada com sucesso.'
+        );
+      },
+      error: (error) => {
+        /*this.isLoading.set(false);*/
+
+        this.notificationService.error(
+          'Falha ao carregar ocorrências',
+          error.message || 'Não foi possível carregar a lista de ocorrências.'
+        );
+      }
+    });
   }
 
   private setupCompanySearch(): void {
@@ -108,51 +155,56 @@ export class Occurrences implements OnInit {
   }
 
 
-  get filteredOccurrences(): Occurrence[] {
-    const term = this.searchTerm.trim().toLowerCase();
+  protected readonly filteredOccurrences = computed(() => {
 
-    return this.occurrences.filter(occurrence => {
+    const term = this.searchTerm().trim().toLowerCase();
+    const currentStatus = this.selectedStatus();
+    const currentType = this.selectedType();
+
+    const occurrences = this.occurrencesSearchResults()?.content || [];
+
+    return occurrences.filter((occurrence: Occurrence) => {
 
       const matchesSearch =
         !term ||
-        occurrence.companyName?.toLowerCase().includes(term) ||
-        occurrence.cnpj?.includes(term) ||
+        occurrence.firm?.companyName?.toLowerCase().includes(term) ||
+        occurrence.firm?.cnpj?.includes(term) ||
         occurrence.type?.toLowerCase().includes(term);
 
-
       const matchesStatus =
-        !this.selectedStatus ||
-        occurrence.status === this.selectedStatus;
+        !currentStatus ||
+        occurrence.status === currentStatus;
 
       const matchesType =
-        !this.selectedType ||
-        occurrence.type === this.selectedType;
+        !currentType ||
+        occurrence.type === currentType;
 
-      return (
-        matchesSearch &&
-        matchesStatus &&
-        matchesType
-      );
+      return matchesSearch && matchesStatus && matchesType;
     });
-  }
+  });
 
   get totalOccurrences(): number {
-    return this.occurrences.length;
+    return this.occurrencesSearchResults()?.content.length || 0;
   }
 
-  get openOccurrences(): number {
-    return this.occurrences.filter(
-      occurrence => occurrence.status === 'open'
+  protected readonly openOccurrences = computed(() => {
+    const occurrences = this.occurrencesSearchResults()?.content ?? [];
+
+    return occurrences.filter(
+      (occurrence: Occurrence) => occurrence.status === 'open'
     ).length;
-  }
+  });
 
-  get recentOccurrences(): number {
-    return this.occurrences.filter(
-      occurrence =>
+  protected readonly recentOccurrences = computed(() => {
+    const occurrences = this.occurrencesSearchResults()?.content ?? [];
+
+    return occurrences.filter(
+      (occurrence: Occurrence) =>
         occurrence.date !== undefined &&
         occurrence.date >= '2026-08-24'
     ).length;
-  }
+  });
+
 
   openDetails(occurrence: Occurrence): void {
     this.selectedOccurrence = occurrence;
@@ -175,7 +227,7 @@ export class Occurrences implements OnInit {
     this.selectedOccurrence = occurrence;
 
     this.occurrenceForm.patchValue({
-      companyId: occurrence.companyId?.toString() ?? '',
+      companyId: occurrence.firm?.id.toString() ?? '',
       averageRevenue: occurrence.averageRevenue?.toString() ?? '',
       date: occurrence.date,
       description: occurrence.description,
@@ -195,9 +247,9 @@ export class Occurrences implements OnInit {
   }
 
   clearFilters(): void {
-    this.searchTerm = '';
-    this.selectedStatus = '';
-    this.selectedType = '';
+    this.searchTerm = signal('');
+    this.selectedStatus = signal('');
+    this.selectedType = signal('');
   }
 
   isInvalid(controlName: string): boolean {

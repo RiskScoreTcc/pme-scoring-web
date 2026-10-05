@@ -52,7 +52,7 @@
       </div>
 
       <strong class="summary-value">
-        {{ openOccurrences }}
+        {{ openOccurrences() }}
       </strong>
 
       <span class="summary-description">
@@ -136,7 +136,7 @@
         </h2>
 
         <p>
-          {{ filteredOccurrences.length }}
+          {{ filteredOccurrences().length }}
           ocorrências encontradas.
         </p>
       </div>
@@ -170,7 +170,7 @@
         <tbody>
 
           @for (
-          occurrence of filteredOccurrences;
+          occurrence of filteredOccurrences();
           track occurrence.id
           ) {
 
@@ -181,11 +181,11 @@
               <div class="company-cell">
 
                 <strong>
-                  {{ occurrence.companyName }}
+                  {{ occurrence.firm?.companyName }}
                 </strong>
 
                 <span>
-                  {{ occurrence.cnpj }}
+                  {{ occurrence.firm?.cnpj }}
                 </span>
 
               </div>
@@ -229,7 +229,7 @@
             <td class="actions-cell">
 
               <button type="button" class="table-action"
-                [attr.aria-label]="'Ações para ocorrência de ' + occurrence.companyName"
+                [attr.aria-label]="'Ações para ocorrência de ' + occurrence.firm?.companyName"
                 (click)="openDetails(occurrence)">
                 Ver detalhes
               </button>
@@ -292,7 +292,7 @@ selectedOccurrence
         </h2>
 
         <p>
-          {{ selectedOccurrence.companyName }}
+          {{ selectedOccurrence.firm?.companyName }}
         </p>
       </div>
 
@@ -310,14 +310,14 @@ selectedOccurrence
         <div class="detail-item">
           <span>Empresa</span>
           <strong>
-            {{ selectedOccurrence.companyName }}
+            {{ selectedOccurrence.firm?.companyName }}
           </strong>
         </div>
 
         <div class="detail-item">
           <span>CNPJ</span>
           <strong>
-            {{ selectedOccurrence.cnpj }}
+            {{ selectedOccurrence.firm?.cnpj }}
           </strong>
         </div>
 
@@ -608,7 +608,7 @@ selectedOccurrence
       </strong>
       registrada para
       <strong>
-        {{ selectedOccurrence.companyName }}
+        {{ selectedOccurrence.firm?.companyName }}
       </strong>.
     </p>
 

@@ -1,11 +1,10 @@
 import { ClassificationType } from '../classification-type';
+import { CompanySummary } from '../companies/company-summary';
 import { OccurrenceStatus } from './occurrence-status';
 
 export interface Occurrence {
   id?: number;
-  companyId?: number;
-  companyName?: string;
-  cnpj?: string;
+  firm?: CompanySummary;
   type?: string;
   averageRevenue?: number;
   description?: string;

@@ -1,4 +1,3 @@
-import { Occurrence } from "../occurences/occurrence";
 import { CompanyStatus } from "./company-status";
 import { ClassificationType } from '../classification-type';
 

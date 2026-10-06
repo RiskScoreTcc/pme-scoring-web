@@ -1,6 +1,12 @@
-import { Component, inject, signal, OnInit, computed } from '@angular/core';
-import { toObservable, takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { CommonModule } from '@angular/common';
+import {
+  Component,
+  inject,
+  signal,
+  OnInit,
+  computed,
+  DestroyRef
+} from '@angular/core';
+
 import {
   FormControl,
   FormBuilder,
@@ -8,10 +14,31 @@ import {
   ReactiveFormsModule,
   Validators
 } from '@angular/forms';
-import { debounceTime, distinctUntilChanged, filter, switchMap, tap, catchError } from 'rxjs/operators';
-import { combineLatest, of } from 'rxjs';
+
+import { CommonModule } from '@angular/common';
+
+import {
+  debounceTime,
+  distinctUntilChanged,
+  filter,
+  switchMap,
+  tap,
+  catchError
+} from 'rxjs/operators';
+
+import {
+  combineLatest,
+  of,
+  BehaviorSubject
+} from 'rxjs';
+
+import {
+  toObservable,
+  takeUntilDestroyed
+} from '@angular/core/rxjs-interop';
+
 import { Occurrence } from '../../core/models/occurences/occurrence';
-import { OccurrenceStatus } from '../../core/models/occurences/occurrence-status';
+import { OccurrenceUpdate } from '../../core/models/occurences/occurrence-update';
 import { ModalTypeOccurrence } from '../../core/models/occurences/modal-type-occurrence';
 import { OccurrenceService } from '../../core/services/occurences/occurrence-service';
 import { CompanyService } from '../../core/services/companies/company-service';
@@ -23,335 +50,1250 @@ import { Page } from '../../core/models/Page';
 
 @Component({
   selector: 'app-occurrences',
-  imports: [ReactiveFormsModule, FormsModule, CommonModule],
+  imports: [
+    ReactiveFormsModule,
+    FormsModule,
+    CommonModule
+  ],
   templateUrl: './occurrences.html',
   styleUrl: './occurrences.css'
 })
 export class Occurrences implements OnInit {
 
+  /*
+   * =========================================================
+   * SERVICES
+   * =========================================================
+   */
+
   private readonly occurrenceService = inject(OccurrenceService);
   private readonly companyService = inject(CompanyService);
   private readonly fb = inject(FormBuilder);
   private readonly notificationService = inject(NotificationService);
+  private readonly destroyRef = inject(DestroyRef);
+
+
+  /*
+   * =========================================================
+   * PAGINATION / LOADING
+   * =========================================================
+   */
 
   protected readonly isLoading = signal(false);
+
+  /**
+   * Página atual.
+   *
+   * O backend trabalha com índice iniciado em 0.
+   */
   protected readonly currentPage = signal(0);
+
+  /**
+   * Quantidade de registros por página.
+   */
   protected readonly pageSize = signal(20);
-  
+
+
+  /*
+   * =========================================================
+   * RELOAD
+   * =========================================================
+   */
+
   private readonly forceReload$ = new BehaviorSubject<number>(0);
 
-  private readonly currentPage$ = toObservable(this.currentPage);
-  private readonly pageSize$ = toObservable(this.pageSize);
+
+  private readonly currentPage$ =
+    toObservable(this.currentPage);
+
+  private readonly pageSize$ =
+    toObservable(this.pageSize);
 
 
-  readonly occurrencesSearchResults = signal<Page<Occurrence> | null>(null);
-  readonly companySearchControl = new FormControl('');
-  readonly companySearchResults = signal<Company[]>([]);
-  readonly isSearchingCompanies = signal<boolean>(false);
-  readonly showCompanyDropdown = signal<boolean>(false);
-  readonly totalCompaniesFound = signal<number>(0);
-  readonly hasMoreResults = computed(() => this.totalCompaniesFound() > this.companySearchResults().length);
-  readonly occurrenceForm = this.fb.group({
-    companyId: ['', Validators.required],
-    averageRevenue: ['', Validators.required, Validators.min(0.01)],
-    date: ['', Validators.required],
-    description: [
-      '',
-      [
-        Validators.required,
-        Validators.minLength(10),
-        Validators.maxLength(500)
+  /*
+   * =========================================================
+   * RESULTADOS
+   * =========================================================
+   */
+
+  readonly occurrencesSearchResults =
+    signal<Page<Occurrence> | null>(null);
+
+
+  /*
+   * =========================================================
+   * COMPANY SEARCH
+   * =========================================================
+   */
+
+  readonly companySearchControl =
+    new FormControl('');
+
+  readonly companySearchResults =
+    signal<Company[]>([]);
+
+  readonly isSearchingCompanies =
+    signal<boolean>(false);
+
+  readonly showCompanyDropdown =
+    signal<boolean>(false);
+
+  readonly totalCompaniesFound =
+    signal<number>(0);
+
+  readonly hasMoreResults =
+    computed(
+      () =>
+        this.totalCompaniesFound() >
+        this.companySearchResults().length
+    );
+
+
+  /*
+   * =========================================================
+   * FORM
+   * =========================================================
+   */
+
+  readonly occurrenceForm =
+    this.fb.group({
+
+      id: [
+        '',
+        Validators.required
+      ],
+
+      averageRevenue: [
+        '',
+        [
+          Validators.required,
+          Validators.min(0.01),
+          Validators.max(999999999.99)
+        ]
+      ],
+
+      date: [
+        '',
+        Validators.required
+      ],
+
+      description: [
+        '',
+        [
+          Validators.required,
+          Validators.minLength(10),
+          Validators.maxLength(500)
+        ]
       ]
-    ],
-  });
+
+    });
+
+
+  /*
+   * =========================================================
+   * MODAL / SELECTION
+   * =========================================================
+   */
 
   selectedOccurrence: Occurrence | null = null;
 
   activeModal: ModalTypeOccurrence = null;
 
-  searchTerm = signal('');
-  selectedStatus = signal('');
-  selectedType = signal('');
 
-  protected readonly companies = signal<Page<Company> | null>(null);
+  /*
+   * =========================================================
+   * FILTERS
+   * =========================================================
+   */
+
+  protected readonly searchTerm = signal('');
+
+  /**
+   * null = Todos
+   * false = Aberta
+   * true = Resolvida
+   */
+  protected readonly selectedStatus =
+    signal<boolean | null>(null);
+
+  private readonly searchTerm$ = toObservable(this.searchTerm);
+  private readonly selectedStatus$ = toObservable(this.selectedStatus);
+
+  /*
+   * =========================================================
+   * COMPANIES
+   * =========================================================
+   */
+
+  protected readonly companies =
+    signal<Page<Company> | null>(null);
+
+
+  /*
+   * =========================================================
+   * LIFECYCLE
+   * =========================================================
+   */
 
   ngOnInit(): void {
+
     this.setupCompanySearch();
+
+    this.setupOccurrenceSearch();
+
   }
 
+
+  /*
+   * =========================================================
+   * OCCURRENCE SEARCH
+   * =========================================================
+   */
+
   private setupOccurrenceSearch(): void {
+
     combineLatest([
+      this.searchTerm$,
+      this.selectedStatus$,
       this.currentPage$,
       this.pageSize$,
       this.forceReload$
-    ]).pipe(
-      switchMap(([page, size]) => {
-        /* Liga o loading da tabela
-        this.isLoading.set(true);*/
-        return this.occurrenceService.searchOccurrences(page, size, 'dateOccurrence,desc');
-      }),
-      takeUntilDestroyed(this.destroyRef)
-    ).subscribe({
-      next: (pageResponse) => {
-        // Atualiza o Signal da tabela com os dados do banco
-        this.occurrencesSearchResults.set(pageResponse);
-        /*this.isLoading.set(false);*/
+    ])
+      .pipe(
+        debounceTime(300),
+        distinctUntilChanged((prev, curr) => JSON.stringify(prev) === JSON.stringify(curr)),
+        switchMap(
+          ([searchTerm, selectedStatus, page, size]) => {
 
-=
-        this.notificationService.success(
-          'Dados carregados',
-          'A lista de ocorrências foi carregada com sucesso.'
-        );
-      },
-      error: (error) => {
-        /*this.isLoading.set(false);*/
+            this.isLoading.set(true);
 
-        this.notificationService.error(
-          'Falha ao carregar ocorrências',
-          error.message || 'Não foi possível carregar a lista de ocorrências.'
-        );
-      }
-    });
-  }
+            const filter = {
+              query: searchTerm || undefined,
+              statusResolved: selectedStatus !== null ? selectedStatus : undefined
+            }
 
-  private setupCompanySearch(): void {
-    this.companySearchControl.valueChanges.pipe(
-      debounceTime(300),
-      distinctUntilChanged(),
-      tap(term => {
-        if (!term || term.length < 2) {
-          this.companySearchResults.set([]);
-          this.showCompanyDropdown.set(false);
-          this.occurrenceForm.patchValue({ companyId: null });
-          this.occurrenceForm.get('companyId')?.markAsDirty();
-        } else {
-          this.isSearchingCompanies.set(true);
-        }
-      }),
-      filter((term): term is string => !!term && term.length >= 2),
-      switchMap(term =>
+            return this.occurrenceService
+              .searchOccurrences(
+                page,
+                size,
+                filter,
+                'dateOccurrence,desc'
+              );
 
-        this.companyService.searchCompanies(term, 0, 10).pipe(
-          catchError(() => of({ content: [], totalElements: 0 }))
+          }
+        ),
+
+        takeUntilDestroyed(
+          this.destroyRef
         )
 
       )
-    ).subscribe(page => {
-      this.companySearchResults.set(page.content);
-      this.isSearchingCompanies.set(false);
-      this.totalCompaniesFound.set(page.totalElements);
-      this.showCompanyDropdown.set(true);
-    });
+      .subscribe({
+
+        next: (pageResponse) => {
+
+          this.occurrencesSearchResults
+            .set(pageResponse);
+
+          this.isLoading.set(false);
+
+        },
+
+        error: (error) => {
+
+          this.isLoading.set(false);
+
+          this.notificationService.error(
+            'Falha ao carregar ocorrências',
+            error?.message ||
+            'Não foi possível carregar a lista de ocorrências.'
+          );
+
+        }
+
+      });
+
   }
 
-  selectCompany(company: Company): void {
-    // Atualiza o ID no formulário principal
-    this.occurrenceForm.patchValue({ companyId: company.id.toString() });
-    this.occurrenceForm.get('companyId')?.markAsDirty();
 
-    // Preenche o campo visual com o nome formatado e fecha a lista
-    this.companySearchControl.setValue(`${company.registeredCompanyName} — ${company.cnpj}`, { emitEvent: false });
-    this.showCompanyDropdown.set(false);
+  /*
+   * =========================================================
+   * RELOAD
+   * =========================================================
+   */
+
+  private reloadUsersManually(): void {
+
+    this.forceReload$.next(
+      Date.now()
+    );
+
   }
 
 
-  protected readonly filteredOccurrences = computed(() => {
+  /*
+   * =========================================================
+   * COMPANY SEARCH
+   * =========================================================
+   */
 
-    const term = this.searchTerm().trim().toLowerCase();
-    const currentStatus = this.selectedStatus();
-    const currentType = this.selectedType();
+  private setupCompanySearch(): void {
 
-    const occurrences = this.occurrencesSearchResults()?.content || [];
+    this.companySearchControl.valueChanges
+      .pipe(
 
-    return occurrences.filter((occurrence: Occurrence) => {
+        debounceTime(300),
 
-      const matchesSearch =
-        !term ||
-        occurrence.firm?.companyName?.toLowerCase().includes(term) ||
-        occurrence.firm?.cnpj?.includes(term) ||
-        occurrence.type?.toLowerCase().includes(term);
+        distinctUntilChanged(),
 
-      const matchesStatus =
-        !currentStatus ||
-        occurrence.status === currentStatus;
+        tap(term => {
 
-      const matchesType =
-        !currentType ||
-        occurrence.type === currentType;
+          if (!term || term.length < 2) {
 
-      return matchesSearch && matchesStatus && matchesType;
-    });
-  });
+            this.companySearchResults.set([]);
 
-  get totalOccurrences(): number {
-    return this.occurrencesSearchResults()?.content.length || 0;
+            this.showCompanyDropdown.set(false);
+
+            this.occurrenceForm
+              .patchValue({
+                id: null
+              });
+
+            this.occurrenceForm
+              .get('id')
+              ?.markAsDirty();
+
+          } else {
+
+            this.isSearchingCompanies
+              .set(true);
+
+          }
+
+        }),
+
+        filter(
+          (term): term is string =>
+            !!term &&
+            term.length >= 2
+        ),
+
+        switchMap(term =>
+
+          this.companyService
+            .searchCompanies(
+              term,
+              0,
+              10
+            )
+            .pipe(
+
+              catchError(
+                () =>
+                  of({
+                    content: [],
+                    totalElements: 0
+                  })
+              )
+
+            )
+
+        ),
+
+        takeUntilDestroyed(
+          this.destroyRef
+        )
+
+      )
+      .subscribe(page => {
+
+        this.companySearchResults
+          .set(page.content);
+
+        this.isSearchingCompanies
+          .set(false);
+
+        this.totalCompaniesFound
+          .set(page.totalElements);
+
+        this.showCompanyDropdown
+          .set(true);
+
+      });
+
   }
 
-  protected readonly openOccurrences = computed(() => {
-    const occurrences = this.occurrencesSearchResults()?.content ?? [];
 
-    return occurrences.filter(
-      (occurrence: Occurrence) => occurrence.status === 'open'
-    ).length;
-  });
+  /*
+   * =========================================================
+   * SELECT COMPANY
+   * =========================================================
+   */
 
-  protected readonly recentOccurrences = computed(() => {
-    const occurrences = this.occurrencesSearchResults()?.content ?? [];
-
-    return occurrences.filter(
-      (occurrence: Occurrence) =>
-        occurrence.date !== undefined &&
-        occurrence.date >= '2026-08-24'
-    ).length;
-  });
-
-
-  openDetails(occurrence: Occurrence): void {
-    this.selectedOccurrence = occurrence;
-    this.activeModal = 'details';
-  }
-
-  openNewOccurrence(): void {
-    this.selectedOccurrence = null;
-    this.occurrenceForm.reset({
-      companyId: '',
-      averageRevenue: '',
-      date: new Date().toISOString().split('T')[0],
-      description: '',
-    });
-
-    this.activeModal = 'new-occurrence';
-  }
-
-  openEdit(occurrence: Occurrence): void {
-    this.selectedOccurrence = occurrence;
+  selectCompany(
+    company: Company
+  ): void {
 
     this.occurrenceForm.patchValue({
-      companyId: occurrence.firm?.id.toString() ?? '',
-      averageRevenue: occurrence.averageRevenue?.toString() ?? '',
-      date: occurrence.date,
-      description: occurrence.description,
+      id: company.id.toString()
     });
 
-    this.activeModal = 'edit';
+    this.occurrenceForm
+      .get('id')
+      ?.markAsDirty();
+
+    this.companySearchControl.setValue(
+      `${company.registeredCompanyName} — ${company.cnpj}`,
+      {
+        emitEvent: false
+      }
+    );
+
+    this.showCompanyDropdown
+      .set(false);
+
   }
 
-  openDeleteConfirmation(occurrence: Occurrence): void {
-    this.selectedOccurrence = occurrence;
-    this.activeModal = 'delete';
+
+  /*
+   * =========================================================
+   * SUMMARY
+   * =========================================================
+   */
+
+  get totalOccurrences(): number {
+
+    return (
+      this.occurrencesSearchResults()
+        ?.totalElements || 0
+    );
+
   }
+
+
+  protected readonly openOccurrences =
+    computed(() => {
+
+      const occurrences =
+        this.occurrencesSearchResults()
+          ?.content ?? [];
+
+      return occurrences.filter(
+        (occurrence: Occurrence) =>
+          occurrence.statusResolved === false
+      ).length;
+
+    });
+
+
+  protected readonly recentOccurrences =
+    computed(() => {
+
+      const occurrences =
+        this.occurrencesSearchResults()
+          ?.content ?? [];
+
+      return occurrences.filter(
+        (occurrence: Occurrence) =>
+          occurrence.creationDate !== undefined &&
+          occurrence.creationDate >= '2026-08-24'
+      ).length;
+
+    });
+
+
+  /*
+   * =========================================================
+   * PAGINATION
+   * =========================================================
+   */
+
+  goToPage(
+    page: number
+  ): void {
+
+    const totalPages =
+      this.occurrencesSearchResults()
+        ?.totalPages ?? 0;
+
+    if (
+      page < 0 ||
+      page >= totalPages
+    ) {
+      return;
+    }
+
+    this.currentPage.set(page);
+
+    this.scrollToResults();
+
+  }
+
+
+  goToPreviousPage(): void {
+
+    if (this.currentPage() > 0) {
+
+      this.currentPage.update(
+        page => page - 1
+      );
+
+      this.scrollToResults();
+
+    }
+
+  }
+
+
+  goToNextPage(): void {
+
+    const totalPages =
+      this.occurrencesSearchResults()
+        ?.totalPages ?? 0;
+
+    if (
+      this.currentPage() <
+      totalPages - 1
+    ) {
+
+      this.currentPage.update(
+        page => page + 1
+      );
+
+      this.scrollToResults();
+
+    }
+
+  }
+
+
+  getPaginationPages(): number[] {
+
+    const totalPages =
+      this.occurrencesSearchResults()
+        ?.totalPages ?? 0;
+
+    const currentPage =
+      this.currentPage();
+
+
+    if (totalPages <= 5) {
+
+      return Array.from(
+        {
+          length: totalPages
+        },
+        (_, index) => index
+      );
+
+    }
+
+
+    let start =
+      Math.max(
+        0,
+        currentPage - 2
+      );
+
+    let end =
+      Math.min(
+        totalPages,
+        start + 5
+      );
+
+
+    if (
+      end - start < 5
+    ) {
+
+      start =
+        Math.max(
+          0,
+          end - 5
+        );
+
+    }
+
+
+    return Array.from(
+      {
+        length: end - start
+      },
+      (_, index) =>
+        start + index
+    );
+
+  }
+
+
+  getFirstItemIndex(): number {
+
+    const page =
+      this.occurrencesSearchResults();
+
+
+    if (
+      !page ||
+      page.totalElements === 0
+    ) {
+      return 0;
+    }
+
+
+    return (
+      page.number *
+      page.size
+    ) + 1;
+
+  }
+
+
+  getLastItemIndex(): number {
+
+    const page =
+      this.occurrencesSearchResults();
+
+
+    if (
+      !page ||
+      page.totalElements === 0
+    ) {
+      return 0;
+    }
+
+
+    return Math.min(
+      (
+        page.number + 1
+      ) * page.size,
+
+      page.totalElements
+    );
+
+  }
+
+
+  /*
+   * =========================================================
+   * SCROLL
+   * =========================================================
+   */
+
+  private scrollToResults(): void {
+
+    setTimeout(() => {
+
+      const results =
+        document.querySelector(
+          '.results-section'
+        );
+
+      results?.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start'
+      });
+
+    });
+
+  }
+
+
+  /*
+   * =========================================================
+   * DETAILS
+   * =========================================================
+   */
+
+  openDetails(
+    occurrence: Occurrence
+  ): void {
+
+    this.selectedOccurrence =
+      occurrence;
+
+    this.activeModal =
+      'details';
+
+  }
+
+
+  /*
+   * =========================================================
+   * NEW OCCURRENCE
+   * =========================================================
+   */
+
+  openNewOccurrence(): void {
+
+    this.selectedOccurrence = null;
+
+    this.companySearchControl.setValue(
+      '',
+      {
+        emitEvent: false
+      }
+    );
+
+
+    this.occurrenceForm.reset({
+
+      id: '',
+
+      averageRevenue: '',
+
+      date:
+        new Date()
+          .toISOString()
+          .split('T')[0],
+
+      description: ''
+
+    });
+
+
+    this.companySearchControl.enable();
+
+    this.activeModal =
+      'new-occurrence';
+
+  }
+
+
+  /*
+   * =========================================================
+   * EDIT
+   * =========================================================
+   */
+
+  openEdit(
+    occurrence: Occurrence
+  ): void {
+
+    this.selectedOccurrence =
+      occurrence;
+
+    this.activeModal =
+      'edit';
+
+
+    const rawObj =
+      occurrence as any;
+
+
+    const rawAmount =
+      rawObj.amountDue ??
+      rawObj.amount_due ??
+      rawObj.averageRevenue ??
+      rawObj.average_revenue ??
+      rawObj.amount ??
+      0;
+
+
+    this.companySearchControl.setValue(
+      `${occurrence.firm?.companyName} — ${occurrence.firm?.cnpj}`,
+      {
+        emitEvent: false
+      }
+    );
+
+
+    this.companySearchControl.disable();
+
+
+    this.occurrenceForm.patchValue({
+
+      id:
+        occurrence.id
+          ?.toString() ?? '',
+
+      averageRevenue:
+        rawAmount ?? 0,
+
+      date:
+        occurrence.creationDate,
+
+      description:
+        occurrence.description
+
+    });
+
+  }
+
+
+  /*
+   * =========================================================
+   * DELETE
+   * =========================================================
+   */
+
+  openDeleteConfirmation(
+    occurrence: Occurrence
+  ): void {
+
+    this.selectedOccurrence =
+      occurrence;
+
+    this.activeModal =
+      'delete';
+
+  }
+
+
+  /*
+   * =========================================================
+   * CLOSE MODAL
+   * =========================================================
+   */
 
   closeModal(): void {
+
     this.activeModal = null;
+
     this.selectedOccurrence = null;
+
+    this.companySearchControl.enable();
+
   }
+
+
+  /*
+   * =========================================================
+   * FILTERS
+   * =========================================================
+   */
 
   clearFilters(): void {
-    this.searchTerm = signal('');
-    this.selectedStatus = signal('');
-    this.selectedType = signal('');
+
+    this.searchTerm.set('');
+
+    this.selectedStatus.set(null);
   }
 
-  isInvalid(controlName: string): boolean {
-    const control = this.occurrenceForm.get(controlName);
 
-    return !!control && control.invalid && control.touched;
+  /*
+   * =========================================================
+   * FORM VALIDATION
+   * =========================================================
+   */
+
+  isInvalid(
+    controlName: string
+  ): boolean {
+
+    const control =
+      this.occurrenceForm
+        .get(controlName);
+
+    return !!control &&
+      control.invalid &&
+      control.touched;
+
   }
+
+
+  /*
+   * =========================================================
+   * CREATE
+   * =========================================================
+   */
 
   onSubmit(): void {
-    if (this.occurrenceForm.invalid) {
-      this.occurrenceForm.markAllAsTouched();
+
+    if (
+      this.occurrenceForm.invalid
+    ) {
+
+      this.occurrenceForm
+        .markAllAsTouched();
+
       return;
+
     }
 
-    const formValue = this.occurrenceForm.getRawValue();
 
-    console.log('Ocorrência:', formValue);
+    const formValue =
+      this.occurrenceForm
+        .getRawValue();
 
-    const occurrenceData: OccurrenceCreate = {
-      companyId: Number(formValue.companyId),
-      averageRevenue: Number(formValue.averageRevenue),
-      date: formValue.date ?? '',
-      description: formValue.description ?? ''
+
+    const occurrenceData:
+      OccurrenceCreate = {
+
+      firmId:
+        Number(formValue.id),
+
+      amountDue:
+        Number(formValue.averageRevenue),
+
+      dateOccurrence:
+        formValue.date ?? '',
+
+      description:
+        formValue.description ?? ''
+
     };
 
-    this.occurrenceService.create(occurrenceData).subscribe({
-      next: (occurrence) => {
-        console.log('Ocorrência criada:', occurrence);
-      },
-      error: (error) => {
-        console.error('Erro ao cadastrar ocorrência:', error);
-      }
-    });
+
+    this.occurrenceService
+      .create(occurrenceData)
+      .subscribe({
+
+        next: async () => {
+
+          await this.notificationService.success(
+            'Sucesso!',
+            'Ocorrência cadastrada com sucesso.'
+          );
 
 
-    this.closeModal();
+          this.currentPage.set(0);
+
+          this.reloadUsersManually();
+
+          this.closeModal();
+
+        },
+
+
+        error: (error) => {
+
+          console.error(
+            'Failed to create occurrence:',
+            error
+          );
+
+
+          this.notificationService.error(
+            'Erro no Cadastro',
+            error?.message ||
+            'Não foi possível cadastrar a ocorrência.'
+          );
+
+        }
+
+      });
+
   }
+
+
+  /*
+   * =========================================================
+   * UPDATE OCCURRENCE
+   * =========================================================
+   */
 
   updateOccurrence(): void {
-    if (!this.selectedOccurrence) {
+
+    if (
+      !this.selectedOccurrence ||
+      !this.selectedOccurrence.id
+    ) {
       return;
     }
 
-    if (this.occurrenceForm.invalid) {
-      this.occurrenceForm.markAllAsTouched();
+
+    if (
+      this.occurrenceForm.invalid
+    ) {
+
+      this.occurrenceForm
+        .markAllAsTouched();
+
       return;
+
     }
 
-    const formValue = this.occurrenceForm.getRawValue();
 
-    console.log(
-      'Atualizar ocorrência:',
-      this.selectedOccurrence.id,
-      formValue
-    );
-
-    /*
-      Futuramente:
-
-      this.occurrenceService.update(
-        this.selectedOccurrence.id,
-        formValue
-      ).subscribe(...)
-    */
-
-    this.closeModal();
-  }
-
-  deleteOccurrence(): void {
-    if (!this.selectedOccurrence) {
-      return;
-    }
-
-    console.log(
-      'Excluir ocorrência:',
-      this.selectedOccurrence.id
-    );
-
-    /*
-      Futuramente:
-
-      this.occurrenceService.delete(
-        this.selectedOccurrence.id
-      ).subscribe(...)
-    */
-
-    this.closeModal();
-  }
+    const formValue =
+      this.occurrenceForm
+        .getRawValue();
 
 
+    const updateOccurrence:
+      OccurrenceUpdate = {
 
-  getStatusLabel(status: OccurrenceStatus): string {
-    const labels: Record<OccurrenceStatus, string> = {
-      open: 'Aberta',
-      in_analysis: 'Em análise',
-      resolved: 'Resolvida'
+      dateOccurrence:
+        formValue.date ?? '',
+
+      amountDue:
+        Number(formValue.averageRevenue),
+
+      description:
+        formValue.description ?? ''
+
     };
 
-    return labels[status];
+
+    const id =
+      this.selectedOccurrence.id
+        .toString();
+
+
+    this.occurrenceService
+      .update(
+        id,
+        updateOccurrence
+      )
+      .subscribe({
+
+        next: async () => {
+
+          await this.notificationService.success(
+            'Sucesso!',
+            'Ocorrência atualizada com sucesso.'
+          );
+
+
+          this.reloadUsersManually();
+
+          this.closeModal();
+
+        },
+
+
+        error: (error) => {
+
+          console.error(
+            'Failed to update occurrence:',
+            error
+          );
+
+
+          this.notificationService.error(
+            'Erro na Atualização',
+            error?.message ||
+            'Não foi possível atualizar a ocorrência.'
+          );
+
+        }
+
+      });
+
   }
 
-  getStatusClass(status: OccurrenceStatus): string {
-    return `status-${status}`;
+
+  /*
+   * =========================================================
+   * STATUS
+   * =========================================================
+   *
+   * false -> true  = Resolvida
+   * true  -> false = Aberta novamente
+   */
+
+  toggleOccurrenceStatus(
+    occurrence: Occurrence
+  ): void {
+
+    if (!occurrence.id) {
+      return;
+    }
+
+
+    const newStatus =
+      occurrence.statusResolved !== true;
+
+
+    this.occurrenceService
+      .updateStatus(
+        occurrence.id.toString(),
+        newStatus
+      )
+      .subscribe({
+
+        next: async () => {
+
+          /*
+           * Atualização imediata da linha.
+           */
+          occurrence.statusResolved =
+            newStatus;
+
+
+          /*
+           * Se o modal de detalhes estiver
+           * aberto para a mesma ocorrência,
+           * atualiza também.
+           */
+          if (
+            this.selectedOccurrence?.id ===
+            occurrence.id
+          ) {
+
+            this.selectedOccurrence =
+            {
+              ...this.selectedOccurrence,
+              statusResolved:
+                newStatus
+            };
+
+          }
+
+
+          await this.notificationService.success(
+            'Sucesso!',
+
+            newStatus
+              ? 'Ocorrência marcada como resolvida.'
+              : 'Ocorrência reaberta com sucesso.'
+          );
+
+
+          /*
+           * Mantém os dados sincronizados
+           * com o backend.
+           */
+          this.reloadUsersManually();
+
+        },
+
+
+        error: (error) => {
+
+          console.error(
+            'Failed to update occurrence status:',
+            error
+          );
+
+
+          this.notificationService.error(
+            'Erro na atualização',
+
+            error?.message ||
+            'Não foi possível atualizar o status da ocorrência.'
+          );
+
+        }
+
+      });
+
   }
+
+
+  /*
+   * =========================================================
+   * DELETE
+   * =========================================================
+   */
+
+  deleteOccurrence(): void {
+
+    if (
+      !this.selectedOccurrence ||
+      !this.selectedOccurrence.id
+    ) {
+      return;
+    }
+
+
+    const id =
+      this.selectedOccurrence.id
+        .toString();
+
+
+    this.occurrenceService
+      .delete(id)
+      .subscribe({
+
+        next: async () => {
+
+          await this.notificationService.success(
+            'Sucesso!',
+            'Ocorrência excluída com sucesso.'
+          );
+
+
+          const page =
+            this.occurrencesSearchResults();
+
+
+          /*
+           * Se deletar o último item da
+           * última página, volta uma página.
+           */
+          if (
+            page &&
+            page.content.length === 1 &&
+            this.currentPage() > 0
+          ) {
+
+            this.currentPage.update(
+              current =>
+                current - 1
+            );
+
+          }
+
+
+          this.reloadUsersManually();
+
+          this.closeModal();
+
+        },
+
+
+        error: (error) => {
+
+          console.error(
+            'Failed to delete occurrence:',
+            error
+          );
+
+
+          this.notificationService.error(
+            'Erro no Delete',
+
+            error?.message ||
+            'Não foi possível excluir a ocorrência.'
+          );
+
+        }
+
+      });
+
+  }
+
+
+  /*
+   * =========================================================
+   * STATUS LABEL
+   * =========================================================
+   */
+
+  getStatusLabel(
+    status: boolean | null
+  ): string {
+
+    if (status === null) {
+      return 'Sem status';
+    }
+
+    return status
+      ? 'Resolvida'
+      : 'Aberta';
+
+  }
+
+
+  /*
+   * =========================================================
+   * STATUS CLASS
+   * =========================================================
+   */
+
+  getStatusClass(
+    status: boolean | null
+  ): string {
+
+    if (status === null) {
+      return 'status-null';
+    }
+
+    return `status-${status
+      ? 'resolved'
+      : 'open'
+      }`;
+
+  }
+
 }

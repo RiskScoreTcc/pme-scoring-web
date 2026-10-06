@@ -8,6 +8,6 @@ export interface Occurrence {
   type?: string;
   averageRevenue?: number;
   description?: string;
-  status?: OccurrenceStatus;
-  date?: string;
+  statusResolved?: boolean;
+  creationDate?: string;
 }

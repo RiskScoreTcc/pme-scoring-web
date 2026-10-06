@@ -1,6 +1,6 @@
 export interface OccurrenceCreate {
-    companyId?: number;
-    date?: string;
-    averageRevenue: number;
-    description?: string;
+    firmId: number;
+    dateOccurrence: string;
+    amountDue: number;
+    description: string;
 }

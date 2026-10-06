@@ -1,3 +1,4 @@
+
 <section class="companies-page">
 
   <!-- =====================================================
@@ -380,7 +381,7 @@
 
 
         <tbody>
-
+<!--
           @for (company of companies; track company.id) {
 
           <tr>
@@ -461,11 +462,11 @@
 
             </td>
 
-
+          -->
             <!-- =================================================
                    AÇÕES
                    ================================================= -->
-
+<!--
             <td class="actions-column">
 
               <div class="action-menu">
@@ -590,12 +591,12 @@
       </table>
 
     </div>
-
+  -->
 
     <!-- ===================================================
          PAGINAÇÃO
          =================================================== -->
-
+<!--
     <nav class="pagination" aria-label="Paginação da lista de empresas">
 
       <button type="button" class="pagination-button" disabled aria-label="Página anterior">
@@ -646,11 +647,11 @@
 
 </section>
 
-
+-->
 <!-- =====================================================
      MODAL — DETALHES DA EMPRESA
      ===================================================== -->
-
+<!--
 @if (activeModal === 'details' && selectedCompany) {
 
 <div class="modal-backdrop" (click)="closeAllModals()">
@@ -853,11 +854,11 @@
 
 }
 
-
+-->
 <!-- =====================================================
      MODAL — SCORE
      ===================================================== -->
-
+<!--
 @if (activeModal === 'score' && selectedCompany) {
 
 <div class="modal-backdrop" (click)="closeAllModals()">
@@ -1019,12 +1020,12 @@
 </div>
 
 }
-
+-->
 
 <!-- =====================================================
      MODAL — OCORRÊNCIAS
      ===================================================== -->
-
+<!--
 @if (activeModal === 'occurrences' && selectedCompany) {
 
 <div class="modal-backdrop" (click)="closeAllModals()">
@@ -1167,12 +1168,12 @@
 </div>
 
 }
-
+-->
 
 <!-- =====================================================
      MODAL — NOVA OCORRÊNCIA
      ===================================================== -->
-
+<!--
 @if (activeModal === 'new-occurrence' && selectedCompany) {
 
 <div class="modal-backdrop" (click)="closeAllModals()">
@@ -1302,11 +1303,11 @@
 
 }
 
-
+-->
 <!-- =====================================================
      MODAL — EXCLUSÃO
      ===================================================== -->
-
+<!--
 @if (activeModal === 'delete' && selectedCompany) {
 
 <div class="modal-backdrop" (click)="closeAllModals()">
@@ -1407,4 +1408,4 @@
 
 </div>
 
-}
+}-->

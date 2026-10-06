@@ -1,155 +1,17 @@
-import { Service } from '@angular/core';
+import { Service,inject } from '@angular/core';
+import { HttpClient, HttpErrorResponse, HttpParams } from '@angular/common/http';
 import { Observable, of as observableOf } from 'rxjs';
 import { Company } from '../../models/companies/company';
 import { CompanyCreate } from '../../models/companies/company-create';
+import { Page } from '../../models/Page';
+
 @Service()
 export class CompanyService {
+    private readonly API_URL = 'http://localhost:8080';
+    private readonly http = inject(HttpClient);
 
     getAll(): Company[] {
-        const companies: Company[] = [
-            {
-                id: 1,
-                legalName: 'Alfa Comércio Ltda.',
-                tradeName: 'Alfa Comércio',
-                cnpj: '12.345.678/0001-90',
-                sector: 'Comércio varejista',
-                score: 824,
-                risk: 'low',
-                status: 'active',
-                lastScoreDate: '21/09/2026 às 14:32',
-                occurrences: [
-                    {
-                        id: 1,
-                        type: 'Atraso de pagamento',
-                        description: 'Registro de atraso em obrigação financeira.',
-                        date: '18/09/2026',
-
-                    },
-                    {
-                        id: 2,
-                        type: 'Consulta realizada',
-                        description: 'Consulta registrada no histórico da empresa.',
-                        date: '12/09/2026',
-
-                    },
-                    {
-                        id: 3,
-                        type: 'Pendência financeira',
-                        description: 'Pendência registrada durante análise financeira.',
-                        date: '05/09/2026',
-                    }
-                ]
-            },
-
-            {
-                id: 2,
-                legalName: 'Beta Serviços S.A.',
-                tradeName: 'Beta Serviços',
-                cnpj: '23.456.789/0001-81',
-                sector: 'Serviços empresariais',
-                score: 641,
-                risk: 'medium',
-                status: 'active',
-                lastScoreDate: '20/09/2026 às 10:15',
-                occurrences: [
-                    {
-                        id: 4,
-                        type: 'Atraso de pagamento',
-                        description: 'Pagamento realizado após o vencimento.',
-                        date: '17/09/2026',
-
-                    },
-                    {
-                        id: 5,
-                        type: 'Consulta realizada',
-                        description: 'Nova consulta registrada no histórico.',
-                        date: '10/09/2026',
-
-                    }
-                ]
-            },
-
-            {
-                id: 3,
-                legalName: 'Gamma Indústria Ltda.',
-                tradeName: 'Gamma Indústria',
-                cnpj: '34.567.890/0001-72',
-                sector: 'Indústria',
-                score: 312,
-                risk: 'high',
-                status: 'active',
-                lastScoreDate: '19/09/2026 às 16:48',
-                occurrences: [
-                    {
-                        id: 6,
-                        type: 'Pendência financeira',
-                        description: 'Pendência identificada durante análise financeira.',
-                        date: '19/09/2026',
-                    },
-                    {
-                        id: 7,
-                        type: 'Atraso de pagamento',
-                        description: 'Obrigação financeira em atraso.',
-                        date: '15/09/2026',
-                    },
-                    {
-                        id: 8,
-                        type: 'Restrição identificada',
-                        description: 'Restrição identificada durante consulta.',
-                        date: '08/09/2026',
-                    }
-                ]
-            },
-
-            {
-                id: 4,
-                legalName: 'Delta Tecnologia Ltda.',
-                tradeName: 'Delta Tecnologia',
-                cnpj: '45.678.901/0001-63',
-                sector: 'Tecnologia da informação',
-                score: 756,
-                risk: 'low',
-                status: 'active',
-                lastScoreDate: '18/09/2026 às 09:21',
-                occurrences: [
-                    {
-                        id: 9,
-                        type: 'Consulta realizada',
-                        description: 'Consulta registrada no histórico da empresa.',
-                        date: '18/09/2026',
-
-                    }
-                ]
-            },
-
-            {
-                id: 5,
-                legalName: 'Epsilon Logística S.A.',
-                tradeName: 'Epsilon Logística',
-                cnpj: '56.789.012/0001-54',
-                sector: 'Transporte e logística',
-                score: 587,
-                risk: 'medium',
-                status: 'active',
-                lastScoreDate: '17/09/2026 às 11:40',
-                occurrences: [
-                    {
-                        id: 10,
-                        type: 'Atraso de pagamento',
-                        description: 'Atraso identificado em obrigação financeira.',
-                        date: '16/09/2026',
-
-                    },
-                    {
-                        id: 11,
-                        type: 'Consulta realizada',
-                        description: 'Consulta registrada no histórico.',
-                        date: '11/09/2026',
-
-                    }
-                ]
-            }
-        ];
+        const companies: Company[] = []
         return companies;
     }
 
@@ -161,37 +23,14 @@ export class CompanyService {
 
     create(formValue: CompanyCreate): Observable<Company> {
         const company: Company = {
-            id: 1,
-            legalName: 'Alfa Comércio Ltda.',
-            tradeName: 'Alfa Comércio',
-            cnpj: '12.345.678/0001-90',
-            sector: 'Comércio varejista',
-            score: 824,
-            risk: 'low',
-            status: 'active',
-            lastScoreDate: '21/09/2026 às 14:32',
-            occurrences: [
-                {
-                    id: 1,
-                    type: 'Atraso de pagamento',
-                    description: 'Registro de atraso em obrigação financeira.',
-                    date: '18/09/2026',
-
-                },
-                {
-                    id: 2,
-                    type: 'Consulta realizada',
-                    description: 'Consulta registrada no histórico da empresa.',
-                    date: '12/09/2026',
-
-                },
-                {
-                    id: 3,
-                    type: 'Pendência financeira',
-                    description: 'Pendência registrada durante análise financeira.',
-                    date: '05/09/2026',
-                }
-            ]
+            id: Math.floor(Math.random() * 1000), // Gera um ID aleatório para simulação
+            registeredCompanyName: formValue.registeredCompanyName,
+            averageRevenue: formValue.averageRevenue,
+            cnpj: formValue.cnpj,
+            ageInMonths: formValue.ageInMonths,
+            numberOfEmployees: formValue.numberOfEmployees,
+            risk: null,
+            status: 'active'
         };
 
         return observableOf(company);
@@ -206,6 +45,15 @@ export class CompanyService {
             'Excluindo empresa:',
             id
         );
+    }
+
+    searchCompanies(query: string, page: number = 0, size: number = 10): Observable<Page<Company>> {
+        const params = new HttpParams()
+            .set('page', page.toString())
+            .set('size', size.toString());
+
+
+        return this.http.get<Page<Company>>(`${this.API_URL}/api/v1/companies/search/${query}?`, { params });
     }
 }
 

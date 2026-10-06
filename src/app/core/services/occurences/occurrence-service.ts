@@ -1,75 +1,34 @@
-import { Service } from '@angular/core';
+import { Service, inject } from '@angular/core';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { Observable, throwError } from 'rxjs';
+import { catchError } from 'rxjs/operators';
+import { ApiErrorResponse } from '../../models/api-error-response';
 import { Occurrence } from '../../models/occurences/occurrence';
 import { OccurrenceCreate } from '../../models/occurences/occurrence-create';
-import { Observable, of as observableOf } from 'rxjs';
+import { Page } from '../../models/Page';
 
 @Service()
 export class OccurrenceService {
-    getAll(): Occurrence[] {
-        const occurrences: Occurrence[] = [
-            {
-                id: 1,
-                companyId: 1,
-                companyName: 'Alfa Comércio Ltda.',
-                cnpj: '12.345.678/0001-90',
-                type: 'Atraso de pagamento',
-                description: 'Pagamento de obrigação financeira realizado após o prazo estabelecido.',
-                status: 'resolved',
-                date: '2026-09-18',
-            },
-            {
-                id: 2,
-                companyId: 3,
-                companyName: 'Gamma Indústria Ltda.',
-                cnpj: '34.567.890/0001-72',
-                type: 'Restrição financeira',
-                description: 'Identificada restrição financeira associada ao CNPJ da empresa.',
-                status: 'in_analysis',
-                date: '2026-09-20',
-            },
-            {
-                id: 3,
-                companyId: 2,
-                companyName: 'Beta Serviços S.A.',
-                cnpj: '23.456.789/0001-81',
-                type: 'Atraso de pagamento',
-                description: 'Registro de atraso em obrigação financeira.',
-                status: 'resolved',
-                date: '2026-09-12',
-            },
-            {
-                id: 4,
-                companyId: 5,
-                companyName: 'Epsilon Logística S.A.',
-                cnpj: '56.789.012/0001-54',
-                type: 'Inconsistência cadastral',
-                description: 'Informação cadastral divergente identificada durante análise.',
-                status: 'open',
-                date: '2026-09-21',
-            },
-            {
-                id: 5,
-                companyId: 4,
-                companyName: 'Delta Tecnologia Ltda.',
-                cnpj: '45.678.901/0001-63',
-                type: 'Documento pendente',
-                description: 'Documento necessário para análise de risco ainda não foi disponibilizado.',
-                status: 'open',
-                date: '2026-09-22'
-            },
-            {
-                id: 6,
-                companyId: 3,
-                companyName: 'Gamma Indústria Ltda.',
-                cnpj: '34.567.890/0001-72',
-                type: 'Atraso de pagamento',
-                description: 'Atraso identificado em obrigação financeira da empresa.',
-                status: 'open',
-                date: '2026-09-22'
-            }
-        ];
+    private readonly API_URL = 'http://localhost:8080';
+    private readonly http = inject(HttpClient);
 
-        return occurrences;
+    searchOccurrences(pageIndex: number, pageSize: number, sort: string): Observable<Page<Occurrence>> {
+        const params = new URLSearchParams({
+            page: pageIndex.toString(),
+            size: pageSize.toString()
+        });
+
+        return this.http
+            .get<Page<Occurrence>>(`${this.API_URL}/api/v1/default-occurrences?${params}`)
+            .pipe(
+                catchError((errorResponse: HttpErrorResponse) => {
+                    const apiError = errorResponse.error as ApiErrorResponse;
+                    const message =
+                        apiError?.message ||
+                        'An unexpected error occurred while searching for occurrences.';
+                    return throwError(() => new Error(message));
+                })
+            );
     }
 
     create(occurrenceData: OccurrenceCreate): Observable<Occurrence> {
@@ -80,15 +39,17 @@ export class OccurrenceService {
         const occurrence: Occurrence =
         {
             id: 1,
-            companyId: 1,
-            companyName: 'Alfa Comércio Ltda.',
-            cnpj: '12.345.678/0001-90',
+            firm: {
+                id: 1,
+                cnpj: '12.345.678/0001-90',
+                companyName: 'Alfa Comércio Ltda.'
+            },
             type: 'Atraso de pagamento',
             description: 'Pagamento de obrigação financeira realizado após o prazo estabelecido.',
             status: 'resolved',
             date: '2026-09-18',
         }
         // Implement the actual creation logic here
-        return observableOf(occurrence);
+        return null as any; // Placeholder for the actual Observable<Occurrence>
     }
 }

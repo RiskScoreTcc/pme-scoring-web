@@ -52,30 +52,11 @@
       </div>
 
       <strong class="summary-value">
-        {{ openOccurrences }}
+        {{ openOccurrences() }}
       </strong>
 
       <span class="summary-description">
         Aguardando tratamento
-      </span>
-    </article>
-
-
-    <article class="summary-card">
-      <div class="summary-card-header">
-        <span class="summary-label">Últimos 30 dias</span>
-
-        <span class="summary-icon" aria-hidden="true">
-          30
-        </span>
-      </div>
-
-      <strong class="summary-value">
-        {{ recentOccurrences }}
-      </strong>
-
-      <span class="summary-description">
-        Ocorrências recentes
       </span>
     </article>
 
@@ -155,7 +136,7 @@
         </h2>
 
         <p>
-          {{ filteredOccurrences.length }}
+          {{ filteredOccurrences().length }}
           ocorrências encontradas.
         </p>
       </div>
@@ -189,7 +170,7 @@
         <tbody>
 
           @for (
-          occurrence of filteredOccurrences;
+          occurrence of filteredOccurrences();
           track occurrence.id
           ) {
 
@@ -200,11 +181,11 @@
               <div class="company-cell">
 
                 <strong>
-                  {{ occurrence.companyName }}
+                  {{ occurrence.firm?.companyName }}
                 </strong>
 
                 <span>
-                  {{ occurrence.cnpj }}
+                  {{ occurrence.firm?.cnpj }}
                 </span>
 
               </div>
@@ -248,7 +229,7 @@
             <td class="actions-cell">
 
               <button type="button" class="table-action"
-                [attr.aria-label]="'Ações para ocorrência de ' + occurrence.companyName"
+                [attr.aria-label]="'Ações para ocorrência de ' + occurrence.firm?.companyName"
                 (click)="openDetails(occurrence)">
                 Ver detalhes
               </button>
@@ -311,7 +292,7 @@ selectedOccurrence
         </h2>
 
         <p>
-          {{ selectedOccurrence.companyName }}
+          {{ selectedOccurrence.firm?.companyName }}
         </p>
       </div>
 
@@ -329,14 +310,14 @@ selectedOccurrence
         <div class="detail-item">
           <span>Empresa</span>
           <strong>
-            {{ selectedOccurrence.companyName }}
+            {{ selectedOccurrence.firm?.companyName }}
           </strong>
         </div>
 
         <div class="detail-item">
           <span>CNPJ</span>
           <strong>
-            {{ selectedOccurrence.cnpj }}
+            {{ selectedOccurrence.firm?.cnpj }}
           </strong>
         </div>
 
@@ -452,31 +433,52 @@ activeModal === 'edit'
 
         <div class="form-grid">
 
-          <!-- Empresa -->
-          <div class="field field-full">
+          <!-- Empresa (Autocomplete Server-side) -->
+          <div class="field field-full autocomplete-field">
 
-            <label for="companyId">
+            <label for="companySearch">
               Empresa
               <span aria-hidden="true">*</span>
             </label>
 
-            <select id="companyId" formControlName="companyId" [attr.aria-invalid]="isInvalid('companyId')">
+            <div class="search-input-wrapper">
+              <input id="companySearch" type="text" [formControl]="companySearchControl"
+                placeholder="Digite a razão social ou CNPJ..." autocomplete="off"
+                [attr.aria-invalid]="isInvalid('companyId')" />
 
-              <option value="">
-                Selecione uma empresa
-              </option>
+              @if (isSearchingCompanies()) {
+              <span class="search-spinner" aria-hidden="true"></span>
+              }
+            </div>
 
-              @for (company of companies; track company.id) {
+            <!-- Campo oculto registrado no FormGroup para manter a validação do ID -->
+            <input type="hidden" formControlName="companyId" />
 
-              <option [value]="company.id">
-                {{ company.legalName }} —
-                {{ company.cnpj }}
-              </option>
-
+            <!-- Lista suspensa de resultados filtrados -->
+            @if (showCompanyDropdown() && companySearchResults().length > 0) {
+            <ul class="autocomplete-dropdown" role="listbox">
+              @for (company of companySearchResults(); track company.id) {
+              <li role="option" (click)="selectCompany(company)" tabindex="0">
+                <span class="company-name">{{ company.registeredCompanyName }}</span>
+                <span class="company-cnpj">{{ company.cnpj }}</span>
+              </li>
               }
 
-            </select>
+              <!-- Mensagem de aviso quando existirem mais resultados no banco -->
+              @if (hasMoreResults()) {
+              <li class="autocomplete-footer">
+                Exibindo {{ companySearchResults().length }} de {{ totalCompaniesFound() }} empresas. Refine a busca
+                digitando o CNPJ ou o nome completo.
+              </li>
+              }
+            </ul>
+            } @else if (showCompanyDropdown() && companySearchControl.value && !isSearchingCompanies()) {
+            <div class="autocomplete-empty">
+              Nenhuma empresa encontrada com o termo digitado.
+            </div>
+            }
 
+            <!-- Mensagem de erro mantendo a mesma regra do formulário -->
             @if (isInvalid('companyId')) {
             <span class="field-error">
               Selecione a empresa.
@@ -484,6 +486,8 @@ activeModal === 'edit'
             }
 
           </div>
+
+
 
           <!-- Data -->
           <div class="field">
@@ -604,7 +608,7 @@ selectedOccurrence
       </strong>
       registrada para
       <strong>
-        {{ selectedOccurrence.companyName }}
+        {{ selectedOccurrence.firm?.companyName }}
       </strong>.
     </p>
 

@@ -1,20 +1,15 @@
-import { Occurrence } from "../occurences/occurrence";
 import { CompanyStatus } from "./company-status";
 import { ClassificationType } from '../classification-type';
 
 export interface Company {
   id: number;
-  legalName: string;
-  tradeName: string;
+  registeredCompanyName: string;
+  averageRevenue: number;
   cnpj: string;
-  sector: string;
+  ageInMonths: number;
 
-  score: number | null;
+  numberOfEmployees: number ;
   risk: ClassificationType | null;
 
   status: CompanyStatus;
-
-  lastScoreDate: string | null;
-
-  occurrences: Occurrence[];
 }

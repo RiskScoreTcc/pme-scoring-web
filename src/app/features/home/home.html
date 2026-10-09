@@ -2,390 +2,267 @@
 
   <!-- Cabeçalho -->
   <header class="overview-header">
-    <div>
+    <div class="overview-heading">
       <span class="eyebrow">PME SCORING</span>
 
       <h1>Visão Geral de Risco</h1>
 
       <p>
-        Acompanhe os principais indicadores e a situação de risco das empresas avaliadas.
+        Acompanhe os principais indicadores de risco
+        das empresas avaliadas.
       </p>
     </div>
 
-    <div class="header-info">
-      <span>Última atualização</span>
-      <strong>Hoje, 14:32</strong>
+    <div class="header-actions">
+      <div class="header-info">
+        <span>Última atualização</span>
+        <strong>{{ lastUpdate() }}</strong>
+      </div>
+
+      <button type="button" class="download-button" (click)="downloadDashboardReport()"
+        aria-label="Baixar relatório do dashboard em formato CSV">
+        <span class="download-icon" aria-hidden="true"></span>
+        <span>Baixar relatório</span>
+      </button>
     </div>
   </header>
 
-
   <!-- Indicadores principais -->
   <section class="metrics-grid" aria-label="Principais indicadores">
-
+    <!-- Empresas avaliadas -->
     <article class="metric-card">
       <div class="metric-header">
         <span class="metric-label">Empresas avaliadas</span>
-        <span class="metric-icon firms" aria-hidden="true">▣</span>
+
+        <span class="metric-icon firms" aria-hidden="true">
+          <span class="icon-building"></span>
+        </span>
       </div>
 
-      <div class="metric-value">1.248</div>
+      <div class="metric-value">
+        {{ totalCompanies() | number:'1.0-0':'pt-BR' }}
+      </div>
 
       <p class="metric-description">
         Empresas com avaliação registrada
       </p>
     </article>
 
-
-    <article class="metric-card">
-      <div class="metric-header">
-        <span class="metric-label">Score médio</span>
-        <span class="metric-icon score" aria-hidden="true">↗</span>
-      </div>
-
-      <div class="metric-value">742</div>
-
-      <p class="metric-description">
-        Média dos scores calculados
-      </p>
-    </article>
-
-
+    <!-- Empresas de alto risco -->
     <article class="metric-card">
       <div class="metric-header">
         <span class="metric-label">Alto risco</span>
-        <span class="metric-icon high" aria-hidden="true">!</span>
+
+        <span class="metric-icon high" aria-hidden="true">
+          <span class="icon-alert">!</span>
+        </span>
       </div>
 
-      <div class="metric-value">126</div>
+      <div class="metric-value">
+        {{ highRiskCount() | number:'1.0-0':'pt-BR' }}
+      </div>
 
       <p class="metric-description">
         Empresas classificadas como alto risco
       </p>
     </article>
 
-
+    <!-- Ocorrências abertas -->
     <article class="metric-card">
       <div class="metric-header">
         <span class="metric-label">Ocorrências abertas</span>
-        <span class="metric-icon occurrence" aria-hidden="true">!</span>
+
+        <span class="metric-icon occurrence" aria-hidden="true">
+          <span class="icon-document"></span>
+        </span>
       </div>
 
-      <div class="metric-value">23</div>
-
-      <div class="occurrence-summary">
-        <span class="high-text">5 alta</span>
-        <span>11 média</span>
-        <span class="low-text">7 baixa</span>
+      <div class="metric-value">
+        {{ openOccurrences() | number:'1.0-0':'pt-BR' }}
       </div>
+
+      <p class="metric-description">
+        Ocorrências que ainda precisam de resolução
+      </p>
     </article>
-
   </section>
 
-
-  <!-- Análise -->
-  <section class="analysis-grid">
-
-    <!-- Distribuição de risco -->
-    <article class="panel risk-panel">
-
-      <div class="panel-header">
-        <div>
-          <h2>Distribuição de risco</h2>
-          <p>Distribuição das empresas por classificação de risco.</p>
-        </div>
-      </div>
-
-      <div class="risk-list">
-
-        <div class="risk-item">
-          <div class="risk-info">
-            <span>Baixo</span>
-            <strong>52%</strong>
-          </div>
-
-          <div class="risk-bar">
-            <div
-              class="risk-progress low"
-              style="width: 52%">
-            </div>
-          </div>
-        </div>
-
-
-        <div class="risk-item">
-          <div class="risk-info">
-            <span>Médio</span>
-            <strong>31%</strong>
-          </div>
-
-          <div class="risk-bar">
-            <div
-              class="risk-progress medium"
-              style="width: 31%">
-            </div>
-          </div>
-        </div>
-
-
-        <div class="risk-item">
-          <div class="risk-info">
-            <span>Alto</span>
-            <strong>17%</strong>
-          </div>
-
-          <div class="risk-bar">
-            <div
-              class="risk-progress high"
-              style="width: 17%">
-            </div>
-          </div>
-        </div>
-
-      </div>
-
-    </article>
-
-
-    <!-- Atenção -->
-    <article class="panel attention-panel">
-
-      <div class="panel-header">
-        <div>
-          <h2>Atenção necessária</h2>
-          <p>Ocorrências que exigem acompanhamento.</p>
-        </div>
-      </div>
-
-      <div class="attention-list">
-
-        <div class="attention-item">
-          <div class="attention-icon high" aria-hidden="true">
-            !
-          </div>
-
-          <div>
-            <strong>5 ocorrências de alta severidade</strong>
-            <span>Requerem atenção prioritária</span>
-          </div>
-        </div>
-
-
-        <div class="attention-item">
-          <div class="attention-icon medium" aria-hidden="true">
-            !
-          </div>
-
-          <div>
-            <strong>11 ocorrências de média severidade</strong>
-            <span>Recomendado acompanhamento</span>
-          </div>
-        </div>
-
-
-        <div class="attention-item">
-          <div class="attention-icon low" aria-hidden="true">
-            !
-          </div>
-
-          <div>
-            <strong>7 ocorrências de baixa severidade</strong>
-            <span>Acompanhamento de rotina</span>
-          </div>
-        </div>
-
-      </div>
-
-    </article>
-
-  </section>
-
-
-  <!-- Avaliações recentes -->
-  <section class="panel recent-panel">
-
+  <!-- Distribuição de risco -->
+  <section class="panel risk-panel" aria-labelledby="risk-panel-title">
     <div class="panel-header">
       <div>
-        <h2>Avaliações recentes</h2>
-        <p>Últimas empresas que tiveram o score calculado.</p>
+        <h2 id="risk-panel-title">Distribuição de risco</h2>
+
+        <p>
+          Distribuição das empresas por classificação de risco.
+        </p>
       </div>
 
-      <a
-        routerLink="/scores"
-        class="panel-link">
-        Ver todos
+      <a routerLink="/companies" class="panel-link">
+        Ver empresas
+        <span class="link-arrow" aria-hidden="true"></span>
       </a>
     </div>
 
+    <div class="risk-summary">
+      <div class="risk-summary-label">
+        Total de empresas classificadas
+      </div>
 
-    <div class="table-container">
-
-      <table>
-
-        <thead>
-          <tr>
-            <th scope="col">Empresa</th>
-            <th scope="col">Score</th>
-            <th scope="col">Classificação</th>
-            <th scope="col">Data da avaliação</th>
-          </tr>
-        </thead>
-
-        <tbody>
-
-          <tr>
-            <td>
-              <strong>Empresa Alpha Ltda.</strong>
-            </td>
-
-            <td>824</td>
-
-            <td>
-              <span class="risk-badge low">
-                Baixo
-              </span>
-            </td>
-
-            <td>22/09/2026</td>
-          </tr>
-
-
-          <tr>
-            <td>
-              <strong>Empresa Beta Ltda.</strong>
-            </td>
-
-            <td>581</td>
-
-            <td>
-              <span class="risk-badge medium">
-                Médio
-              </span>
-            </td>
-
-            <td>22/09/2026</td>
-          </tr>
-
-
-          <tr>
-            <td>
-              <strong>Empresa Gamma Ltda.</strong>
-            </td>
-
-            <td>312</td>
-
-            <td>
-              <span class="risk-badge high">
-                Alto
-              </span>
-            </td>
-
-            <td>21/09/2026</td>
-          </tr>
-
-
-          <tr>
-            <td>
-              <strong>Empresa Delta Ltda.</strong>
-            </td>
-
-            <td>691</td>
-
-            <td>
-              <span class="risk-badge medium">
-                Médio
-              </span>
-            </td>
-
-            <td>21/09/2026</td>
-          </tr>
-
-        </tbody>
-
-      </table>
-
+      <div class="risk-summary-value" aria-live="polite">
+        {{ riskTotal() | number:'1.0-0':'pt-BR' }}
+      </div>
     </div>
 
+    <div class="risk-list">
+      <!-- Baixo risco -->
+      <div class="risk-item">
+        <div class="risk-info">
+          <div class="risk-label-group">
+            <span class="risk-indicator low" aria-hidden="true"></span>
+            <span class="risk-label">Baixo risco</span>
+          </div>
+
+          <strong>{{ lowRiskPercentage() }}%</strong>
+        </div>
+
+        <div class="risk-bar" role="progressbar" aria-label="Percentual de empresas de baixo risco" aria-valuemin="0"
+          aria-valuemax="100" [attr.aria-valuenow]="lowRiskPercentage()"
+          [attr.aria-valuetext]="lowRiskPercentage() + '%'">
+          <div class="risk-progress low" [style.width.%]="lowRiskPercentage()"></div>
+        </div>
+
+        <span class="risk-count">
+          {{ lowRiskCount() | number:'1.0-0':'pt-BR' }}
+          {{ lowRiskCount() === 1 ? 'empresa' : 'empresas' }}
+        </span>
+      </div>
+
+      <!-- Médio risco -->
+      <div class="risk-item">
+        <div class="risk-info">
+          <div class="risk-label-group">
+            <span class="risk-indicator medium" aria-hidden="true"></span>
+            <span class="risk-label">Médio risco</span>
+          </div>
+
+          <strong>{{ mediumRiskPercentage() }}%</strong>
+        </div>
+
+        <div class="risk-bar" role="progressbar" aria-label="Percentual de empresas de médio risco" aria-valuemin="0"
+          aria-valuemax="100" [attr.aria-valuenow]="mediumRiskPercentage()"
+          [attr.aria-valuetext]="mediumRiskPercentage() + '%'">
+          <div class="risk-progress medium" [style.width.%]="mediumRiskPercentage()"></div>
+        </div>
+
+        <span class="risk-count">
+          {{ mediumRiskCount() | number:'1.0-0':'pt-BR' }}
+          {{ mediumRiskCount() === 1 ? 'empresa' : 'empresas' }}
+        </span>
+      </div>
+
+      <!-- Alto risco -->
+      <div class="risk-item">
+        <div class="risk-info">
+          <div class="risk-label-group">
+            <span class="risk-indicator high" aria-hidden="true"></span>
+            <span class="risk-label">Alto risco</span>
+          </div>
+
+          <strong>{{ highRiskPercentage() }}%</strong>
+        </div>
+
+        <div class="risk-bar" role="progressbar" aria-label="Percentual de empresas de alto risco" aria-valuemin="0"
+          aria-valuemax="100" [attr.aria-valuenow]="highRiskPercentage()"
+          [attr.aria-valuetext]="highRiskPercentage() + '%'">
+          <div class="risk-progress high" [style.width.%]="highRiskPercentage()"></div>
+        </div>
+
+        <span class="risk-count">
+          {{ highRiskCount() | number:'1.0-0':'pt-BR' }}
+          {{ highRiskCount() === 1 ? 'empresa' : 'empresas' }}
+        </span>
+      </div>
+    </div>
   </section>
 
-
   <!-- Ações rápidas -->
-  <section class="quick-actions">
-
+  <section class="quick-actions" aria-labelledby="quick-actions-title">
     <div class="quick-actions-header">
-      <div>
-        <h2>Ações rápidas</h2>
-        <p>Acesse rapidamente as principais funcionalidades.</p>
-      </div>
-    </div>
+      <h2 id="quick-actions-title">Ações rápidas</h2>
 
+      <p>
+        Acesse diretamente as principais funcionalidades.
+      </p>
+    </div>
 
     <div class="actions-grid">
+      <!-- Nova empresa -->
+      <a routerLink="/companies/new" class="action-card">
+        <span class="action-icon action-icon-add" aria-hidden="true">
+          <span></span>
+        </span>
 
-      <a
-        routerLink="/firms"
-        class="action-card">
-
-        <span class="action-icon" aria-hidden="true">+</span>
-
-        <div>
+        <span class="action-content">
           <strong>Nova empresa</strong>
-          <span>Cadastrar uma nova empresa para avaliação.</span>
-        </div>
+          <span>
+            Cadastrar uma nova empresa para avaliação.
+          </span>
+        </span>
 
-        <span class="action-arrow" aria-hidden="true">→</span>
-
+        <span class="action-arrow" aria-hidden="true"></span>
       </a>
 
+      <!-- Empresas -->
+      <a routerLink="/companies" class="action-card">
+        <span class="action-icon" aria-hidden="true">
+          <span class="icon-building"></span>
+        </span>
 
-      <a
-        routerLink="/scores"
-        class="action-card">
+        <span class="action-content">
+          <strong>Empresas</strong>
+          <span>
+            Consultar empresas e seus respectivos scores.
+          </span>
+        </span>
 
-        <span class="action-icon" aria-hidden="true">↗</span>
-
-        <div>
-          <strong>Consultar scores</strong>
-          <span>Visualizar e analisar os scores calculados.</span>
-        </div>
-
-        <span class="action-arrow" aria-hidden="true">→</span>
-
+        <span class="action-arrow" aria-hidden="true"></span>
       </a>
 
+      <!-- Ocorrências -->
+      <a routerLink="/occurrences" class="action-card">
+        <span class="action-icon action-icon-occurrence" aria-hidden="true">
+          <span class="icon-document"></span>
+        </span>
 
-      <a
-        routerLink="/occurrences"
-        class="action-card">
+        <span class="action-content">
+          <strong>Ocorrências</strong>
+          <span>
+            Acompanhar e resolver ocorrências registradas.
+          </span>
+        </span>
 
-        <span class="action-icon" aria-hidden="true">!</span>
-
-        <div>
-          <strong>Ver ocorrências</strong>
-          <span>Acompanhar ocorrências registradas.</span>
-        </div>
-
-        <span class="action-arrow" aria-hidden="true">→</span>
-
+        <span class="action-arrow" aria-hidden="true"></span>
       </a>
 
+      <!-- Configuração de pesos: somente administradores -->
+      @if (isAdmin()) {
+      <a routerLink="/weights" class="action-card">
+        <span class="action-icon action-icon-settings" aria-hidden="true">
+          <span class="icon-sliders"></span>
+        </span>
 
-      <a
-        routerLink="/scores"
-        class="action-card">
+        <span class="action-content">
+          <strong>Configuração de pesos</strong>
+          <span>
+            Ajustar os pesos utilizados no cálculo do score.
+          </span>
+        </span>
 
-        <span class="action-icon" aria-hidden="true">↓</span>
-
-        <div>
-          <strong>Exportar CSV</strong>
-          <span>Exportar os dados das avaliações.</span>
-        </div>
-
-        <span class="action-arrow" aria-hidden="true">→</span>
-
+        <span class="action-arrow" aria-hidden="true"></span>
       </a>
-
+      }
     </div>
-
   </section>
 
 </div>

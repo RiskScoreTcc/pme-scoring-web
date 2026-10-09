@@ -16,7 +16,7 @@ import {
 } from '@angular/forms';
 
 import { CommonModule } from '@angular/common';
-
+import { Router } from '@angular/router';
 import {
   debounceTime,
   distinctUntilChanged,
@@ -46,7 +46,7 @@ import { OccurrenceCreate } from '../../core/models/occurences/occurrence-create
 import { Company } from '../../core/models/companies/company';
 import { NotificationService } from '../../shared/services/notification/notification-service';
 import { Page } from '../../core/models/Page';
-
+import { MetricsStateService } from '../../core/services/matric/metrics-state-service';
 
 @Component({
   selector: 'app-occurrences',
@@ -71,8 +71,20 @@ export class Occurrences implements OnInit {
   private readonly fb = inject(FormBuilder);
   private readonly notificationService = inject(NotificationService);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly metricsState = inject(MetricsStateService)
+  private readonly router = inject(Router);
 
-
+  private readonly navigationState = this.router.currentNavigation()?.extras
+    .state as
+    | {
+      openNewOccurrence?: boolean;
+      company?: Pick<
+        Company,
+        'id' | 'registeredCompanyName' | 'cnpj'
+      >;
+    }
+    | undefined;
+    
   /*
    * =========================================================
    * PAGINATION / LOADING
@@ -118,6 +130,9 @@ export class Occurrences implements OnInit {
 
   readonly occurrencesSearchResults =
     signal<Page<Occurrence> | null>(null);
+
+  protected readonly occurrenceMetrics = this.metricsState.metricsOccurrence;
+
 
 
   /*
@@ -240,6 +255,12 @@ export class Occurrences implements OnInit {
     this.setupCompanySearch();
 
     this.setupOccurrenceSearch();
+    const { openNewOccurrence, company } = this.navigationState ?? {};
+
+    if (openNewOccurrence && company) {
+      this.openNewOccurrence();
+      this.selectCompany(company as Company);
+    }
 
   }
 
@@ -324,6 +345,8 @@ export class Occurrences implements OnInit {
 
   private reloadUsersManually(): void {
 
+    this.metricsState.loadOccurrenceMetrics().subscribe();
+
     this.forceReload$.next(
       Date.now()
     );
@@ -338,89 +361,43 @@ export class Occurrences implements OnInit {
    */
 
   private setupCompanySearch(): void {
-
     this.companySearchControl.valueChanges
       .pipe(
-
         debounceTime(300),
-
         distinctUntilChanged(),
-
         tap(term => {
-
           if (!term || term.length < 2) {
-
             this.companySearchResults.set([]);
-
             this.showCompanyDropdown.set(false);
-
-            this.occurrenceForm
-              .patchValue({
-                id: null
-              });
-
-            this.occurrenceForm
-              .get('id')
-              ?.markAsDirty();
-
+            this.occurrenceForm.patchValue({ id: null });
+            this.occurrenceForm.get('id')?.markAsDirty();
           } else {
-
-            this.isSearchingCompanies
-              .set(true);
-
+            this.isSearchingCompanies.set(true);
           }
-
         }),
+        filter((term): term is string => !!term && term.length >= 2),
+        switchMap(term => {
+          const filter = { query: term };
 
-        filter(
-          (term): term is string =>
-            !!term &&
-            term.length >= 2
-        ),
-
-        switchMap(term =>
-
-          this.companyService
-            .searchCompanies(
-              term,
-              0,
-              10
+          return this.companyService.searchCompanies(filter, 0, 10).pipe(
+            catchError(() =>
+              of({
+                content: [],
+                totalElements: 0
+              })
             )
-            .pipe(
-
-              catchError(
-                () =>
-                  of({
-                    content: [],
-                    totalElements: 0
-                  })
-              )
-
-            )
-
-        ),
-
-        takeUntilDestroyed(
-          this.destroyRef
-        )
-
+          );
+        }),
+        takeUntilDestroyed(this.destroyRef)
       )
       .subscribe(page => {
+        const companies = page.content.map(item => item.firm);
 
-        this.companySearchResults
-          .set(page.content);
-
-        this.isSearchingCompanies
-          .set(false);
-
-        this.totalCompaniesFound
-          .set(page.totalElements);
-
-        this.showCompanyDropdown
-          .set(true);
-
+        this.companySearchResults.set(companies);
+        this.isSearchingCompanies.set(false);
+        this.totalCompaniesFound.set(page.totalElements);
+        this.showCompanyDropdown.set(true);
       });
-
   }
 
 
@@ -461,29 +438,8 @@ export class Occurrences implements OnInit {
    * =========================================================
    */
 
-  get totalOccurrences(): number {
-
-    return (
-      this.occurrencesSearchResults()
-        ?.totalElements || 0
-    );
-
-  }
-
-
-  protected readonly openOccurrences =
-    computed(() => {
-
-      const occurrences =
-        this.occurrencesSearchResults()
-          ?.content ?? [];
-
-      return occurrences.filter(
-        (occurrence: Occurrence) =>
-          occurrence.statusResolved === false
-      ).length;
-
-    });
+  protected readonly totalOccurrences = computed(() => this.occurrenceMetrics()?.activeOccurrencesCount ?? 0);
+  protected readonly openOccurrences = computed(() => this.occurrenceMetrics()?.openOccurrencesCount ?? 0);
 
 
   protected readonly recentOccurrences =

@@ -1,1 +1,1 @@
-export type ClassificationType = 'low' | 'medium' | 'high';
+export type ClassificationType = 'LOW' | 'MEDIUM' | 'HIGH' ;

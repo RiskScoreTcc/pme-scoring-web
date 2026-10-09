@@ -6,6 +6,7 @@ import { AuthCredentials } from '../../models/auth/auth-credentials';
 import { TokenService } from '../token/token-service';
 import { AuthResponse } from '../../models/auth/auth-response';
 import { JwtDecoderService } from '../jwt-decoder/jwt-decoder-service';
+import { MetricsStateService } from '../matric/metrics-state-service';
 
 @Service()
 export class AuthService {
@@ -14,6 +15,8 @@ export class AuthService {
     private readonly tokenService = inject(TokenService);
     private readonly jwtDecoderService = inject(JwtDecoderService);
     private readonly isAuthenticated = signal(this.tokenService.hasToken());
+    private readonly metricsStateService = inject(MetricsStateService);
+
     readonly isLoggedIn = this.isAuthenticated.asReadonly();
 
 
@@ -24,6 +27,7 @@ export class AuthService {
                     const token = response?.token;
                     this.tokenService.addTokenToLocalStorage(token);
                     this.jwtDecoderService.setUser();
+                    this.checkSession();
                     this.isAuthenticated.set(true);
                 }
             }),
@@ -51,7 +55,18 @@ export class AuthService {
 
     logout(): void {
         this.tokenService.removeTokenFromLocalStorage();
+        this.metricsStateService.clearMetrics();
         this.isAuthenticated.set(false);
+    }
+
+    checkSession() {
+        this.jwtDecoderService.setUser();
+        const user = this.jwtDecoderService.getUser();
+        if (user && user.role === 'ADMIN') {
+            this.metricsStateService.loadMetricsAdmin().subscribe();
+        } else {
+            this.metricsStateService.loadMetricsAnalyst().subscribe();
+        }
     }
 
 }

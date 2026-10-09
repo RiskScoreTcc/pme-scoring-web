@@ -23,6 +23,10 @@ export class JwtDecoderService {
         }
     }
 
+    /**
+     * Método de EFEITO: Atualiza o estado reativo do userSubject.
+     * Deve ser chamado apenas na inicialização (AppComponent), login ou logout.
+     */
     setUser(): CurrentUser | null {
         const token = this.tokenService.getTokenFromLocalStorage();
 
@@ -34,7 +38,6 @@ export class JwtDecoderService {
         try {
             const user = jwtDecode<CurrentUser>(token);
 
-
             if (this.isTokenExpired(user)) {
                 this.userSubject.next(null);
                 return null;
@@ -42,7 +45,6 @@ export class JwtDecoderService {
 
             this.userSubject.next(user);
             return user;
-
         } catch (error) {
             console.error('Error decoding JWT token:', error);
             this.userSubject.next(null);
@@ -50,22 +52,37 @@ export class JwtDecoderService {
         }
     }
 
+    /**
+     * LEITURA PURA: Não dispara .next() nem efeitos colaterais.
+     * Seguro para ser chamado dentro de computed(), getters ou templates HTML.
+     */
     getUser(): CurrentUser | null {
-
         const currentToken = this.userSubject.value;
 
-        if (!currentToken) {
+        // 1. Se já está no Subject e é válido, retorna direto
+        if (currentToken && !this.isTokenExpired(currentToken)) {
+            return currentToken;
+        }
+
+        // 2. Tenta decodificar passivamente do LocalStorage sem alterar estado (.next)
+        const token = this.tokenService.getTokenFromLocalStorage();
+        if (!token) {
             return null;
         }
-        if (this.isTokenExpired(currentToken)) {
-            this.userSubject.next(null);
+
+        try {
+            const user = jwtDecode<CurrentUser>(token);
+            if (this.isTokenExpired(user)) {
+                return null;
+            }
+            return user;
+        } catch {
             return null;
         }
-        return currentToken;
     }
 
     isTokenExpired(user: CurrentUser): boolean {
-        if (!user.exp) return false;
+        if (!user?.exp) return false;
         const currentTimeInSeconds = Math.floor(Date.now() / 1000);
         return user.exp < currentTimeInSeconds;
     }

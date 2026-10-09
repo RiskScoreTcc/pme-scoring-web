@@ -1,6 +1,9 @@
 <div class="company-form-page">
 
-  <!-- Cabeçalho -->
+  <!-- =====================================================
+       CABEÇALHO
+       ===================================================== -->
+
   <header class="page-header">
 
     <div class="page-header-main">
@@ -16,19 +19,22 @@
         </h1>
 
         <p>
-          Cadastre os dados da empresa para iniciar sua avaliação
-          de risco no PME Scoring.
+          Cadastre os dados da empresa para iniciar sua
+          avaliação de risco no PME Scoring.
         </p>
 
       </div>
 
-      <a
-        routerLink="/companies"
-        class="back-link"
-        aria-label="Voltar para empresas"
-      >
-        <span class="back-icon" aria-hidden="true">←</span>
-        <span>Voltar para empresas</span>
+      <a routerLink="/companies" class="back-link" aria-label="Voltar para a lista de empresas">
+
+        <span class="back-icon" aria-hidden="true">
+          ←
+        </span>
+
+        <span>
+          Voltar para empresas
+        </span>
+
       </a>
 
     </div>
@@ -36,36 +42,42 @@
   </header>
 
 
-  <!-- Formulário -->
-  <form
-    class="company-form"
-    [formGroup]="companyForm"
-    (ngSubmit)="onSubmit()"
-    novalidate
-  >
+  <!-- =====================================================
+       FORMULÁRIO
+       ===================================================== -->
 
-    <!-- CARD PRINCIPAL -->
-    <section
-      class="form-card"
-      aria-labelledby="company-data-title"
-    >
+  <form class="company-form" [formGroup]="companyForm" (ngSubmit)="onSubmit()" novalidate
+    aria-labelledby="company-form-title">
 
-      <!-- Cabeçalho da seção -->
-      <div class="form-card-header">
+    <!-- ===================================================
+         DADOS DA EMPRESA
+         =================================================== -->
+
+    <section class="form-card" aria-labelledby="company-form-title">
+
+      <header class="form-card-header">
 
         <div class="section-icon" aria-hidden="true">
-          <span>🏢</span>
+
+          <span>
+            PJ
+          </span>
+
         </div>
 
         <div class="section-heading">
 
-          <h2 id="company-data-title">
+          <span class="section-eyebrow">
+            CADASTRO
+          </span>
+
+          <h2 id="company-form-title">
             Dados da empresa
           </h2>
 
           <p>
-            Preencha as informações utilizadas no cadastro e
-            cálculo de risco da empresa.
+            Informe os dados utilizados no cadastro e na
+            avaliação de risco da empresa.
           </p>
 
         </div>
@@ -75,239 +87,282 @@
           Campos obrigatórios
         </span>
 
-      </div>
+      </header>
 
 
-      <!-- Campos -->
       <div class="form-fields">
 
-        <!-- CNPJ -->
+        <!-- =================================================
+             CNPJ
+             ================================================= -->
+
         <div class="form-field">
 
           <label for="cnpj">
+
             CNPJ
-            <span class="required" aria-hidden="true">*</span>
+
+            <span class="required" aria-hidden="true">
+              *
+            </span>
+
           </label>
 
-          <input
-            id="cnpj"
-            type="text"
-            formControlName="cnpj"
-            inputmode="numeric"
-            autocomplete="off"
-            placeholder="00.000.000/0000-00"
-            [attr.aria-invalid]="isInvalid('cnpj')"
-            [attr.aria-describedby]="
-              isInvalid('cnpj') ? 'cnpj-error' : null
-            "
-          >
+          <input id="cnpj" type="text" formControlName="cnpj" inputmode="numeric" autocomplete="off" maxlength="18"
+            placeholder="00.000.000/0000-00" [attr.aria-invalid]="isInvalid('cnpj')" [attr.aria-describedby]="
+              isInvalid('cnpj')
+                ? 'cnpj-help cnpj-error'
+                : 'cnpj-help'
+            " (input)="onCnpjInput($event)">
 
-          <span class="field-help">
-            Informe o CNPJ da empresa.
+          <span id="cnpj-help" class="field-help">
+
+            Informe o CNPJ no formato
+            00.000.000/0000-00.
+
           </span>
 
           @if (isInvalid('cnpj')) {
-            <span
-              id="cnpj-error"
-              class="field-error"
-              role="alert"
-            >
-              Informe um CNPJ válido.
-            </span>
+
+          <span id="cnpj-error" class="field-error" role="alert">
+
+            @if (companyForm.controls.cnpj.hasError('required')) {
+
+            Informe o CNPJ da empresa.
+
+            } @else {
+
+            Informe um CNPJ válido.
+
+            }
+
+          </span>
+
           }
 
         </div>
 
 
-        <!-- Razão social -->
-        <div class="form-field form-field-wide">
+        <!-- =================================================
+             RAZÃO SOCIAL
+             ================================================= -->
+
+        <div class="form-field">
 
           <label for="registeredCompanyName">
+
             Razão social
-            <span class="required" aria-hidden="true">*</span>
+
+            <span class="required" aria-hidden="true">
+              *
+            </span>
+
           </label>
 
-          <input
-            id="registeredCompanyName"
-            type="text"
-            formControlName="registeredCompanyName"
-            autocomplete="organization"
-            maxlength="255"
-            placeholder="Ex.: Tech Solutions Inovação Ltda."
-            [attr.aria-invalid]="isInvalid('registeredCompanyName')"
-            [attr.aria-describedby]="
+          <input id="registeredCompanyName" type="text" formControlName="registeredCompanyName"
+            autocomplete="organization" maxlength="255" placeholder="Ex.: Tech Solutions Inovação Ltda."
+            [attr.aria-invalid]="
               isInvalid('registeredCompanyName')
-                ? 'registeredCompanyName-error'
-                : null
-            "
-          >
+            " [attr.aria-describedby]="
+              isInvalid('registeredCompanyName')
+                ? 'company-name-help company-name-error'
+                : 'company-name-help'
+            ">
 
-          <span class="field-help">
+          <span id="company-name-help" class="field-help">
+
             Nome empresarial registrado no CNPJ.
+
           </span>
 
           @if (isInvalid('registeredCompanyName')) {
-            <span
-              id="registeredCompanyName-error"
-              class="field-error"
-              role="alert"
-            >
-              Informe a razão social da empresa.
-            </span>
+
+          <span id="company-name-error" class="field-error" role="alert">
+
+            @if (
+            companyForm.controls.registeredCompanyName
+            .hasError('required')
+            ) {
+
+            Informe a razão social da empresa.
+
+            } @else if (
+            companyForm.controls.registeredCompanyName
+            .hasError('minlength')
+            ) {
+
+            A razão social deve possuir pelo menos
+            3 caracteres.
+
+            } @else {
+
+            A razão social não pode ultrapassar
+            255 caracteres.
+
+            }
+
+          </span>
+
           }
 
         </div>
 
 
-        <!-- Faturamento -->
+        <!-- =================================================
+             FATURAMENTO
+             ================================================= -->
+
         <div class="form-field">
 
           <label for="averageRevenue">
+
             Faturamento médio
-            <span class="required" aria-hidden="true">*</span>
+
+            <span class="required" aria-hidden="true">
+              *
+            </span>
+
           </label>
 
           <div class="input-with-prefix">
+
             <span class="input-prefix" aria-hidden="true">
               R$
             </span>
 
-            <input
-              id="averageRevenue"
-              type="number"
-              formControlName="averageRevenue"
-              inputmode="decimal"
-              min="0"
-              step="0.01"
-              placeholder="150000,00"
-              [attr.aria-invalid]="isInvalid('averageRevenue')"
-              [attr.aria-describedby]="
+            <input id="averageRevenue" type="number" formControlName="averageRevenue" inputmode="decimal" min="0"
+              step="0.01" placeholder="150000.00" [attr.aria-invalid]="
                 isInvalid('averageRevenue')
-                  ? 'averageRevenue-help averageRevenue-error'
-                  : 'averageRevenue-help'
-              "
-            >
+              " [attr.aria-describedby]="
+                isInvalid('averageRevenue')
+                  ? 'revenue-help revenue-error'
+                  : 'revenue-help'
+              ">
+
           </div>
 
-          <span
-            id="averageRevenue-help"
-            class="field-help"
-          >
+          <span id="revenue-help" class="field-help">
+
             Média de faturamento considerada na avaliação.
+
           </span>
 
           @if (isInvalid('averageRevenue')) {
-            <span
-              id="averageRevenue-error"
-              class="field-error"
-              role="alert"
-            >
-              Informe um faturamento válido.
-            </span>
+
+          <span id="revenue-error" class="field-error" role="alert">
+
+            Informe um faturamento igual ou superior a zero.
+
+          </span>
+
           }
 
         </div>
 
 
-        <!-- Idade -->
+        <!-- =================================================
+             IDADE DA EMPRESA
+             ================================================= -->
+
         <div class="form-field">
 
           <label for="ageInMonths">
+
             Idade da empresa
-            <span class="required" aria-hidden="true">*</span>
+
+            <span class="required" aria-hidden="true">
+              *
+            </span>
+
           </label>
 
           <div class="input-with-suffix">
 
-            <input
-              id="ageInMonths"
-              type="number"
-              formControlName="ageInMonths"
-              inputmode="numeric"
-              min="0"
-              step="1"
-              placeholder="48"
-              [attr.aria-invalid]="isInvalid('ageInMonths')"
-              [attr.aria-describedby]="
+            <input id="ageInMonths" type="number" formControlName="ageInMonths" inputmode="numeric" min="0" step="1"
+              placeholder="48" [attr.aria-invalid]="
                 isInvalid('ageInMonths')
-                  ? 'ageInMonths-help ageInMonths-error'
-                  : 'ageInMonths-help'
-              "
-            >
+              " [attr.aria-describedby]="
+                isInvalid('ageInMonths')
+                  ? 'age-help age-error'
+                  : 'age-help'
+              ">
 
-            <span class="input-suffix">
+            <span class="input-suffix" aria-hidden="true">
+
               meses
+
             </span>
 
           </div>
 
-          <span
-            id="ageInMonths-help"
-            class="field-help"
-          >
+          <span id="age-help" class="field-help">
+
             Informe o tempo de atividade da empresa em meses.
+
           </span>
 
           @if (isInvalid('ageInMonths')) {
-            <span
-              id="ageInMonths-error"
-              class="field-error"
-              role="alert"
-            >
-              Informe a idade da empresa.
-            </span>
+
+          <span id="age-error" class="field-error" role="alert">
+
+            Informe uma idade igual ou superior a zero.
+
+          </span>
+
           }
 
         </div>
 
 
-        <!-- Funcionários -->
+        <!-- =================================================
+             FUNCIONÁRIOS
+             ================================================= -->
+
         <div class="form-field">
 
           <label for="numberOfEmployees">
+
             Número de funcionários
-            <span class="required" aria-hidden="true">*</span>
+
+            <span class="required" aria-hidden="true">
+              *
+            </span>
+
           </label>
 
           <div class="input-with-suffix">
 
-            <input
-              id="numberOfEmployees"
-              type="number"
-              formControlName="numberOfEmployees"
-              inputmode="numeric"
-              min="0"
-              step="1"
-              placeholder="25"
-              [attr.aria-invalid]="isInvalid('numberOfEmployees')"
-              [attr.aria-describedby]="
+            <input id="numberOfEmployees" type="number" formControlName="numberOfEmployees" inputmode="numeric" min="0"
+              step="1" placeholder="25" [attr.aria-invalid]="
                 isInvalid('numberOfEmployees')
-                  ? 'numberOfEmployees-help numberOfEmployees-error'
-                  : 'numberOfEmployees-help'
-              "
-            >
+              " [attr.aria-describedby]="
+                isInvalid('numberOfEmployees')
+                  ? 'employees-help employees-error'
+                  : 'employees-help'
+              ">
 
-            <span class="input-suffix">
+            <span class="input-suffix" aria-hidden="true">
+
               funcionários
+
             </span>
 
           </div>
 
-          <span
-            id="numberOfEmployees-help"
-            class="field-help"
-          >
+          <span id="employees-help" class="field-help">
+
             Informe a quantidade atual de funcionários.
+
           </span>
 
           @if (isInvalid('numberOfEmployees')) {
-            <span
-              id="numberOfEmployees-error"
-              class="field-error"
-              role="alert"
-            >
-              Informe o número de funcionários.
-            </span>
+
+          <span id="employees-error" class="field-error" role="alert">
+
+            Informe uma quantidade igual ou superior a zero.
+
+          </span>
+
           }
 
         </div>
@@ -317,35 +372,58 @@
     </section>
 
 
-    <!-- AÇÕES -->
+    <!-- =====================================================
+         INFORMAÇÃO
+         ===================================================== -->
+
+    <aside class="form-information" aria-label="Informação sobre o cadastro">
+
+      <span class="information-icon" aria-hidden="true">
+        i
+      </span>
+
+      <p>
+        Os dados informados serão utilizados para realizar
+        a avaliação de risco da empresa.
+      </p>
+
+    </aside>
+
+
+    <!-- =====================================================
+         AÇÕES
+         ===================================================== -->
+
     <footer class="form-actions">
 
-      <div class="form-actions-info">
-        <span class="info-icon" aria-hidden="true">ⓘ</span>
+      <a routerLink="/companies" class="button button-secondary" [attr.aria-disabled]="
+          isSubmitting() ? 'true' : null
+        ">
+
+        Cancelar
+
+      </a>
+
+      <button type="submit" class="button button-primary" [disabled]="isSubmitting()">
+
+        @if (isSubmitting()) {
+
+        <span class="button-spinner" aria-hidden="true">
+        </span>
 
         <span>
-          Os dados poderão ser utilizados para calcular o score de risco.
+          Cadastrando...
         </span>
-      </div>
 
-      <div class="form-actions-buttons">
+        } @else {
 
-        <a
-          routerLink="/companies"
-          class="button button-secondary"
-        >
-          Cancelar
-        </a>
-
-        <button
-          type="submit"
-          class="button button-primary"
-        >
-          <span aria-hidden="true">✓</span>
+        <span>
           Cadastrar empresa
-        </button>
+        </span>
 
-      </div>
+        }
+
+      </button>
 
     </footer>
 

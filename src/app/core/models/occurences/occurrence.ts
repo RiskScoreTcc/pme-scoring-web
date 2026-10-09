@@ -6,8 +6,9 @@ export interface Occurrence {
   id?: number;
   firm?: CompanySummary;
   type?: string;
+  dateOccurrence?:string
   averageRevenue?: number;
   description?: string;
-  statusResolved?: boolean;
+  statusResolved?: boolean| undefined;
   creationDate?: string;
 }

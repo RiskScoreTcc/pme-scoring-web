@@ -1,1 +1,1 @@
-export type CompanyStatus = 'active' | 'inactive';
+export type CompanyStatus = 'ACTIVE' | 'INACTIVE';

@@ -19,11 +19,60 @@
         <strong>{{ lastUpdate() }}</strong>
       </div>
 
-      <button type="button" class="download-button" (click)="downloadDashboardReport()"
-        aria-label="Baixar relatório do dashboard em formato CSV">
+      <button type="button" class="download-button" (click)="openDownloadDialog()"
+        aria-label="Escolher classificação e baixar relatório CSV">
         <span class="download-icon" aria-hidden="true"></span>
         <span>Baixar relatório</span>
       </button>
+      @if (isDownloadDialogOpen()) {
+      <div class="download-dialog-backdrop">
+        <section class="download-dialog" role="dialog" aria-modal="true" aria-labelledby="download-dialog-title"
+          aria-describedby="download-dialog-description">
+          <div class="download-dialog-header">
+            <h2 id="download-dialog-title">Baixar relatório CSV</h2>
+
+            <p id="download-dialog-description">
+              Escolha quais empresas deseja incluir no relatório.
+            </p>
+          </div>
+
+          <div class="download-dialog-field">
+            <label for="risk-filter">Classificação de risco</label>
+
+            <select id="risk-filter" [value]="selectedRisk()" [disabled]="isDownloading()"
+              (change)="onRiskChange($event)">
+              <option value="ALL">Todas as classificações</option>
+              <option value="HIGH">Alto risco</option>
+              <option value="MEDIUM">Médio risco</option>
+              <option value="LOW">Baixo risco</option>
+            </select>
+
+            <span class="download-dialog-hint">
+              O relatório incluirá todas as classificações ou somente a
+              classificação selecionada.
+            </span>
+          </div>
+
+          @if (downloadError()) {
+          <p class="download-dialog-error" role="alert">
+            {{ downloadError() }}
+          </p>
+          }
+
+          <div class="download-dialog-actions">
+            <button type="button" class="download-cancel-button" [disabled]="isDownloading()"
+              (click)="closeDownloadDialog()">
+              Cancelar
+            </button>
+
+            <button type="button" class="download-confirm-button" [disabled]="isDownloading()"
+              (click)="confirmDashboardDownload()">
+              {{ isDownloading() ? 'Gerando relatório...' : 'Baixar CSV' }}
+            </button>
+          </div>
+        </section>
+      </div>
+      }
     </div>
   </header>
 

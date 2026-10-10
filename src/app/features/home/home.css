@@ -928,3 +928,168 @@
   }
 }
 
+
+/* ========================================
+   DIÁLOGO DE DOWNLOAD DO RELATÓRIO
+======================================== */
+
+.download-dialog-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: rgba(15, 23, 42, 0.48);
+}
+
+.download-dialog {
+  width: 100%;
+  max-width: 460px;
+  padding: 26px;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  background: #ffffff;
+  box-shadow: 0 20px 50px rgba(15, 23, 42, 0.2);
+}
+
+.download-dialog-header h2 {
+  margin: 0;
+  color: #0f172a;
+  font-size: 19px;
+  line-height: 1.4;
+  font-weight: 700;
+}
+
+.download-dialog-header p {
+  margin: 8px 0 0;
+  color: #64748b;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.download-dialog-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 24px;
+}
+
+.download-dialog-field label {
+  color: #334155;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.download-dialog-field select {
+  width: 100%;
+  min-height: 44px;
+  padding: 0 12px;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #0f172a;
+  font: inherit;
+  font-size: 13px;
+}
+
+.download-dialog-field select:focus-visible {
+  outline: 3px solid rgba(37, 99, 235, 0.25);
+  outline-offset: 2px;
+  border-color: #2563eb;
+}
+
+.download-dialog-field select:disabled {
+  background: #f8fafc;
+  cursor: not-allowed;
+}
+
+.download-dialog-hint {
+  color: #64748b;
+  font-size: 11px;
+  line-height: 1.6;
+}
+
+.download-dialog-error {
+  margin: 16px 0 0;
+  color: #b91c1c;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.download-dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 26px;
+}
+
+.download-cancel-button,
+.download-confirm-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 40px;
+  padding: 0 15px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    background-color 160ms ease,
+    border-color 160ms ease;
+}
+
+.download-cancel-button {
+  border-color: #cbd5e1;
+  background: #ffffff;
+  color: #334155;
+}
+
+.download-cancel-button:hover:not(:disabled) {
+  background: #f8fafc;
+  border-color: #94a3b8;
+}
+
+.download-confirm-button {
+  border-color: #1d4ed8;
+  background: #1d4ed8;
+  color: #ffffff;
+}
+
+.download-confirm-button:hover:not(:disabled) {
+  border-color: #1e40af;
+  background: #1e40af;
+}
+
+.download-cancel-button:focus-visible,
+.download-confirm-button:focus-visible {
+  outline: 3px solid rgba(37, 99, 235, 0.3);
+  outline-offset: 3px;
+}
+
+.download-cancel-button:disabled,
+.download-confirm-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+@media (max-width: 480px) {
+  .download-dialog {
+    padding: 21px;
+  }
+
+  .download-dialog-actions {
+    flex-direction: column-reverse;
+  }
+
+  .download-cancel-button,
+  .download-confirm-button {
+    width: 100%;
+    min-height: 44px;
+  }
+}

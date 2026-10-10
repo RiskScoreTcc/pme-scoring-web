@@ -2,12 +2,16 @@ import { CommonModule } from '@angular/common';
 import {
   Component,
   computed,
-  inject
+  inject,
+  signal
 } from '@angular/core';
 import { RouterModule } from '@angular/router';
 
 import { MetricsStateService } from '../../core/services/matric/metrics-state-service';
 import { JwtDecoderService } from '../../core/services/jwt-decoder/jwt-decoder-service';
+import { DashboardReportService } from '../../core/services/dashboard/dashboard-report-service';
+
+type RiskFilter = 'ALL' | 'HIGH' | 'MEDIUM' | 'LOW';
 
 @Component({
   selector: 'app-home',
@@ -23,12 +27,23 @@ export class Home {
 
   private readonly metricsState = inject(MetricsStateService);
   private readonly jwtDecoderService = inject(JwtDecoderService);
+  private readonly dashboardReportService = inject(DashboardReportService)
 
   protected readonly companyMetrics =
     this.metricsState.metricsCompany;
 
   protected readonly occurrenceMetrics =
     this.metricsState.metricsOccurrence;
+
+
+  protected readonly isDownloadDialogOpen = signal(false);
+
+  protected readonly selectedRisk = signal<RiskFilter>('ALL');
+
+  protected readonly isDownloading = signal(false);
+
+  protected readonly downloadError = signal<string | null>(null);
+
 
   protected readonly isAdmin = computed(
     () => this.jwtDecoderService.getUser()?.role === 'ADMIN'
@@ -98,55 +113,76 @@ export class Home {
     return Number(((amount / total) * 100).toFixed(1));
   }
 
-  protected downloadDashboardReport(): void {
-    const generatedAt = new Date();
 
-    const rows: string[][] = [
-      ['Relatório PME Scoring', ''],
-      ['Data de geração', generatedAt.toLocaleString('pt-BR')],
-      ['', ''],
-      ['Indicador', 'Quantidade'],
-      ['Empresas avaliadas', String(this.totalCompanies())],
-      ['Empresas de baixo risco', String(this.lowRiskCount())],
-      ['Empresas de médio risco', String(this.mediumRiskCount())],
-      ['Empresas de alto risco', String(this.highRiskCount())],
-      ['Ocorrências abertas', String(this.openOccurrences())],
-      ['Ocorrências ativas', String(this.activeOccurrences())],
-      ['Total de empresas classificadas', String(this.riskTotal())],
-      ['', ''],
-      ['Classificação de risco', 'Percentual'],
-      ['Baixo risco', `${this.lowRiskPercentage()}%`],
-      ['Médio risco', `${this.mediumRiskPercentage()}%`],
-      ['Alto risco', `${this.highRiskPercentage()}%`]
-    ];
-
-    const csv = rows
-      .map(row =>
-        row.map(value => this.escapeCsv(value)).join(';')
-      )
-      .join('\r\n');
-
-    const blob = new Blob(
-      ['\uFEFF', csv],
-      { type: 'text/csv;charset=utf-8;' }
-    );
-
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    const date = generatedAt.toISOString().slice(0, 10);
-
-    link.href = url;
-    link.download = `pme-scoring-relatorio-${date}.csv`;
-    link.style.display = 'none';
-
-    document.body.appendChild(link);
-    link.click();
-    link.remove();
-
-    URL.revokeObjectURL(url);
+  protected openDownloadDialog(): void {
+    this.selectedRisk.set('ALL');
+    this.downloadError.set(null);
+    this.isDownloadDialogOpen.set(true);
   }
 
-  private escapeCsv(value: string): string {
-    return `"${String(value ?? '').replace(/"/g, '""')}"`;
+  protected closeDownloadDialog(): void {
+    if (this.isDownloading()) {
+      return;
+    }
+
+    this.isDownloadDialogOpen.set(false);
+    this.downloadError.set(null);
   }
+
+  protected onRiskChange(event: Event): void {
+    const select = event.target as HTMLSelectElement;
+    const value = select.value;
+
+    if (
+      value === 'ALL' ||
+      value === 'HIGH' ||
+      value === 'MEDIUM' ||
+      value === 'LOW'
+    ) {
+      this.selectedRisk.set(value);
+      this.downloadError.set(null);
+    }
+  }
+
+  protected confirmDashboardDownload(): void {
+    if (this.isDownloading()) {
+      return;
+    }
+
+    const risk = this.selectedRisk();
+
+    this.isDownloading.set(true);
+    this.downloadError.set(null);
+
+    this.dashboardReportService
+      .downloadDashboard(risk === 'ALL' ? undefined : risk)
+      .subscribe({
+        next: (blob) => {
+          const url = window.URL.createObjectURL(blob);
+          const link = document.createElement('a');
+
+          link.href = url;
+          link.download = 'relatorio-dashboard.csv';
+
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+
+          window.URL.revokeObjectURL(url);
+
+          this.isDownloading.set(false);
+          this.isDownloadDialogOpen.set(false);
+        },
+        error: (error) => {
+          console.error('Erro ao baixar o relatório:', error);
+
+          this.downloadError.set(
+            'Não foi possível baixar o relatório. Tente novamente.'
+          );
+
+          this.isDownloading.set(false);
+        }
+      });
+  }
+
 }

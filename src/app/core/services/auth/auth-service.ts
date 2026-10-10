@@ -64,7 +64,7 @@ export class AuthService {
         const user = this.jwtDecoderService.getUser();
         if (user && user.role === 'ADMIN') {
             this.metricsStateService.loadMetricsAdmin().subscribe();
-        } else {
+        } else if (user) {
             this.metricsStateService.loadMetricsAnalyst().subscribe();
         }
     }

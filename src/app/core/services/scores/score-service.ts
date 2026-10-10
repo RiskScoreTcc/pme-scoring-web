@@ -6,10 +6,11 @@ import { ApiErrorResponse } from '../../models/api-error-response';
 import { ScoreRequest } from '../../models/score/score-request';
 import { JwtDecoderService } from '../jwt-decoder/jwt-decoder-service';
 import { CalculatedScore } from '../../models/score/calculated-score';
+import { environment } from '../../../../environments/environment';
 
 @Service()
 export class ScoreService {
-    private readonly API_URL = 'http://localhost:8080';
+    private readonly API_URL = environment.apiUrl;
     private readonly http = inject(HttpClient);
     private readonly jwtService = inject(JwtDecoderService);
 
@@ -19,11 +20,11 @@ export class ScoreService {
 
         const scoreRequest: ScoreRequest = {
             firmId: companyId,
-            userId: user?.id ?? 1 // Atenção: garanta que isso não gere falso positivo em produção
+            userId: user?.id ?? 1 
         };
 
         return this.http
-            .post<CalculatedScore>(`${this.API_URL}/api/v1/calculated-scores`, scoreRequest)
+            .post<CalculatedScore>(`${this.API_URL}calculated-scores`, scoreRequest)
             .pipe(
                 catchError((errorResponse: HttpErrorResponse) => {
                     const apiError = errorResponse.error as ApiErrorResponse | undefined;

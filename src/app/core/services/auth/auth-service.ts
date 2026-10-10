@@ -7,10 +7,11 @@ import { TokenService } from '../token/token-service';
 import { AuthResponse } from '../../models/auth/auth-response';
 import { JwtDecoderService } from '../jwt-decoder/jwt-decoder-service';
 import { MetricsStateService } from '../matric/metrics-state-service';
+import { environment } from '../../../../environments/environment';
 
 @Service()
 export class AuthService {
-    private readonly API_URL = 'http://localhost:8080';
+    private readonly API_URL = environment.apiUrl;
     private readonly http = inject(HttpClient);
     private readonly tokenService = inject(TokenService);
     private readonly jwtDecoderService = inject(JwtDecoderService);
@@ -21,7 +22,7 @@ export class AuthService {
 
 
     login(authCredentials: AuthCredentials): Observable<boolean> {
-        return this.http.post<AuthResponse>(`${this.API_URL}/api/v1/users/login`, authCredentials).pipe(
+        return this.http.post<AuthResponse>(`${this.API_URL}users/login`, authCredentials).pipe(
             tap((response) => {
                 if (response?.token) {
                     const token = response?.token;
@@ -40,7 +41,7 @@ export class AuthService {
     }
 
     validateToken(token: string): Observable<boolean> {
-        return this.http.get<void>(`${this.API_URL}/api/v1/users/valid/`, { params: { token } }).pipe(
+        return this.http.get<void>(`${this.API_URL}users/valid/`, { params: { token } }).pipe(
             tap(() => {
                 this.isAuthenticated.set(true);
             }),

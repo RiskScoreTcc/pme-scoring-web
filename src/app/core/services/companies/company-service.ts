@@ -9,10 +9,11 @@ import { CompanyCreate } from '../../models/companies/company-create';
 import { Page } from '../../models/Page';
 import { CompanyFilter } from '../../models/companies/company-filter';
 import { CompanyUpdate } from '../../models/companies/company-update';
+import { environment } from '../../../../environments/environment';
 
 @Service()
 export class CompanyService {
-    private readonly API_URL = 'http://localhost:8080';
+    private readonly API_URL = environment.apiUrl;
     private readonly http = inject(HttpClient);
 
     searchCompaniesAll(page: number = 0, size: number = 10): Observable<Page<Company>> {
@@ -22,7 +23,7 @@ export class CompanyService {
 
 
         return this.http
-            .get<Page<Company>>(`${this.API_URL}/api/v1/companies`, { params })
+            .get<Page<Company>>(`${this.API_URL}companies`, { params })
             .pipe(
                 catchError((errorResponse: HttpErrorResponse) => {
                     const apiError = errorResponse.error as ApiErrorResponse;
@@ -41,7 +42,7 @@ export class CompanyService {
 
         return this.http
             .post<Company>(
-                `${this.API_URL}/api/v1/companies`,
+                `${this.API_URL}companies`,
                 formValue
             )
             .pipe(
@@ -72,7 +73,7 @@ export class CompanyService {
     update(id: number, company: CompanyUpdate): Observable<Company> {
         return this.http
             .patch<Company>(
-                `${this.API_URL}/api/v1/companies/${id}`,
+                `${this.API_URL}companies/${id}`,
                 company
             )
             .pipe(
@@ -102,7 +103,7 @@ export class CompanyService {
 
 
     deleteCompany(id: number): Observable<void> {
-        return this.http.delete<void>(`${this.API_URL}/api/v1/companies/${id}`).pipe(
+        return this.http.delete<void>(`${this.API_URL}companies/${id}`).pipe(
             catchError((errorResponse: HttpErrorResponse) => {
                 const apiError = errorResponse.error as ApiErrorResponse | undefined;
 
@@ -133,7 +134,7 @@ export class CompanyService {
         }
 
 
-        return this.http.get<Page<FirmWithScore>>(`${this.API_URL}/api/v1/companies/filter?${params}`)
+        return this.http.get<Page<FirmWithScore>>(`${this.API_URL}companies/filter?${params}`)
             .pipe(
                 catchError((errorResponse: HttpErrorResponse) => {
                     const apiError = errorResponse.error as ApiErrorResponse;

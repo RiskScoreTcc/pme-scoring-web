@@ -8,10 +8,11 @@ import { OccurrenceCreate } from '../../models/occurences/occurrence-create';
 import { Page } from '../../models/Page';
 import { OccurrenceUpdate } from '../../models/occurences/occurrence-update';
 import { OccurrenceFilter } from '../../models/occurences/occurrence-filter';
+import { environment } from '../../../../environments/environment';
 
 @Service()
 export class OccurrenceService {
-    private readonly API_URL = 'http://localhost:8080';
+    private readonly API_URL = environment.apiUrl;
     private readonly http = inject(HttpClient);
 
     searchOccurrences(pageIndex: number, pageSize: number, filter: OccurrenceFilter | undefined, sort: string): Observable<Page<Occurrence>> {
@@ -34,7 +35,7 @@ export class OccurrenceService {
 
 
         return this.http
-            .get<Page<Occurrence>>(`${this.API_URL}/api/v1/default-occurrences/filter?${params}`)
+            .get<Page<Occurrence>>(`${this.API_URL}default-occurrences/filter?${params}`)
             .pipe(
                 catchError((errorResponse: HttpErrorResponse) => {
                     const apiError = errorResponse.error as ApiErrorResponse;
@@ -49,7 +50,7 @@ export class OccurrenceService {
     create(occurrenceData: OccurrenceCreate): Observable<Occurrence> {
 
         return this.http
-            .post<Occurrence>(`${this.API_URL}/api/v1/default-occurrences`, occurrenceData)
+            .post<Occurrence>(`${this.API_URL}default-occurrences`, occurrenceData)
             .pipe(
                 catchError((errorResponse: HttpErrorResponse) => {
                     const apiError = errorResponse.error as ApiErrorResponse | undefined;
@@ -67,7 +68,7 @@ export class OccurrenceService {
 
     delete(occurrenceId: string): Observable<void> {
         return this.http
-            .delete<void>(`${this.API_URL}/api/v1/default-occurrences/${occurrenceId}`)
+            .delete<void>(`${this.API_URL}default-occurrences/${occurrenceId}`)
             .pipe(
                 catchError((errorResponse: HttpErrorResponse) => {
                     const apiError = errorResponse.error as ApiErrorResponse | undefined;
@@ -84,7 +85,7 @@ export class OccurrenceService {
 
     update(occurrenceId: string, occurrenceData: OccurrenceUpdate): Observable<Occurrence> {
         return this.http
-            .patch<Occurrence>(`${this.API_URL}/api/v1/default-occurrences/${occurrenceId}`, occurrenceData)
+            .patch<Occurrence>(`${this.API_URL}default-occurrences/${occurrenceId}`, occurrenceData)
             .pipe(
                 catchError((errorResponse: HttpErrorResponse) => {
                     const apiError = errorResponse.error as ApiErrorResponse | undefined;
@@ -101,7 +102,7 @@ export class OccurrenceService {
 
     updateStatus(occurrenceId: string, status: boolean): Observable<Occurrence> {
         return this.http
-            .patch<Occurrence>(`${this.API_URL}/api/v1/default-occurrences/${occurrenceId}/status`, { status })
+            .patch<Occurrence>(`${this.API_URL}default-occurrences/${occurrenceId}/status`, { status })
             .pipe(
                 catchError((errorResponse: HttpErrorResponse) => {
                     const apiError = errorResponse.error as ApiErrorResponse | undefined;

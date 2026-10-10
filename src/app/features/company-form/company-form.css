@@ -3,10 +3,12 @@
    ========================================================= */
 
 .company-form-page {
+
   width: 100%;
   max-width: 1180px;
   margin: 0 auto;
   padding: 36px 32px 48px;
+
   box-sizing: border-box;
 }
 
@@ -20,9 +22,11 @@
 }
 
 .page-header-main {
+
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
+
   gap: 32px;
 }
 
@@ -31,36 +35,42 @@
 }
 
 .eyebrow {
-  display: inline-block;
+
+  display: block;
   margin-bottom: 8px;
+
+  color: #64748b;
 
   font-size: 11px;
   font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
 
-  color: #64748b;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
 }
 
 .page-title h1 {
+
   margin: 0;
+
+  color: #0f172a;
 
   font-size: 30px;
   line-height: 1.2;
   font-weight: 700;
-  letter-spacing: -0.02em;
 
-  color: #0f172a;
+  letter-spacing: -0.02em;
 }
 
 .page-title p {
+
   max-width: 680px;
+
   margin: 10px 0 0;
+
+  color: #64748b;
 
   font-size: 14px;
   line-height: 1.6;
-
-  color: #64748b;
 }
 
 
@@ -69,44 +79,67 @@
    ========================================================= */
 
 .back-link {
+
   display: inline-flex;
   align-items: center;
+  justify-content: center;
+
   gap: 8px;
 
-  margin-top: 8px;
-  padding: 9px 12px;
+  flex-shrink: 0;
 
-  border: 1px solid #e2e8f0;
+  margin-top: 6px;
+  min-height: 40px;
+
+  padding: 0 13px;
+
+  border: 1px solid #cbd5e1;
   border-radius: 8px;
 
   background: #ffffff;
-
   color: #334155;
+
   font-size: 13px;
   font-weight: 600;
 
   text-decoration: none;
 
   transition:
-    background-color 0.15s ease,
-    border-color 0.15s ease,
-    color 0.15s ease;
+    background-color 140ms ease,
+    border-color 140ms ease,
+    color 140ms ease;
 }
 
 .back-link:hover {
+
+  border-color: #94a3b8;
   background: #f8fafc;
-  border-color: #cbd5e1;
   color: #1d4ed8;
 }
 
 .back-link:focus-visible {
-  outline: 3px solid rgb(29 78 216 / 20%);
+
+  outline: 3px solid rgb(37 99 235 / 20%);
   outline-offset: 2px;
 }
 
 .back-icon {
+
   font-size: 16px;
   line-height: 1;
+}
+
+
+/* =========================================================
+   FORM
+   ========================================================= */
+
+.company-form {
+
+  display: flex;
+  flex-direction: column;
+
+  gap: 18px;
 }
 
 
@@ -114,13 +147,8 @@
    FORM CARD
    ========================================================= */
 
-.company-form {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
-
 .form-card {
+
   overflow: hidden;
 
   border: 1px solid #e2e8f0;
@@ -138,67 +166,95 @@
    ========================================================= */
 
 .form-card-header {
+
   display: flex;
   align-items: flex-start;
+
   gap: 14px;
 
-  padding: 24px 26px;
+  padding: 22px 26px;
 
   border-bottom: 1px solid #e2e8f0;
+
   background: #f8fafc;
 }
 
 .section-icon {
+
   display: flex;
   align-items: center;
   justify-content: center;
 
   flex: 0 0 40px;
+
   width: 40px;
   height: 40px;
 
-  border: 1px solid #dbeafe;
+  border: 1px solid #bfdbfe;
   border-radius: 9px;
 
   background: #eff6ff;
+  color: #1d4ed8;
 
-  font-size: 18px;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.03em;
 }
 
 .section-heading {
   flex: 1;
+  min-width: 0;
+}
+
+.section-eyebrow {
+
+  display: block;
+  margin-bottom: 4px;
+
+  color: #64748b;
+
+  font-size: 10px;
+  font-weight: 700;
+
+  letter-spacing: 0.08em;
 }
 
 .section-heading h2 {
+
   margin: 0;
 
-  font-size: 16px;
-  line-height: 1.4;
-  font-weight: 700;
-
   color: #0f172a;
+
+  font-size: 17px;
+  line-height: 1.35;
+  font-weight: 700;
 }
 
 .section-heading p {
-  margin: 4px 0 0;
+
+  margin: 5px 0 0;
+
+  color: #64748b;
 
   font-size: 13px;
   line-height: 1.5;
-
-  color: #64748b;
 }
 
 .required-hint {
+
   flex-shrink: 0;
 
-  margin-top: 3px;
+  margin-top: 4px;
+
+  color: #64748b;
 
   font-size: 12px;
-  color: #64748b;
 }
 
-.required-hint span {
+.required-hint>span {
+
   color: #dc2626;
+
   font-weight: 700;
 }
 
@@ -208,8 +264,12 @@
    ========================================================= */
 
 .form-fields {
+
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+
+  grid-template-columns:
+    repeat(2, minmax(0, 1fr));
+
   gap: 24px;
 
   padding: 28px 26px 30px;
@@ -219,32 +279,32 @@
   min-width: 0;
 }
 
-.form-field-wide {
-  grid-column: 1 / -1;
-}
-
 .form-field label {
+
   display: block;
 
   margin-bottom: 7px;
 
+  color: #334155;
+
   font-size: 13px;
   font-weight: 600;
-
-  color: #334155;
 }
 
 .required {
+
   margin-left: 3px;
+
   color: #dc2626;
 }
 
 
 /* =========================================================
-   INPUT
+   INPUTS
    ========================================================= */
 
 .form-field input {
+
   display: block;
 
   width: 100%;
@@ -258,17 +318,17 @@
   border-radius: 8px;
 
   background: #ffffff;
-
   color: #0f172a;
+
   font-family: inherit;
   font-size: 14px;
 
   outline: none;
 
   transition:
-    border-color 0.15s ease,
-    box-shadow 0.15s ease,
-    background-color 0.15s ease;
+    border-color 140ms ease,
+    box-shadow 140ms ease,
+    background-color 140ms ease;
 }
 
 .form-field input::placeholder {
@@ -280,6 +340,7 @@
 }
 
 .form-field input:focus {
+
   border-color: #2563eb;
 
   box-shadow:
@@ -287,17 +348,28 @@
 }
 
 .form-field input[aria-invalid="true"] {
+
   border-color: #dc2626;
 }
 
 .form-field input[aria-invalid="true"]:focus {
+
   box-shadow:
     0 0 0 3px rgb(220 38 38 / 12%);
 }
 
 
 /* =========================================================
-   INPUT PREFIX / SUFFIX
+   NUMBER INPUT
+   ========================================================= */
+
+.form-field input[type="number"] {
+  font-variant-numeric: tabular-nums;
+}
+
+
+/* =========================================================
+   PREFIX / SUFFIX
    ========================================================= */
 
 .input-with-prefix,
@@ -310,17 +382,20 @@
 }
 
 .input-with-suffix input {
-  padding-right: 95px;
+  padding-right: 100px;
 }
 
 .input-prefix,
 .input-suffix {
+
   position: absolute;
+
   top: 50%;
 
   transform: translateY(-50%);
 
   color: #64748b;
+
   font-size: 13px;
   font-weight: 600;
 
@@ -341,26 +416,79 @@
    ========================================================= */
 
 .field-help {
+
   display: block;
 
   margin-top: 6px;
 
+  color: #64748b;
+
   font-size: 12px;
   line-height: 1.45;
-
-  color: #64748b;
 }
 
 .field-error {
+
   display: block;
 
   margin-top: 6px;
 
+  color: #b91c1c;
+
   font-size: 12px;
   line-height: 1.45;
-  font-weight: 500;
 
-  color: #dc2626;
+  font-weight: 500;
+}
+
+
+/* =========================================================
+   INFORMATION
+   ========================================================= */
+
+.form-information {
+
+  display: flex;
+  align-items: flex-start;
+
+  gap: 10px;
+
+  padding: 13px 15px;
+
+  border: 1px solid #dbeafe;
+  border-radius: 9px;
+
+  background: #eff6ff;
+}
+
+.information-icon {
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  flex: 0 0 20px;
+
+  width: 20px;
+  height: 20px;
+
+  border-radius: 50%;
+
+  background: #dbeafe;
+  color: #1d4ed8;
+
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.form-information p {
+
+  margin: 1px 0 0;
+
+  color: #1e40af;
+
+  font-size: 12px;
+  line-height: 1.5;
 }
 
 
@@ -369,76 +497,46 @@
    ========================================================= */
 
 .form-actions {
+
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 24px;
+  justify-content: flex-end;
 
-  padding: 18px 20px;
-
-  border: 1px solid #e2e8f0;
-  border-radius: 10px;
-
-  background: #ffffff;
-}
-
-.form-actions-info {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-
-  max-width: 560px;
-
-  font-size: 12px;
-  line-height: 1.45;
-
-  color: #64748b;
-}
-
-.info-icon {
-  flex-shrink: 0;
-
-  font-size: 14px;
-  color: #64748b;
-}
-
-.form-actions-buttons {
-  display: flex;
-  align-items: center;
   gap: 10px;
 
-  flex-shrink: 0;
+  padding-top: 2px;
 }
 
-
-/* =========================================================
-   BUTTONS
-   ========================================================= */
-
 .button {
+
   display: inline-flex;
   align-items: center;
   justify-content: center;
+
   gap: 8px;
 
   min-height: 42px;
 
-  padding: 0 16px;
+  padding: 0 17px;
 
   border-radius: 8px;
 
+  box-sizing: border-box;
+
   font-family: inherit;
+
   font-size: 13px;
   font-weight: 600;
 
   text-decoration: none;
+
   cursor: pointer;
 
   transition:
-    background-color 0.15s ease,
-    border-color 0.15s ease,
-    box-shadow 0.15s ease,
-    transform 0.1s ease;
+    background-color 140ms ease,
+    border-color 140ms ease,
+    box-shadow 140ms ease,
+    transform 100ms ease;
 }
 
 .button:active {
@@ -446,14 +544,18 @@
 }
 
 .button:focus-visible {
-  outline: 3px solid rgb(37 99 235 / 18%);
+
+  outline: 3px solid rgb(37 99 235 / 20%);
   outline-offset: 2px;
 }
 
 
-/* Secondary */
+/* =========================================================
+   SECONDARY
+   ========================================================= */
 
 .button-secondary {
+
   border: 1px solid #cbd5e1;
 
   background: #ffffff;
@@ -461,33 +563,68 @@
 }
 
 .button-secondary:hover {
+
   border-color: #94a3b8;
+
   background: #f8fafc;
 }
 
 
-/* Primary */
+/* =========================================================
+   PRIMARY
+   ========================================================= */
 
 .button-primary {
+
   border: 1px solid #1d4ed8;
 
   background: #1d4ed8;
   color: #ffffff;
 }
 
-.button-primary:hover {
+.button-primary:hover:not(:disabled) {
+
   border-color: #1e40af;
+
   background: #1e40af;
 }
 
-.button-primary:focus-visible {
-  box-shadow:
-    0 0 0 3px rgb(29 78 216 / 18%);
+.button-primary:disabled {
+
+  opacity: 0.65;
+
+  cursor: not-allowed;
 }
 
 
 /* =========================================================
-   RESPONSIVE
+   LOADING
+   ========================================================= */
+
+.button-spinner {
+
+  width: 14px;
+  height: 14px;
+
+  border: 2px solid rgb(255 255 255 / 35%);
+  border-top-color: #ffffff;
+
+  border-radius: 50%;
+
+  animation:
+    button-spinner 700ms linear infinite;
+}
+
+@keyframes button-spinner {
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+
+/* =========================================================
+   RESPONSIVE — TABLET
    ========================================================= */
 
 @media (max-width: 800px) {
@@ -497,7 +634,9 @@
   }
 
   .page-header-main {
+
     flex-direction: column;
+
     gap: 18px;
   }
 
@@ -506,11 +645,10 @@
   }
 
   .form-fields {
-    grid-template-columns: 1fr;
-  }
 
-  .form-field-wide {
-    grid-column: auto;
+    grid-template-columns: 1fr;
+
+    padding: 24px 22px 26px;
   }
 
   .required-hint {
@@ -518,27 +656,24 @@
   }
 
   .form-actions {
-    align-items: stretch;
-    flex-direction: column;
+
+    justify-content: stretch;
   }
 
-  .form-actions-info {
-    max-width: none;
-  }
-
-  .form-actions-buttons {
-    width: 100%;
-  }
-
-  .form-actions-buttons .button {
+  .button {
     flex: 1;
   }
 }
 
 
+/* =========================================================
+   RESPONSIVE — MOBILE
+   ========================================================= */
+
 @media (max-width: 560px) {
 
   .company-form-page {
+
     padding: 22px 14px 32px;
   }
 
@@ -551,28 +686,45 @@
   }
 
   .form-card-header {
-    padding: 20px;
-  }
 
-  .form-fields {
-    padding: 22px 20px 24px;
-    gap: 20px;
+    padding: 20px;
   }
 
   .section-icon {
     display: none;
   }
 
+  .form-fields {
+
+    gap: 20px;
+
+    padding: 22px 20px 24px;
+  }
+
+  .form-information {
+
+    padding: 12px 13px;
+  }
+
   .form-actions {
-    padding: 16px;
-  }
 
-  .form-actions-buttons {
     flex-direction: column-reverse;
+
+    align-items: stretch;
   }
 
-  .form-actions-buttons .button {
+  .button {
+
     width: 100%;
+
+    flex: none;
+  }
+
+  .back-link {
+
+    width: 100%;
+
+    box-sizing: border-box;
   }
 }
 
@@ -586,10 +738,15 @@
   .back-link,
   .form-field input,
   .button {
+
     transition: none;
   }
 
   .button:active {
     transform: none;
+  }
+
+  .button-spinner {
+    animation: none;
   }
 }

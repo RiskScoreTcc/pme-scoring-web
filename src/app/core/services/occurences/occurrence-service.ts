@@ -14,19 +14,24 @@ export class OccurrenceService {
     private readonly API_URL = 'http://localhost:8080';
     private readonly http = inject(HttpClient);
 
-    searchOccurrences(pageIndex: number, pageSize: number, filter: OccurrenceFilter, sort: string): Observable<Page<Occurrence>> {
+    searchOccurrences(pageIndex: number, pageSize: number, filter: OccurrenceFilter | undefined, sort: string): Observable<Page<Occurrence>> {
         const params = new URLSearchParams({
             page: pageIndex.toString(),
             size: pageSize.toString()
         });
 
-        // Adiciona os parâmetros de filtro à URL
-        if (filter.query) {
-            params.set('query', filter.query);
+        if (filter) {
+
+            // Adiciona os parâmetros de filtro à URL
+            if (filter.query) {
+                params.set('query', filter.query);
+            }
+            if (filter.statusResolved !== undefined) {
+                params.set('statusResolved', filter.statusResolved.toString());
+            }
         }
-        if (filter.statusResolved !== undefined) {
-            params.set('statusResolved', filter.statusResolved.toString());
-        }   
+
+
 
         return this.http
             .get<Page<Occurrence>>(`${this.API_URL}/api/v1/default-occurrences/filter?${params}`)

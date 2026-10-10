@@ -4,39 +4,31 @@
        NAVEGAÇÃO PRINCIPAL
        ===================================================== -->
 
-  <aside
-    id="main-navigation"
-    class="main-navigation"
-    [class.is-collapsed]="!isNavigationOpen"
+  <aside id="main-navigation" class="main-navigation" [class.is-collapsed]="!isNavigationOpen"
     aria-label="Navegação principal">
 
-    <!-- Cabeçalho da navegação -->
+    <!-- ===================================================
+         CABEÇALHO DA NAVEGAÇÃO
+         =================================================== -->
+
     <div class="navigation-header">
 
-      <a
-        routerLink="/overview"
-        class="application-brand"
-        aria-label="PME Scoring - Visão Geral">
+      <a routerLink="/overview" class="application-brand" aria-label="PME Scoring - Visão Geral">
 
         <span class="brand-name">
           PME Scoring
         </span>
 
-        <span
-          class="brand-symbol"
-          aria-hidden="true">
+        <span class="brand-symbol" aria-hidden="true">
           PS
         </span>
 
       </a>
 
 
-      <!-- Botão para fechar no mobile -->
-      <button
-        type="button"
-        class="navigation-close"
-        (click)="closeNavigation()"
-        aria-label="Fechar menu de navegação">
+      <!-- Botão utilizado no mobile -->
+
+      <button type="button" class="navigation-close" (click)="closeNavigation()" aria-label="Fechar menu de navegação">
 
         <span aria-hidden="true">
           ×
@@ -48,31 +40,28 @@
 
 
     <!-- ===================================================
-         MENU DE NAVEGAÇÃO
+         MENU PRINCIPAL
          =================================================== -->
 
-    <nav
-      class="navigation-menu"
-      aria-label="Menu principal">
+    <nav class="navigation-menu" aria-label="Menu principal">
 
       <ul>
 
-        <!-- Visão Geral -->
+        <!-- =================================================
+             VISÃO GERAL
+             ================================================= -->
+
         <li>
 
-          <a
-            routerLink="/overview"
-            routerLinkActive="is-active"
-            [routerLinkActiveOptions]="{ exact: true }"
-            #overviewLink="routerLinkActive"
-            [attr.aria-current]="
-              overviewLink.isActive ? 'page' : null
-            "
-            (click)="closeNavigation()">
+          <a routerLink="/overview" routerLinkActive="is-active" [routerLinkActiveOptions]="{
+              exact: true
+            }" #overviewLink="routerLinkActive" [attr.aria-current]="
+              overviewLink.isActive
+                ? 'page'
+                : null
+            " (click)="closeNavigation()">
 
-            <span
-              class="navigation-icon"
-              aria-hidden="true">
+            <span class="navigation-icon" aria-hidden="true">
               ▦
             </span>
 
@@ -85,21 +74,19 @@
         </li>
 
 
-        <!-- Empresas -->
+        <!-- =================================================
+             EMPRESAS
+             ================================================= -->
+
         <li>
 
-          <a
-            routerLink="/companies"
-            routerLinkActive="is-active"
-            #companiesLink="routerLinkActive"
-            [attr.aria-current]="
-              companiesLink.isActive ? 'page' : null
-            "
-            (click)="closeNavigation()">
+          <a routerLink="/companies" routerLinkActive="is-active" #companiesLink="routerLinkActive" [attr.aria-current]="
+              companiesLink.isActive
+                ? 'page'
+                : null
+            " (click)="closeNavigation()">
 
-            <span
-              class="navigation-icon"
-              aria-hidden="true">
+            <span class="navigation-icon" aria-hidden="true">
               ▣
             </span>
 
@@ -111,21 +98,21 @@
 
         </li>
 
-        <!-- Ocorrências -->
+
+        <!-- =================================================
+             OCORRÊNCIAS
+             ================================================= -->
+
         <li>
 
-          <a
-            routerLink="/occurrences"
-            routerLinkActive="is-active"
-            #occurrencesLink="routerLinkActive"
+          <a routerLink="/occurrences" routerLinkActive="is-active" #occurrencesLink="routerLinkActive"
             [attr.aria-current]="
-              occurrencesLink.isActive ? 'page' : null
-            "
-            (click)="closeNavigation()">
+              occurrencesLink.isActive
+                ? 'page'
+                : null
+            " (click)="closeNavigation()">
 
-            <span
-              class="navigation-icon"
-              aria-hidden="true">
+            <span class="navigation-icon" aria-hidden="true">
               !
             </span>
 
@@ -138,21 +125,23 @@
         </li>
 
 
+        <!-- =================================================
+             OPÇÕES EXCLUSIVAS DO ADMINISTRADOR
+             ================================================= -->
+
+        @if (isAdmin()) {
+
         <!-- Configuração de Pesos -->
+
         <li>
 
-          <a
-            routerLink="/weights"
-            routerLinkActive="is-active"
-            #weightsLink="routerLinkActive"
-            [attr.aria-current]="
-              weightsLink.isActive ? 'page' : null
-            "
-            (click)="closeNavigation()">
+          <a routerLink="/weights" routerLinkActive="is-active" #weightsLink="routerLinkActive" [attr.aria-current]="
+                weightsLink.isActive
+                  ? 'page'
+                  : null
+              " (click)="closeNavigation()">
 
-            <span
-              class="navigation-icon"
-              aria-hidden="true">
+            <span class="navigation-icon" aria-hidden="true">
               ⚖
             </span>
 
@@ -166,20 +155,16 @@
 
 
         <!-- Usuários e Acessos -->
+
         <li>
 
-          <a
-            routerLink="/users"
-            routerLinkActive="is-active"
-            #usersLink="routerLinkActive"
-            [attr.aria-current]="
-              usersLink.isActive ? 'page' : null
-            "
-            (click)="closeNavigation()">
+          <a routerLink="/users" routerLinkActive="is-active" #usersLink="routerLinkActive" [attr.aria-current]="
+                usersLink.isActive
+                  ? 'page'
+                  : null
+              " (click)="closeNavigation()">
 
-            <span
-              class="navigation-icon"
-              aria-hidden="true">
+            <span class="navigation-icon" aria-hidden="true">
               ♙
             </span>
 
@@ -191,6 +176,8 @@
 
         </li>
 
+        }
+
       </ul>
 
     </nav>
@@ -199,34 +186,30 @@
 
 
   <!-- =====================================================
-       FUNDO SOBREPOSTO - MOBILE
+       OVERLAY MOBILE
        ===================================================== -->
 
-  <button
-    type="button"
-    class="navigation-overlay"
-    [class.is-visible]="isNavigationOpen"
-    (click)="closeNavigation()"
+  <button type="button" class="navigation-overlay" [class.is-visible]="isNavigationOpen" (click)="closeNavigation()"
     aria-label="Fechar menu de navegação">
   </button>
 
 
   <!-- =====================================================
-       ÁREA PRINCIPAL DA APLICAÇÃO
+       CONTEÚDO PRINCIPAL
        ===================================================== -->
 
   <div class="application-content">
 
-    <!-- Barra superior -->
+    <!-- ===================================================
+         CABEÇALHO
+         =================================================== -->
+
     <header class="application-header">
 
-      <button
-        type="button"
-        class="navigation-toggle"
-        (click)="toggleNavigation()"
-        [attr.aria-expanded]="isNavigationOpen"
-        aria-controls="main-navigation"
-        aria-label="Alternar menu de navegação">
+      <!-- Botão do menu -->
+
+      <button type="button" class="navigation-toggle" (click)="toggleNavigation()"
+        [attr.aria-expanded]="isNavigationOpen" aria-controls="main-navigation" aria-label="Alternar menu de navegação">
 
         <span aria-hidden="true">
           ☰
@@ -235,23 +218,85 @@
       </button>
 
 
-      <!-- Usuário autenticado -->
+      <!-- =================================================
+           USUÁRIO AUTENTICADO
+           ================================================= -->
+
       <div class="current-user">
 
-        <span class="current-user-name">
-          Administrador
-        </span>
+        <!-- Informações do usuário -->
 
-        <button
-          type="button"
-          class="current-user-avatar"
-          aria-label="Abrir opções do usuário">
+        <div class="current-user-information">
+
+          <span class="current-user-name">
+            {{ currentUserName() }}
+          </span>
+
+          <span class="current-user-role">
+            {{ currentUserRole() }}
+          </span>
+
+        </div>
+
+
+        <!-- Avatar -->
+
+        <button type="button" class="current-user-avatar" [attr.aria-expanded]="isUserMenuOpen()" aria-haspopup="menu"
+          aria-controls="user-menu" aria-label="Abrir menu do usuário" (click)="toggleUserMenu()">
 
           <span aria-hidden="true">
-            AD
+            {{ currentUserInitials() }}
           </span>
 
         </button>
+
+
+        <!-- =================================================
+             MENU DO USUÁRIO
+             ================================================= -->
+
+        @if (isUserMenuOpen()) {
+
+        <div id="user-menu" class="user-menu" role="menu" aria-label="Opções do usuário">
+
+          <!-- Dados do usuário -->
+
+          <div class="user-menu-header">
+
+            <span class="user-menu-email">
+              {{ currentUserEmail() }}
+            </span>
+
+            <span class="user-menu-role">
+              {{ currentUserRole() }}
+            </span>
+
+          </div>
+
+
+          <!-- Separador -->
+
+          <div class="user-menu-divider" aria-hidden="true">
+          </div>
+
+
+          <!-- Logout -->
+
+          <button type="button" class="user-menu-action" role="menuitem" (click)="logout()">
+
+            <span class="user-menu-icon" aria-hidden="true">
+              →
+            </span>
+
+            <span>
+              Sair
+            </span>
+
+          </button>
+
+        </div>
+
+        }
 
       </div>
 
@@ -262,9 +307,7 @@
          CONTEÚDO DAS ROTAS
          =================================================== -->
 
-    <main
-      class="route-content"
-      id="main-content">
+    <main class="route-content" id="main-content">
 
       <router-outlet></router-outlet>
 

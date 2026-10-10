@@ -1,7 +1,8 @@
 import {
   Component,
   inject,
-  signal
+  signal,
+  OnInit
 } from '@angular/core';
 
 import {
@@ -13,6 +14,7 @@ import {
 import { filter, map, startWith } from 'rxjs';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { Navigation } from './core/components/navigation/navigation';
+import { AuthService } from './core/services/auth/auth-service';
 
 @Component({
   selector: 'app-root',
@@ -25,11 +27,12 @@ import { Navigation } from './core/components/navigation/navigation';
   styleUrl: './app.css',
   templateUrl: './app.html'
 })
-export class App {
+export class App implements OnInit {
 
   protected readonly title = signal('pme-scoring-web');
 
   private readonly router = inject(Router);
+  private readonly authService = inject(AuthService)
 
   readonly isLoginPage = toSignal(
     this.router.events.pipe(
@@ -40,6 +43,8 @@ export class App {
     { initialValue: window.location.pathname.startsWith('/login') }
   );
 
-
+  ngOnInit(): void {
+    this.authService.checkSession();
+  }
 
 }

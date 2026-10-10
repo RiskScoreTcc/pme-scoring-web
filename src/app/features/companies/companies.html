@@ -1,4 +1,3 @@
-
 <section class="companies-page">
 
   <!-- =====================================================
@@ -18,8 +17,8 @@
       </h1>
 
       <p>
-        Consulte empresas cadastradas e acompanhe seus indicadores
-        de risco, pontuação e ocorrências.
+        Consulte empresas, scores, ocorrências e informações
+        utilizadas na análise de risco.
       </p>
 
     </div>
@@ -28,13 +27,7 @@
 
       <a routerLink="/companies/new" class="button button-primary">
 
-        <span class="button-icon" aria-hidden="true">
-          +
-        </span>
-
-        <span>
-          Nova empresa
-        </span>
+        Cadastrar empresa
 
       </a>
 
@@ -44,54 +37,52 @@
 
 
   <!-- =====================================================
-       INDICADORES
+       RESUMO
        ===================================================== -->
 
-  <section class="summary-section" aria-labelledby="companies-summary-title">
+  <section class="summary-section" aria-labelledby="summary-title">
 
     <div class="section-heading">
 
-      <div>
-
-        <span class="section-eyebrow">
-          RESUMO
-        </span>
-
-        <h2 id="companies-summary-title">
-          Visão geral
-        </h2>
-
-      </div>
+      <h2 id="summary-title">
+        Resumo da carteira
+      </h2>
 
     </div>
 
 
     <div class="summary-grid">
 
+      <!-- Total -->
+
       <article class="summary-card">
 
         <div class="summary-card-header">
 
           <span class="summary-label">
-            Total de empresas
+            Empresas avaliadas
           </span>
 
           <span class="summary-icon" aria-hidden="true">
-            ▣
+
+            E
+
           </span>
 
         </div>
 
         <strong class="summary-value">
-          1.248
+          {{ totalCompanieSearch() | number:'1.0-0' }}
         </strong>
 
         <span class="summary-description">
-          Empresas cadastradas
+          Total encontrado na consulta
         </span>
 
       </article>
 
+
+      <!-- Baixo -->
 
       <article class="summary-card">
 
@@ -102,21 +93,31 @@
           </span>
 
           <span class="summary-icon summary-icon-positive" aria-hidden="true">
-            ✓
+
+            OK
+
           </span>
 
         </div>
 
         <strong class="summary-value">
-          742
+          {{ lowRiskCount() | number:'1.0-0' }}
         </strong>
 
         <span class="summary-description">
-          59,5% das empresas
+
+          {{
+          riskPercentageCalculation(
+          lowRiskCount()
+          )
+          }}% das empresas
+
         </span>
 
       </article>
 
+
+      <!-- Médio -->
 
       <article class="summary-card">
 
@@ -127,21 +128,31 @@
           </span>
 
           <span class="summary-icon summary-icon-warning" aria-hidden="true">
+
             !
+
           </span>
 
         </div>
 
         <strong class="summary-value">
-          381
+          {{ mediumRiskCount() | number:'1.0-0' }}
         </strong>
 
         <span class="summary-description">
-          30,5% das empresas
+
+          {{
+          riskPercentageCalculation(
+          mediumRiskCount()
+          )
+          }}% das empresas
+
         </span>
 
       </article>
 
+
+      <!-- Alto -->
 
       <article class="summary-card">
 
@@ -152,17 +163,25 @@
           </span>
 
           <span class="summary-icon summary-icon-danger" aria-hidden="true">
+
             !
+
           </span>
 
         </div>
 
         <strong class="summary-value">
-          125
+          {{ highRiskCount() | number:'1.0-0' }}
         </strong>
 
         <span class="summary-description">
-          10,0% das empresas
+
+          {{
+          riskPercentageCalculation(
+          highRiskCount()
+          )
+          }}% das empresas
+
         </span>
 
       </article>
@@ -191,7 +210,7 @@
         </h2>
 
         <p>
-          Pesquise empresas e consulte suas informações,
+          Pesquise empresas e consulte seus dados,
           scores e ocorrências.
         </p>
 
@@ -212,18 +231,10 @@
           Buscar empresa
         </label>
 
-        <div class="input-wrapper">
+        <input id="company-search" type="search" placeholder="Nome ou CNPJ" autocomplete="off" [value]="searchTerm()"
+          (input)="searchTerm.set($any($event.target).value)">
 
-          <span class="input-icon" aria-hidden="true">
-            ⌕
-          </span>
-
-          <input id="company-search" type="search" placeholder="Nome ou CNPJ" autocomplete="off"
-            aria-describedby="company-search-help">
-
-        </div>
-
-        <span id="company-search-help" class="field-help">
+        <span class="field-help">
           Informe o nome da empresa ou o CNPJ.
         </span>
 
@@ -236,21 +247,25 @@
           Faixa de risco
         </label>
 
-        <select id="risk-filter">
+        <select id="risk-filter" [value]="selectedRisk() ?? ''" (change)="
+            selectedRisk.set(
+              $any($event.target).value || null
+            )
+          ">
 
           <option value="">
             Todas as faixas
           </option>
 
-          <option value="low">
+          <option value="LOW">
             Baixo risco
           </option>
 
-          <option value="medium">
+          <option value="MEDIUM">
             Médio risco
           </option>
 
-          <option value="high">
+          <option value="HIGH">
             Alto risco
           </option>
 
@@ -258,35 +273,9 @@
 
       </div>
 
-
-      <div class="filter-field">
-
-        <label for="status-filter">
-          Situação
-        </label>
-
-        <select id="status-filter">
-
-          <option value="">
-            Todas
-          </option>
-
-          <option value="active">
-            Ativa
-          </option>
-
-          <option value="inactive">
-            Inativa
-          </option>
-
-        </select>
-
-      </div>
-
-
       <div class="filter-actions">
 
-        <button type="button" class="button button-secondary">
+        <button type="button" class="button button-secondary" (click)="clearFilters()">
 
           Limpar filtros
 
@@ -301,363 +290,343 @@
          RESULTADOS
          =================================================== -->
 
-    <div class="results-header">
+    <section class="results-card">
 
-      <span class="results-count">
-        <strong>1.248</strong>
-        empresas encontradas
-      </span>
+      <header class="results-header">
 
-      <div class="results-sort">
+        <div>
 
-        <label for="company-sort">
-          Ordenar por
-        </label>
+          <strong>
+            Resultados
+          </strong>
 
-        <select id="company-sort">
+          <span>
+            {{ totalCompanies() | number:'1.0-0' }}
+            empresas
+          </span>
 
-          <option value="score">
-            Score
-          </option>
+        </div>
 
-          <option value="name">
-            Nome
-          </option>
+        @if (isLoading()) {
 
-          <option value="risk">
-            Faixa de risco
-          </option>
+        <span class="loading-label" role="status">
 
-        </select>
+          Carregando empresas...
 
-      </div>
+        </span>
 
-    </div>
+        }
 
+      </header>
 
-    <!-- ===================================================
-         TABELA
-         =================================================== -->
 
-    <div class="table-container">
+      <!-- =================================================
+           TABELA
+           ================================================= -->
 
-      <table>
+      <div class="table-container">
 
-        <caption class="visually-hidden">
-          Lista de empresas avaliadas pelo sistema de scoring.
-        </caption>
+        <table>
 
-        <thead>
+          <caption class="visually-hidden">
+            Lista de empresas cadastradas
+          </caption>
 
-          <tr>
+          <thead>
 
-            <th scope="col">
-              Empresa
-            </th>
+            <tr>
 
-            <th scope="col">
-              CNPJ
-            </th>
+              <th scope="col">
+                Empresa
+              </th>
 
-            <th scope="col" class="score-column">
-              Score
-            </th>
+              <th scope="col">
+                CNPJ
+              </th>
 
-            <th scope="col">
-              Faixa de risco
-            </th>
+              <th scope="col">
+                Receita média
+              </th>
 
-            <th scope="col">
-              Situação
-            </th>
+              <th scope="col">
+                Score
+              </th>
 
-            <th scope="col" class="actions-column">
-              Ações
-            </th>
+              <th scope="col">
+                Risco
+              </th>
 
-          </tr>
+              <th scope="col">
+                Situação
+              </th>
 
-        </thead>
+              <th scope="col">
+                Ações
+              </th>
 
+            </tr>
 
-        <tbody>
-<!--
-          @for (company of companies; track company.id) {
+          </thead>
 
-          <tr>
 
-            <td>
+          <tbody>
 
-              <div class="company-cell">
+            @if (
+            companiesSearchResults()?.content?.length
+            ) {
 
-                <strong>
-                  {{ company.legalName }}
-                </strong>
+            @for (
+            company of companiesSearchResults()!.content;
+            track company.firm.id
+            ) {
 
-                <span>
-                  {{ company.sector }}
-                </span>
+            <tr>
 
-              </div>
+              <!-- Empresa -->
 
-            </td>
+              <td>
 
+                <div class="company-cell">
 
-            <td>
-              {{ company.cnpj }}
-            </td>
-
-
-            <td class="score-column">
-
-              @if (company.score !== null) {
-
-              <strong class="score" [class.score-low]="company.risk === 'low'"
-                [class.score-medium]="company.risk === 'medium'" [class.score-high]="company.risk === 'high'">
-
-                {{ company.score }}
-
-              </strong>
-
-              } @else {
-
-              <span class="score-empty">
-                Não calculado
-              </span>
-
-              }
-
-            </td>
-
-
-            <td>
-
-              @if (company.risk) {
-
-              <span class="risk-badge" [class.risk-low]="company.risk === 'low'"
-                [class.risk-medium]="company.risk === 'medium'" [class.risk-high]="company.risk === 'high'">
-
-                {{ getRiskLabel(company.risk) }}
-
-              </span>
-
-              } @else {
-
-              <span class="risk-badge risk-unrated">
-                Não avaliado
-              </span>
-
-              }
-
-            </td>
-
-
-            <td>
-
-              <span class="status-badge" [class.status-active]="company.status === 'active'">
-
-                {{ company.status === 'active' ? 'Ativa' : 'Inativa' }}
-
-              </span>
-
-            </td>
-
-          -->
-            <!-- =================================================
-                   AÇÕES
-                   ================================================= -->
-<!--
-            <td class="actions-column">
-
-              <div class="action-menu">
-
-                <button type="button" class="table-action" [attr.aria-label]="'Ações para ' + company.legalName"
-                  aria-haspopup="menu" [attr.aria-expanded]="openActionMenu === company.id"
-                  (click)="toggleActionMenu(company.id)">
-
-                  <span aria-hidden="true">
-                    ⋮
+                  <strong>
+                    {{
+                    company.firm.registeredCompanyName
+                    }}
+                  </strong>
+
+                  <span>
+                    ID #{{ company.firm.id }}
                   </span>
-
-                </button>
-
-
-                @if (openActionMenu === company.id) {
-
-                <div class="action-menu-dropdown" role="menu" [attr.aria-label]="'Ações de ' + company.legalName">
-
-                  <button type="button" role="menuitem" (click)="openCompanyDetails(company.id)">
-
-                    <span aria-hidden="true">
-                      ◉
-                    </span>
-
-                    Ver empresa
-
-                  </button>
-
-
-                  <a role="menuitem" [routerLink]="['/companies', company.id, 'edit']" (click)="openActionMenu = null">
-
-                    <span aria-hidden="true">
-                      ✎
-                    </span>
-
-                    Editar dados
-
-                  </a>
-
-
-                  <div class="menu-divider"></div>
-
-
-                  <button type="button" role="menuitem" (click)="openScore(company.id)">
-
-                    <span aria-hidden="true">
-                      ◈
-                    </span>
-
-                    Ver score
-
-                  </button>
-
-
-                  <button type="button" role="menuitem" (click)="openScoreCalculation(company.id)">
-
-                    <span aria-hidden="true">
-                      ↻
-                    </span>
-
-                    {{ company.score !== null
-                    ? 'Recalcular score'
-                    : 'Calcular score' }}
-
-                  </button>
-
-
-                  <div class="menu-divider"></div>
-
-
-                  <button type="button" role="menuitem" (click)="openOccurrences(company.id)">
-
-                    <span aria-hidden="true">
-                      ≡
-                    </span>
-
-                    Ver ocorrências
-
-                  </button>
-
-
-                  <button type="button" role="menuitem" (click)="openNewOccurrence(company.id)">
-
-                    <span aria-hidden="true">
-                      +
-                    </span>
-
-                    Nova ocorrência
-
-                  </button>
-
-
-                  <div class="menu-divider"></div>
-
-
-                  <button type="button" role="menuitem" class="action-danger"
-                    (click)="openDeleteConfirmation(company.id)">
-
-                    <span aria-hidden="true">
-                      ×
-                    </span>
-
-                    Excluir empresa
-
-                  </button>
 
                 </div>
 
+              </td>
+
+
+              <!-- CNPJ -->
+
+              <td>
+
+                {{
+                formatCnpj(
+                company.firm.cnpj
+                )
+                }}
+
+              </td>
+
+
+              <!-- Receita -->
+
+              <td>
+
+                {{
+                formatCurrency(
+                company.firm.averageRevenue
+                )
+                }}
+
+              </td>
+
+
+              <!-- Score -->
+
+              <td>
+
+                @if (
+                company.calculatedScore
+                ) {
+
+                <strong class="score-value">
+
+                  {{
+                  company.calculatedScore.scoreValue
+                  }}
+
+                </strong>
+
+                } @else {
+
+                <span class="not-available">
+                  Não calculado
+                </span>
+
                 }
 
-              </div>
-
-            </td>
-
-          </tr>
-
-          }
-
-        </tbody>
-
-      </table>
-
-    </div>
-  -->
-
-    <!-- ===================================================
-         PAGINAÇÃO
-         =================================================== -->
-<!--
-    <nav class="pagination" aria-label="Paginação da lista de empresas">
-
-      <button type="button" class="pagination-button" disabled aria-label="Página anterior">
-
-        ←
-
-      </button>
+              </td>
 
 
-      <button type="button" class="pagination-button is-current" aria-current="page">
+              <!-- Risco -->
 
-        1
+              <td>
 
-      </button>
+                <span class="risk-badge" [class]="
+                        getRiskClass(
+                          company.calculatedScore?.riskBand
+                        )
+                      ">
 
+                  {{
+                  getRiskLabel(
+                  company.calculatedScore?.riskBand
+                  )
+                  }}
 
-      <button type="button" class="pagination-button">
-        2
-      </button>
+                </span>
 
-
-      <button type="button" class="pagination-button">
-        3
-      </button>
-
-
-      <span class="pagination-ellipsis" aria-hidden="true">
-
-        ...
-
-      </span>
+              </td>
 
 
-      <button type="button" class="pagination-button">
-        25
-      </button>
+              <!-- Status -->
+
+              <td>
+
+                <span class="status-badge" [class]="
+                        getStatusClass(
+                          company.firm.status
+                        )
+                      ">
+
+                  <span class="status-dot" aria-hidden="true">
+                  </span>
+
+                  {{
+                  getStatusLabel(
+                  company.firm.status
+                  )
+                  }}
+
+                </span>
+
+              </td>
 
 
-      <button type="button" class="pagination-button" aria-label="Próxima página">
+              <!-- Ações -->
 
-        →
+              <td class="actions-cell">
 
-      </button>
+                <button type="button" class="details-button" (click)="
+                        openCompanyDetails(company)
+                      ">
 
-    </nav>
+                  Ver detalhes
+
+                </button>
+
+              </td>
+
+            </tr>
+
+            }
+
+            } @else {
+
+            <tr>
+
+              <td colspan="7" class="empty-table">
+
+                @if (isLoading()) {
+
+                <strong>
+                  Carregando empresas...
+                </strong>
+
+                } @else {
+
+                <strong>
+                  Nenhuma empresa encontrada
+                </strong>
+
+                <span>
+                  Tente ajustar os filtros da consulta.
+                </span>
+
+                }
+
+              </td>
+
+            </tr>
+
+            }
+
+          </tbody>
+
+        </table>
+
+      </div>
+
+
+      <!-- =================================================
+           PAGINAÇÃO
+           ================================================= -->
+
+      @if (totalPage() > 0) {
+
+      <nav class="pagination" aria-label="Paginação da lista de empresas">
+
+        <button type="button" class="pagination-button" [disabled]="currentPage() === 0" (click)="
+              goToPage(
+                currentPage() - 1
+              )
+            " aria-label="Página anterior">
+
+          Anterior
+
+        </button>
+
+
+        <span class="pagination-current">
+
+          Página
+          {{ currentPage() + 1 }}
+          de
+          {{ totalPage() }}
+
+        </span>
+
+
+        <button type="button" class="pagination-button" [disabled]="
+              currentPage() >= totalPage() - 1
+            " (click)="
+              goToPage(
+                currentPage() + 1
+              )
+            " aria-label="Próxima página">
+
+          Próxima
+
+        </button>
+
+      </nav>
+
+      }
+
+    </section>
 
   </section>
 
 </section>
 
--->
+
 <!-- =====================================================
-     MODAL — DETALHES DA EMPRESA
+     MODAL — DETALHES / EDIÇÃO
      ===================================================== -->
-<!--
-@if (activeModal === 'details' && selectedCompany) {
+
+@if (
+activeModal === 'details'
+&&
+selectedCompany
+) {
 
 <div class="modal-backdrop" (click)="closeAllModals()">
 
-  <section class="company-modal" role="dialog" aria-modal="true" aria-labelledby="company-details-title"
-    (click)="$event.stopPropagation()">
+  <section class="company-modal company-details-modal" role="dialog" aria-modal="true"
+    aria-labelledby="company-details-title" (click)="$event.stopPropagation()">
+
+
+    <!-- =================================================
+           HEADER
+           ================================================= -->
 
     <header class="modal-header">
 
@@ -668,17 +637,28 @@
         </span>
 
         <h2 id="company-details-title">
-          {{ selectedCompany.legalName }}
+
+          {{
+          selectedCompany.firm.registeredCompanyName
+          }}
+
         </h2>
 
         <p>
-          CNPJ {{ selectedCompany.cnpj }}
+
+          CNPJ
+          {{
+          formatCnpj(
+          selectedCompany.firm.cnpj
+          )
+          }}
+
         </p>
 
       </div>
 
 
-      <button type="button" class="modal-close" aria-label="Fechar" (click)="closeAllModals()">
+      <button type="button" class="modal-close" aria-label="Fechar detalhes da empresa" (click)="closeAllModals()">
 
         ×
 
@@ -687,164 +667,544 @@
     </header>
 
 
+    <!-- =================================================
+           CONTEÚDO
+           ================================================= -->
+
     <div class="modal-content">
 
-      <div class="company-detail-grid">
 
-        <div class="detail-item">
+      <!-- ===============================================
+             MODO EDIÇÃO
+             =============================================== -->
 
-          <span>
-            Razão social
-          </span>
+      @if (isEditing()) {
 
-          <strong>
-            {{ selectedCompany.legalName }}
-          </strong>
-
-        </div>
-
-
-        <div class="detail-item">
-
-          <span>
-            Nome fantasia
-          </span>
-
-          <strong>
-            {{ selectedCompany.tradeName }}
-          </strong>
-
-        </div>
-
-
-        <div class="detail-item">
-
-          <span>
-            CNPJ
-          </span>
-
-          <strong>
-            {{ selectedCompany.cnpj }}
-          </strong>
-
-        </div>
-
-
-        <div class="detail-item">
-
-          <span>
-            Setor
-          </span>
-
-          <strong>
-            {{ selectedCompany.sector }}
-          </strong>
-
-        </div>
-
-
-        <div class="detail-item">
-
-          <span>
-            Situação
-          </span>
-
-          <span class="status-badge status-active">
-            {{ selectedCompany.status === 'active' ? 'Ativa' : 'Inativa' }}
-          </span>
-
-        </div>
-
-
-        <div class="detail-item">
-
-          <span>
-            Ocorrências
-          </span>
-
-          <strong>
-            {{ selectedCompany.occurrences.length }}
-          </strong>
-
-        </div>
-
-      </div>
-
-
-      <div class="current-score-card">
+      <div class="editing-banner" role="status">
 
         <div>
 
+          <strong>
+            Editando dados da empresa
+          </strong>
+
           <span>
-            SCORE ATUAL
+            Altere os campos necessários e salve as
+            informações quando terminar.
           </span>
-
-          @if (selectedCompany.score !== null) {
-
-          <strong class="score" [class.score-low]="selectedCompany.risk === 'low'"
-            [class.score-medium]="selectedCompany.risk === 'medium'"
-            [class.score-high]="selectedCompany.risk === 'high'">
-
-            {{ selectedCompany.score }}
-
-          </strong>
-
-          } @else {
-
-          <strong class="score score-empty">
-            Não calculado
-          </strong>
-
-          }
 
         </div>
 
+      </div>
 
-        @if (selectedCompany.risk) {
+      }
 
-        <span class="risk-badge" [class.risk-low]="selectedCompany.risk === 'low'"
-          [class.risk-medium]="selectedCompany.risk === 'medium'" [class.risk-high]="selectedCompany.risk === 'high'">
 
-          {{ getRiskLabel(selectedCompany.risk) }}
+      <form class="company-edit-form" [formGroup]="companyForm" (ngSubmit)="saveCompanyChanges()" novalidate>
 
-        </span>
+
+        <!-- =============================================
+               DADOS DA EMPRESA
+               ============================================= -->
+
+        <section class="detail-section">
+
+          <div class="detail-section-header">
+
+            <div>
+
+              <span class="section-eyebrow">
+                DADOS CADASTRAIS
+              </span>
+
+              <h3>
+                Informações da empresa
+              </h3>
+
+            </div>
+
+          </div>
+
+
+          <div class="company-detail-grid">
+
+
+            <!-- Razão social -->
+
+            <div class="detail-field">
+
+              <label for="detail-company-name">
+                Razão social
+              </label>
+
+              <input id="detail-company-name" type="text" formControlName="registeredCompanyName"
+                autocomplete="organization" [attr.aria-invalid]="
+                    isInvalid(
+                      'registeredCompanyName'
+                    )
+                  " [readonly]="!isEditing()">
+
+              @if (
+              isInvalid(
+              'registeredCompanyName'
+              )
+              ) {
+
+              <span class="field-error" role="alert">
+
+                Informe uma razão social válida.
+
+              </span>
+
+              }
+
+            </div>
+
+
+            <!-- CNPJ -->
+
+            <div class="detail-field">
+
+              <label for="detail-cnpj">
+                CNPJ
+              </label>
+
+              <input id="detail-cnpj" type="text" formControlName="cnpj" inputmode="numeric" maxlength="18"
+                autocomplete="off" [readonly]="!isEditing()" (input)="
+                    isEditing()
+                      ? onCnpjInput($event)
+                      : null
+                  ">
+
+              @if (
+              isInvalid('cnpj')
+              ) {
+
+              <span class="field-error" role="alert">
+
+                Informe um CNPJ válido.
+
+              </span>
+
+              }
+
+            </div>
+
+
+            <!-- Receita -->
+
+            <div class="detail-field">
+
+              <label for="detail-revenue">
+                Receita média
+              </label>
+
+              <div class="money-input">
+
+                <span>
+                  R$
+                </span>
+
+                <input id="detail-revenue" type="number" formControlName="averageRevenue" inputmode="decimal" min="0"
+                  max="999999999999.99" step="0.01" [readonly]="!isEditing()">
+
+              </div>
+
+              <span class="field-help">
+                Máximo permitido:
+                R$ 999.999.999.999,99
+              </span>
+
+            </div>
+
+
+            <!-- Tempo -->
+
+            <div class="detail-field">
+
+              <label for="detail-age">
+                Tempo de atividade
+              </label>
+
+              <div class="number-input">
+
+                <input id="detail-age" type="number" formControlName="ageInMonths" min="0" max="1200" step="1"
+                  inputmode="numeric" [readonly]="!isEditing()">
+
+                <span>
+                  meses
+                </span>
+
+              </div>
+
+            </div>
+
+
+            <!-- Funcionários -->
+
+            <div class="detail-field">
+
+              <label for="detail-employees">
+                Número de funcionários
+              </label>
+
+              <input id="detail-employees" type="number" formControlName="numberOfEmployees" min="0" max="999999"
+                step="1" inputmode="numeric" [readonly]="!isEditing()">
+
+            </div>
+
+
+            <!-- Status -->
+
+            <div class="detail-field">
+
+              <span class="detail-label">
+                Situação
+              </span>
+
+              <span class="status-badge" [class]="
+                    getStatusClass(
+                      selectedCompany.firm.status
+                    )
+                  ">
+
+                <span class="status-dot" aria-hidden="true">
+                </span>
+
+                {{
+                getStatusLabel(
+                selectedCompany.firm.status
+                )
+                }}
+
+              </span>
+
+            </div>
+
+          </div>
+
+        </section>
+
+
+        <!-- =============================================
+               SCORE
+               ============================================= -->
+
+        <section class="current-score-card">
+
+          <div class="score-card-main">
+
+            <div>
+
+              <span class="score-card-label">
+                SCORE ATUAL
+              </span>
+
+              @if (selectedScore) {
+
+              <strong class="score-card-value" [class]="
+                      getRiskClass(
+                        selectedScore.riskBand
+                      )
+                    ">
+
+                {{
+                selectedScore.scoreValue
+                }}
+
+              </strong>
+
+              <span class="risk-badge" [class]="
+                      getRiskClass(
+                        selectedScore.riskBand
+                      )
+                    ">
+
+                {{
+                getRiskLabel(
+                selectedScore.riskBand
+                )
+                }}
+
+              </span>
+
+              } @else {
+
+              <strong class="score-not-calculated">
+                Não calculado
+              </strong>
+
+              }
+
+            </div>
+
+
+            <div class="score-card-date">
+
+              <span>
+                Data do cálculo
+              </span>
+
+              <strong>
+
+                {{
+                selectedScore
+                ? formatDate(
+                selectedScore.calculationDate
+                )
+                : 'Não realizada'
+                }}
+
+              </strong>
+
+            </div>
+
+          </div>
+
+
+          @if (selectedScore) {
+
+          <div class="score-card-justification">
+
+            <span>
+              Justificativa
+            </span>
+
+            <p>
+              {{ selectedScore.justification }}
+            </p>
+
+          </div>
+
+
+          <div class="score-disclaimer">
+
+            {{ selectedScore.disclaimer }}
+
+          </div>
+
+          }
+
+        </section>
+
+
+        <!-- =============================================
+               OCORRÊNCIAS
+               ============================================= -->
+
+        <section class="occurrence-summary-card">
+
+          <div>
+
+            <span>
+              Ocorrências registradas
+            </span>
+
+            <strong>
+              {{
+              selectedOccurrences.length
+              ?? 0
+              }}
+            </strong>
+
+          </div>
+
+
+          <div>
+
+            <span>
+              Ocorrências ativas
+            </span>
+
+            <strong>
+              {{
+              selectedCompany
+              ?? 0
+              }}
+            </strong>
+
+          </div>
+
+        </section>
+
+
+        <!-- =============================================
+               AÇÕES
+               ============================================= -->
+
+        @if (!isEditing()) {
+
+        <section class="company-actions">
+
+          <h3>
+            Ações da empresa
+          </h3>
+
+
+          <div class="company-actions-grid">
+
+
+            <button type="button" class="action-card" (click)="
+                    enableCompanyEdit()
+                  ">
+
+              <strong>
+                Editar dados
+              </strong>
+
+              <span>
+                Alterar informações cadastrais
+              </span>
+
+            </button>
+
+
+            <button type="button" class="action-card" (click)="
+                    openScore(selectedCompany!)
+                  ">
+
+              <strong>
+                Ver score
+              </strong>
+
+              <span>
+                Consultar cálculo e fatores
+              </span>
+
+            </button>
+
+
+            <button type="button" class="action-card" (click)="
+                    openScoreCalculation(
+                      selectedCompany!
+                    )
+                  ">
+
+              <strong>
+                {{
+                selectedScore
+                ? 'Recalcular score'
+                : 'Calcular score'
+                }}
+              </strong>
+
+              <span>
+                Executar uma nova avaliação
+              </span>
+
+            </button>
+
+
+            <button type="button" class="action-card" (click)="
+                    openOccurrences(
+                      selectedCompany!
+                    )
+                  ">
+
+              <strong>
+                Ver ocorrências
+              </strong>
+
+              <span>
+                Consultar histórico financeiro
+              </span>
+
+            </button>
+
+
+            <button type="button" class="action-card" (click)="
+                    openNewOccurrence(
+                      selectedCompany!
+                    )
+                  ">
+
+              <strong>
+                Nova ocorrência
+              </strong>
+
+              <span>
+                Registrar uma ocorrência
+              </span>
+
+            </button>
+
+
+            <button type="button" class="action-card action-card-danger" (click)="
+                    openDeleteConfirmation(
+                      selectedCompany!
+                    )
+                  ">
+
+              <strong>
+                Excluir empresa
+              </strong>
+
+              <span>
+                Remover empresa do cadastro
+              </span>
+
+            </button>
+
+          </div>
+
+        </section>
 
         }
 
-      </div>
-
-
-      <div class="modal-section">
-
-        <h3>
-          Última avaliação
-        </h3>
-
-        <p>
-          {{ selectedCompany.lastScoreDate ?? 'Ainda não avaliada' }}
-        </p>
-
-      </div>
+      </form>
 
     </div>
 
 
+    <!-- ===============================================
+           FOOTER
+           =============================================== -->
+
     <footer class="modal-footer">
 
-      <button type="button" class="button button-secondary" (click)="closeAllModals()">
+
+      @if (isEditing()) {
+
+      <button type="button" class="button button-secondary" [disabled]="isSaving()" (click)="
+              cancelCompanyEdit()
+            ">
+
+        Cancelar
+
+      </button>
+
+
+      <button type="submit" class="button button-primary" [disabled]="
+              isSaving()
+              ||
+              companyForm.invalid
+            " (click)="
+              saveCompanyChanges()
+            ">
+
+        @if (isSaving()) {
+
+        Salvando...
+
+        } @else {
+
+        Salvar alterações
+
+        }
+
+      </button>
+
+      } @else {
+
+      <button type="button" class="button button-secondary" (click)="
+              closeAllModals()
+            ">
 
         Fechar
 
       </button>
 
-
-      <button type="button" class="button button-primary" (click)="openScoreCalculation(selectedCompany.id)">
-
-        {{ selectedCompany.score !== null
-        ? 'Recalcular score'
-        : 'Calcular score' }}
-
-      </button>
+      }
 
     </footer>
 
@@ -854,16 +1214,20 @@
 
 }
 
--->
+
 <!-- =====================================================
      MODAL — SCORE
      ===================================================== -->
-<!--
-@if (activeModal === 'score' && selectedCompany) {
+
+@if (
+activeModal === 'score'
+&&
+selectedCompany
+) {
 
 <div class="modal-backdrop" (click)="closeAllModals()">
 
-  <section class="company-modal score-modal" role="dialog" aria-modal="true" aria-labelledby="score-title"
+  <section class="company-modal" role="dialog" aria-modal="true" aria-labelledby="score-title"
     (click)="$event.stopPropagation()">
 
     <header class="modal-header">
@@ -875,17 +1239,19 @@
         </span>
 
         <h2 id="score-title">
-          Avaliação de risco
+          Score da empresa
         </h2>
 
         <p>
-          {{ selectedCompany.legalName }}
+          {{
+          selectedCompany.firm.registeredCompanyName
+          }}
         </p>
 
       </div>
 
 
-      <button type="button" class="modal-close" aria-label="Fechar" (click)="closeAllModals()">
+      <button type="button" class="modal-close" aria-label="Fechar score" (click)="closeAllModals()">
 
         ×
 
@@ -896,64 +1262,136 @@
 
     <div class="modal-content">
 
-      <div class="score-overview">
+      @if (selectedScore) {
+
+      <div class="score-detail-hero">
 
         <span>
-          SCORE ATUAL
+          SCORE
         </span>
 
-
-        @if (selectedCompany.score !== null) {
-
-        <strong class="large-score" [class.score-low]="selectedCompany.risk === 'low'"
-          [class.score-medium]="selectedCompany.risk === 'medium'" [class.score-high]="selectedCompany.risk === 'high'">
-
-          {{ selectedCompany.score }}
-
+        <strong>
+          {{ selectedScore.scoreValue }}
         </strong>
 
+        <span class="risk-badge" [class]="
+                getRiskClass(
+                  selectedScore.riskBand
+                )
+              ">
 
-        <span class="risk-badge" [class.risk-low]="selectedCompany.risk === 'low'"
-          [class.risk-medium]="selectedCompany.risk === 'medium'" [class.risk-high]="selectedCompany.risk === 'high'">
-
-          {{ getRiskLabel(selectedCompany.risk) }}
+          {{
+          getRiskLabel(
+          selectedScore.riskBand
+          )
+          }}
 
         </span>
-
-        } @else {
-
-        <strong class="large-score score-empty">
-          Não calculado
-        </strong>
-
-        }
 
       </div>
 
 
       <div class="score-information">
 
-        <div class="score-information-item">
+        <div>
 
           <span>
-            Última avaliação
+            Data do cálculo
           </span>
 
           <strong>
-            {{ selectedCompany.lastScoreDate ?? 'Não realizada' }}
+            {{
+            formatDate(
+            selectedScore.calculationDate
+            )
+            }}
           </strong>
 
         </div>
 
 
-        <div class="score-information-item">
+        <div>
 
           <span>
-            Ocorrências consideradas
+            Status
           </span>
 
           <strong>
-            {{ selectedCompany.occurrences.length }}
+            {{
+            selectedScore.status === 'ACTIVE'
+            ? 'Ativo'
+            : 'Inativo'
+            }}
+          </strong>
+
+        </div>
+
+
+        <div>
+
+          <span>
+            Receita média considerada
+          </span>
+
+          <strong>
+            {{
+            formatCurrency(
+            selectedScore.factorsJson.averageRevenue
+            )
+            }}
+          </strong>
+
+        </div>
+
+
+        <div>
+
+          <span>
+            Ocorrências em aberto
+          </span>
+
+          <strong>
+            {{
+            selectedScore.factorsJson.totalActiveDefaults
+            }}
+          </strong>
+
+        </div>
+
+
+        <div>
+
+          <span>
+            Valor em aberto
+          </span>
+
+          <strong>
+            {{
+            formatCurrency(
+            selectedScore.factorsJson.amountDue
+            )
+            }}
+          </strong>
+
+        </div>
+
+
+        <div>
+
+          <span>
+            Tempo considerado
+          </span>
+
+          <strong>
+
+            {{
+            isSentinelValue(
+            selectedScore.factorsJson.timeMonths
+            )
+            ? 'Não informado'
+            : selectedScore.factorsJson.timeMonths + ' meses'
+            }}
+
           </strong>
 
         </div>
@@ -964,34 +1402,38 @@
       <div class="calculation-information">
 
         <h3>
-          Dados considerados
+          Justificativa
         </h3>
 
-        <ul>
-
-          <li>
-            <span aria-hidden="true">✓</span>
-            Dados cadastrais
-          </li>
-
-          <li>
-            <span aria-hidden="true">✓</span>
-            Informações financeiras
-          </li>
-
-          <li>
-            <span aria-hidden="true">✓</span>
-            Ocorrências registradas
-          </li>
-
-          <li>
-            <span aria-hidden="true">✓</span>
-            Pesos configurados
-          </li>
-
-        </ul>
+        <p>
+          {{ selectedScore.justification }}
+        </p>
 
       </div>
+
+
+      <div class="score-disclaimer">
+
+        {{ selectedScore.disclaimer }}
+
+      </div>
+
+      } @else {
+
+      <div class="empty-state">
+
+        <strong>
+          Score ainda não calculado
+        </strong>
+
+        <p>
+          Calcule o score para obter a classificação
+          de risco da empresa.
+        </p>
+
+      </div>
+
+      }
 
     </div>
 
@@ -1005,11 +1447,23 @@
       </button>
 
 
-      <button type="button" class="button button-primary" (click)="openScoreCalculation(selectedCompany.id)">
+      <button type="button" class="button button-primary" [disabled]="isActionLoading()" (click)="
+            calculateScore()
+          ">
 
-        {{ selectedCompany.score !== null
-        ? 'Recalcular score'
-        : 'Calcular score' }}
+        @if (isActionLoading()) {
+
+        Calculando...
+
+        } @else if (selectedScore) {
+
+        Recalcular score
+
+        } @else {
+
+        Calcular score
+
+        }
 
       </button>
 
@@ -1020,13 +1474,17 @@
 </div>
 
 }
--->
+
 
 <!-- =====================================================
      MODAL — OCORRÊNCIAS
      ===================================================== -->
-<!--
-@if (activeModal === 'occurrences' && selectedCompany) {
+
+@if (
+activeModal === 'occurrences'
+&&
+selectedCompany
+) {
 
 <div class="modal-backdrop" (click)="closeAllModals()">
 
@@ -1046,13 +1504,15 @@
         </h2>
 
         <p>
-          {{ selectedCompany.legalName }}
+          {{
+          selectedCompany.firm.registeredCompanyName
+          }}
         </p>
 
       </div>
 
 
-      <button type="button" class="modal-close" aria-label="Fechar" (click)="closeAllModals()">
+      <button type="button" class="modal-close" aria-label="Fechar ocorrências" (click)="closeAllModals()">
 
         ×
 
@@ -1063,84 +1523,124 @@
 
     <div class="modal-content">
 
-      <div class="occurrence-summary">
+      @if (isActionLoading()) {
 
-        <div>
+      <div class="loading-state" role="status">
 
-          <span>
-            Total de ocorrências
-          </span>
-
-          <strong>
-            {{ selectedCompany.occurrences.length }}
-          </strong>
-
-        </div>
-
-
-        <div>
-
-          <span>
-            Última ocorrência
-          </span>
-
-          <strong>
-            {{ selectedCompany.occurrences[0]?.date ?? 'Nenhuma' }}
-          </strong>
-
-        </div>
+        Carregando ocorrências...
 
       </div>
 
+      } @else if (selectedOccurrences.length) {
 
       <div class="occurrence-list">
 
-        @if (selectedCompany.occurrences.length > 0) {
-
         @for (
-        occurrence of selectedCompany.occurrences;
+        occurrence of selectedOccurrences;
         track occurrence.id
         ) {
 
         <article class="occurrence-item">
 
+          <div class="occurrence-header">
 
-          <div class="occurrence-content">
+            <div>
 
-            <div class="occurrence-header">
-              <time>
-                {{ occurrence.date }}
-              </time>
+              <strong>
+                Ocorrência #{{ occurrence.id }}
+              </strong>
+
+              <span>
+                {{
+                formatDate(
+                occurrence.dateOccurrence
+                )
+                }}
+              </span>
+
+            </div>
+
+            <span class="occurrence-status" [class.is-resolved]="
+                      occurrence.statusResolved
+                    " [class.is-open]="
+                      !occurrence.statusResolved
+                    ">
+
+              {{
+              occurrence.statusResolved
+              ? 'Resolvida'
+              : 'Em aberto'
+              }}
+
+            </span>
+
+          </div>
+
+
+          <div class="occurrence-details">
+
+            <div>
+
+              <span>
+                Valor devido
+              </span>
+
+              <strong>
+                {{
+                formatCurrency(
+                occurrence.averageRevenue
+                )
+                }}
+              </strong>
+
             </div>
 
 
-            <p>
-              {{ occurrence.description }}
-            </p>
+            <div>
+
+              <span>
+                Criação
+              </span>
+
+              <strong>
+                {{
+                formatDate(
+                occurrence.creationDate
+                )
+                }}
+              </strong>
+
+            </div>
 
           </div>
+
+
+          <p>
+            {{ occurrence.description }}
+          </p>
 
         </article>
 
         }
 
-        } @else {
+      </div>
 
-        <div class="empty-state">
+      } @else {
 
-          <strong>
-            Nenhuma ocorrência registrada
-          </strong>
+      <div class="empty-state">
 
-          <p>
-            Esta empresa ainda não possui ocorrências cadastradas.
-          </p>
+        <strong>
+          Nenhuma ocorrência encontrada
+        </strong>
 
-        </div>
-
-        }
+        <p>
+          Esta empresa não possui ocorrências
+          disponíveis para consulta.
+        </p>
 
       </div>
+
+      }
 
     </div>
 
@@ -1154,9 +1654,12 @@
       </button>
 
 
-      <button type="button" class="button button-primary" (click)="openNewOccurrence(selectedCompany.id)">
+      <button type="button" class="button button-primary" (click)="
+            openNewOccurrence(
+              selectedCompany!
+            )
+          ">
 
-        <span aria-hidden="true">+</span>
         Nova ocorrência
 
       </button>
@@ -1168,18 +1671,22 @@
 </div>
 
 }
--->
+
 
 <!-- =====================================================
      MODAL — NOVA OCORRÊNCIA
      ===================================================== -->
-<!--
-@if (activeModal === 'new-occurrence' && selectedCompany) {
+
+@if (
+activeModal === 'new-occurrence'
+&&
+selectedCompany
+) {
 
 <div class="modal-backdrop" (click)="closeAllModals()">
 
-  <section class="company-modal occurrence-form-modal" role="dialog" aria-modal="true"
-    aria-labelledby="new-occurrence-title" (click)="$event.stopPropagation()">
+  <section class="company-modal" role="dialog" aria-modal="true" aria-labelledby="new-occurrence-title"
+    (click)="$event.stopPropagation()">
 
     <header class="modal-header">
 
@@ -1194,7 +1701,9 @@
         </h2>
 
         <p>
-          {{ selectedCompany.legalName }}
+          {{
+          selectedCompany.firm.registeredCompanyName
+          }}
         </p>
 
       </div>
@@ -1214,7 +1723,15 @@
       <div class="selected-company">
 
         <div class="company-icon">
-          {{ selectedCompany.legalName.charAt(0) }}
+
+          {{
+          selectedCompany
+          .firm
+          .registeredCompanyName
+          .charAt(0)
+          .toUpperCase()
+          }}
+
         </div>
 
         <div>
@@ -1224,11 +1741,20 @@
           </span>
 
           <strong>
-            {{ selectedCompany.legalName }}
+            {{
+            selectedCompany
+            .firm
+            .registeredCompanyName
+            }}
           </strong>
 
           <small>
-            CNPJ {{ selectedCompany.cnpj }}
+            CNPJ
+            {{
+            formatCnpj(
+            selectedCompany.firm.cnpj
+            )
+            }}
           </small>
 
         </div>
@@ -1236,44 +1762,17 @@
       </div>
 
 
-      <div class="occurrence-form">
+      <div class="empty-state">
 
-        <div class="form-field">
+        <strong>
+          Formulário de ocorrência
+        </strong>
 
-          <label for="occurrence-date">
-            Data da ocorrência
-          </label>
-
-          <input id="occurrence-date" type="date">
-
-        </div>
-
-        <div class="form-field">
-
-          <label for="occurrence-Debt">
-            Valor da dívida
-          </label>
-
-          <input id="averageRevenue" type="number" step="0.01" placeholder="Ex: 4500.00"
-            formControlName="averageRevenue" />
-
-
-        </div>
-        <div class="form-field form-field-full">
-
-          <label for="occurrence-description">
-            Descrição
-          </label>
-
-          <textarea id="occurrence-description" rows="4" maxlength="500"
-            placeholder="Descreva a ocorrência registrada.">
-            </textarea>
-
-          <span class="field-help">
-            Informe os detalhes relevantes para a análise da empresa.
-          </span>
-
-        </div>
+        <p>
+          A estrutura de criação de ocorrência continua
+          preparada para receber o formulário conectado
+          ao OccurrenceService.
+        </p>
 
       </div>
 
@@ -1284,14 +1783,7 @@
 
       <button type="button" class="button button-secondary" (click)="closeAllModals()">
 
-        Cancelar
-
-      </button>
-
-
-      <button type="button" class="button button-primary" (click)="registerOccurrence()">
-
-        Registrar ocorrência
+        Fechar
 
       </button>
 
@@ -1303,12 +1795,16 @@
 
 }
 
--->
+
 <!-- =====================================================
      MODAL — EXCLUSÃO
      ===================================================== -->
-<!--
-@if (activeModal === 'delete' && selectedCompany) {
+
+@if (
+activeModal === 'delete'
+&&
+selectedCompany
+) {
 
 <div class="modal-backdrop" (click)="closeAllModals()">
 
@@ -1344,18 +1840,27 @@
       <div class="delete-warning">
 
         <div class="delete-icon" aria-hidden="true">
+
           !
+
         </div>
 
         <div>
 
           <h3>
-            Excluir {{ selectedCompany.legalName }}?
+
+            Excluir
+            {{
+            selectedCompany
+            .firm
+            .registeredCompanyName
+            }}?
+
           </h3>
 
           <p>
-            Esta ação removerá a empresa do cadastro do sistema.
-            Os dados relacionados também poderão ser afetados.
+            Esta ação removerá a empresa do cadastro
+            do sistema.
           </p>
 
         </div>
@@ -1370,11 +1875,20 @@
         </span>
 
         <strong>
-          {{ selectedCompany.legalName }}
+          {{
+          selectedCompany
+          .firm
+          .registeredCompanyName
+          }}
         </strong>
 
         <small>
-          CNPJ {{ selectedCompany.cnpj }}
+          CNPJ
+          {{
+          formatCnpj(
+          selectedCompany.firm.cnpj
+          )
+          }}
         </small>
 
       </div>
@@ -1396,9 +1910,17 @@
       </button>
 
 
-      <button type="button" class="button button-danger" (click)="deleteCompany()">
+      <button type="button" class="button button-danger" [disabled]="isActionLoading()" (click)="deleteCompany()">
+
+        @if (isActionLoading()) {
+
+        Excluindo...
+
+        } @else {
 
         Excluir empresa
+
+        }
 
       </button>
 
@@ -1408,4 +1930,4 @@
 
 </div>
 
-}-->
+}

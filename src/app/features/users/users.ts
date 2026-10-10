@@ -37,6 +37,7 @@ import { ModalTypeUser } from '../../core/models/users/modal-type-user';
 import { UserService } from '../../core/services/users/user-service';
 import { NotificationService } from '../../shared/services/notification/notification-service';
 import { Page } from '../../core/models/Page';
+import { MetricsStateService } from '../../core/services/matric/metrics-state-service';
 
 @Component({
   selector: 'app-users',
@@ -54,6 +55,8 @@ export class Users implements OnInit {
   private readonly userService = inject(UserService);
   private readonly notificationService = inject(NotificationService);
   private readonly destroyRef = inject(DestroyRef); // Injetado
+  private readonly metricsState = inject(MetricsStateService);
+  protected readonly userMetrics = this.metricsState.metricsUser;
 
   @ViewChild('modalFirstControl')
   private modalFirstControl?: ElementRef<HTMLElement>;
@@ -118,33 +121,11 @@ export class Users implements OnInit {
 
   });
 
-
-  protected readonly totalUsers =
-    computed(() =>
-      this.users()?.totalElements ?? 0
-    );
-
-  protected readonly activeUsers =
-    computed(() =>
-      this.users()?.content.filter(
-        user => user.status === 'ACTIVE'
-      ).length ?? 0
-    );
-
-  protected readonly adminUsers =
-    computed(() =>
-      this.users()?.content.filter(
-        user => user.type === 'ADMIN'
-      ).length ?? 0
-    );
-
-  protected readonly analystUsers =
-    computed(() =>
-      this.users()?.content.filter(
-        user => user.type === 'CREDIT_ANALYST'
-      ).length ?? 0
-    );
-
+  protected readonly totalUsers = computed(() => this.userMetrics()?.totalUsersCount ?? 0);
+  protected readonly activeUsers = computed(() => this.userMetrics()?.activeUsersCount ?? 0);
+  protected readonly adminUsers = computed(() => this.userMetrics()?.adminUsersCount ?? 0);
+  protected readonly analystUsers = computed(() => this.userMetrics()?.analystUsersCount ?? 0);
+  
   ngOnInit(): void {
     this.setupReactiveSearchPipeline();
   }
@@ -209,6 +190,7 @@ export class Users implements OnInit {
 
 
   private reloadUsersManually(): void {
+    this.metricsState.loadUserMetrics().subscribe();
     this.forceReload$.next(Date.now());
   }
 

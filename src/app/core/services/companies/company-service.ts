@@ -8,6 +8,7 @@ import { FirmWithScore } from '../../models/companies/firm-with-score';
 import { CompanyCreate } from '../../models/companies/company-create';
 import { Page } from '../../models/Page';
 import { CompanyFilter } from '../../models/companies/company-filter';
+import { CompanyUpdate } from '../../models/companies/company-update';
 
 @Service()
 export class CompanyService {
@@ -68,8 +69,35 @@ export class CompanyService {
             );
     }
 
-    update(company: Company): void {
-        // ...
+    update(id: number, company: CompanyUpdate): Observable<Company> {
+        return this.http
+            .patch<Company>(
+                `${this.API_URL}/api/v1/companies/${id}`,
+                company
+            )
+            .pipe(
+                catchError(
+                    (errorResponse: HttpErrorResponse) => {
+
+                        const apiError =
+                            errorResponse.error as
+                            ApiErrorResponse | undefined;
+
+                        const message =
+                            apiError?.message ||
+                            (
+                                typeof errorResponse.error === 'string'
+                                    ? errorResponse.error
+                                    : null
+                            ) ||
+                            'Ocorreu um erro inesperado ao atualizar a empresa.';
+
+                        return throwError(
+                            () => new Error(message)
+                        );
+                    }
+                )
+            );
     }
 
 
@@ -94,7 +122,7 @@ export class CompanyService {
             size: size.toString()
         });
 
-        
+
 
         // Adiciona os parâmetros de filtro à URL
         if (filter.query) {

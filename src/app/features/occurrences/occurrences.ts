@@ -84,7 +84,7 @@ export class Occurrences implements OnInit {
       >;
     }
     | undefined;
-    
+
   /*
    * =========================================================
    * PAGINATION / LOADING
@@ -103,7 +103,7 @@ export class Occurrences implements OnInit {
   /**
    * Quantidade de registros por página.
    */
-  protected readonly pageSize = signal(20);
+  protected readonly pageSize = signal(10);
 
 
   /*
@@ -1249,6 +1249,75 @@ export class Occurrences implements OnInit {
       ? 'resolved'
       : 'open'
       }`;
+
+  }
+
+  formatCurrency(
+    value: number | null | undefined
+  ): string {
+
+    if (
+      value === null
+      ||
+      value === undefined
+      ||
+      this.isSentinelValue(value)
+    ) {
+      return 'Não informado';
+    }
+
+    return new Intl.NumberFormat(
+      'pt-BR',
+      {
+        style: 'currency',
+        currency: 'BRL',
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+      }
+    ).format(
+      this.normalizeMoney(value)
+    );
+
+  }
+
+  isSentinelValue(
+    value: unknown
+  ): boolean {
+
+    return Number(value)
+      === 1073741824;
+
+  }
+
+  normalizeMoney(
+    value: number | string | null
+  ): number {
+
+    if (
+      value === null
+      ||
+      value === ''
+    ) {
+      return 0;
+    }
+
+    const numericValue =
+      Number(value);
+
+    if (
+      !Number.isFinite(numericValue)
+      ||
+      numericValue < 0
+    ) {
+      return 0;
+    }
+
+    return Number(
+      Math.min(
+        numericValue,
+        999999999999.99
+      ).toFixed(2)
+    );
 
   }
 

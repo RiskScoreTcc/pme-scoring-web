@@ -1529,6 +1529,72 @@ tbody tr:last-child td {
   line-height: 1.6;
 }
 
+.occurrence-filters {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 20px;
+}
+
+.occurrence-filters .filter-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: min(100%, 260px);
+}
+
+.occurrence-filters label {
+  color: #334155;
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.occurrence-filters select {
+  width: 100%;
+  min-height: 42px;
+  padding: 9px 12px;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  background: #fff;
+  color: #0f172a;
+  font: inherit;
+}
+
+.occurrence-filters select:focus-visible,
+.occurrence-pagination button:focus-visible {
+  outline: 3px solid #93c5fd;
+  outline-offset: 2px;
+}
+
+.occurrence-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid #e2e8f0;
+}
+
+.occurrence-pagination span {
+  color: #475569;
+  font-size: 0.875rem;
+  text-align: center;
+}
+
+@media (max-width: 480px) {
+  .occurrence-pagination {
+    flex-wrap: wrap;
+  }
+
+  .occurrence-pagination button {
+    flex: 1;
+  }
+
+  .occurrence-pagination span {
+    order: -1;
+    width: 100%;
+  }
+}
 
 /* =========================================================
    NOVA OCORRÊNCIA

@@ -5,6 +5,7 @@ import { catchError } from 'rxjs/operators';
 import { ApiErrorResponse } from '../../models/api-error-response';
 import { ScoreRequest } from '../../models/score/score-request';
 import { JwtDecoderService } from '../jwt-decoder/jwt-decoder-service';
+import { CalculatedScore } from '../../models/score/calculated-score';
 
 @Service()
 export class ScoreService {
@@ -13,7 +14,7 @@ export class ScoreService {
     private readonly jwtService = inject(JwtDecoderService);
 
 
-    calculateScore(companyId: number): Observable<void> {
+    calculateScore(companyId: number): Observable<CalculatedScore> {
         const user = this.jwtService.getUser();
 
         const scoreRequest: ScoreRequest = {
@@ -22,7 +23,7 @@ export class ScoreService {
         };
 
         return this.http
-            .post<void>(`${this.API_URL}/api/v1/calculated-scores`, scoreRequest)
+            .post<CalculatedScore>(`${this.API_URL}/api/v1/calculated-scores`, scoreRequest)
             .pipe(
                 catchError((errorResponse: HttpErrorResponse) => {
                     const apiError = errorResponse.error as ApiErrorResponse | undefined;

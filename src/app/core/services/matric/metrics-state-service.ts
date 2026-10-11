@@ -4,10 +4,11 @@ import { Observable, forkJoin, tap, catchError, EMPTY } from 'rxjs';
 import { UserMetrics } from '../../models/users/user-metrics';
 import { CompanyMetrics } from '../../models/companies/company-metrics';
 import { OccurrenceMetrics } from '../../models/occurences/occurrence-metrics';
+import { environment } from '../../../../environments/environment';
 
 @Service()
 export class MetricsStateService {
-    private readonly API_URL = 'http://localhost:8080';
+    private readonly API_URL = environment.apiUrl;
     private http = inject(HttpClient);
 
     private metricsUserSignal = signal<UserMetrics | null>(null);
@@ -46,14 +47,14 @@ export class MetricsStateService {
 
 
     loadUserMetrics(): Observable<UserMetrics> {
-        return this.http.get<UserMetrics>(`${this.API_URL}/api/v1/users/metrics`).pipe(
+        return this.http.get<UserMetrics>(`${this.API_URL}users/metrics`).pipe(
             tap((data) => {
                 this.metricsUserSignal.set(data)
             })
         );
     }
     loadCompanyMetrics(): Observable<CompanyMetrics> {
-        return this.http.get<CompanyMetrics>(`${this.API_URL}/api/v1/companies/metrics`).pipe(
+        return this.http.get<CompanyMetrics>(`${this.API_URL}companies/metrics`).pipe(
             tap((data) => {
                 this.metricsCompanySignal.set(data)
             })
@@ -61,7 +62,7 @@ export class MetricsStateService {
     }
 
     loadOccurrenceMetrics(): Observable<OccurrenceMetrics> {
-        return this.http.get<OccurrenceMetrics>(`${this.API_URL}/api/v1/default-occurrences/metrics`).pipe(
+        return this.http.get<OccurrenceMetrics>(`${this.API_URL}default-occurrences/metrics`).pipe(
             tap((data) => {
                 this.metricsOccurrenceSignal.set(data)
             })

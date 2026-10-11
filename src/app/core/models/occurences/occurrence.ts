@@ -7,7 +7,7 @@ export interface Occurrence {
   firm?: CompanySummary;
   type?: string;
   dateOccurrence?:string
-  averageRevenue?: number;
+  amountDue?: number;
   description?: string;
   statusResolved?: boolean| undefined;
   creationDate?: string;

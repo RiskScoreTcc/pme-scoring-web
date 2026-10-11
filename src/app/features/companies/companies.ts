@@ -34,7 +34,6 @@ import {
 
 import { Router, RouterLink } from '@angular/router';
 
-import { Company } from '../../core/models/companies/company';
 import { CompanyService } from '../../core/services/companies/company-service';
 
 import { ClassificationType } from '../../core/models/classification-type';
@@ -151,6 +150,8 @@ export class Companies implements OnInit {
   protected readonly isSaving =
     signal(false);
 
+  protected readonly occurrenceCount =
+    signal(0);
 
   // =========================================================
   // RESULTADO DA BUSCA
@@ -180,24 +181,14 @@ export class Companies implements OnInit {
   // OCORRÊNCIAS
   // =========================================================
 
-  selectedOccurrences:
-    Occurrence[] = [
-      {
-        id: 1,
-        firm: {
-          id: 1,
-          cnpj: '12345656565',
-          companyName: 'dasdasdsdas'
-        },
-        type: 'ACTIVE',
-        dateOccurrence: '20/10/2026',
-        averageRevenue: 55656,
-        description: 'dasdasdasdasd ew',
-        statusResolved: true,
-        creationDate: '20/10/2006'
-      }
+  selectedOccurrences: Occurrence[] = [];
 
-    ];
+  protected readonly occurrencePage = signal(0);
+  protected readonly occurrencePageSize = signal(10);
+  protected readonly occurrenceTotalPages = signal(0);
+
+  protected readonly selectedOccurrenceType =
+    signal<'CLOSED' | 'OPEN' | null>(null);
 
 
   // =========================================================
@@ -224,7 +215,7 @@ export class Companies implements OnInit {
       [
         Validators.required,
         Validators.minLength(14),
-        Validators.maxLength(14)
+        Validators.maxLength(18)
       ]
     ],
 
@@ -251,7 +242,7 @@ export class Companies implements OnInit {
       [
         Validators.required,
         Validators.min(0),
-        Validators.max(1200)
+        Validators.max(9999)
       ]
     ],
 
@@ -453,7 +444,7 @@ export class Companies implements OnInit {
     this.selectedScore =
       company.calculatedScore ?? null;
 
-    this.selectedOccurrences = [];
+    this.openOccurrences(company);
 
     this.isEditing.set(false);
 
@@ -563,20 +554,6 @@ export class Companies implements OnInit {
     this.isSaving.set(true);
 
 
-    /*
-     * =======================================================
-     * INTEGRAÇÃO COM API
-     * =======================================================
-     *
-     * Use aqui o método de atualização existente
-     * no seu CompanyService.
-     *
-     * Exemplo:
-     *
-     * this.companyService.update(companyId, payload)
-     *
-     
-
     this.companyService
       .update(companyId, payload)
       .pipe(
@@ -643,7 +620,6 @@ export class Companies implements OnInit {
         }
 
       });
-*/
   }
 
 
@@ -745,6 +721,8 @@ export class Companies implements OnInit {
       return;
     }
 
+    const company = this.selectedCompany
+
     const companyId =
       this.selectedCompany.firm.id;
 
@@ -768,6 +746,14 @@ export class Companies implements OnInit {
           );
 
           this.reloadCompanies();
+
+          if (!this.selectedScore) {
+            this.openCompanyDetails(company);
+          }
+
+          this.selectedScore = {
+            ...score
+          };
 
         },
 
@@ -801,60 +787,86 @@ export class Companies implements OnInit {
 
     this.activeModal = 'occurrences';
 
-    this.selectedOccurrences = [];
+    this.occurrencePage.set(0);
+    this.selectedOccurrenceType.set(null);
+
+    this.loadCompanyOccurrences();
+
+  }
+
+  private loadCompanyOccurrences(): void {
+    if (!this.selectedCompany) {
+      return;
+    }
 
     this.isActionLoading.set(true);
+    this.selectedOccurrences = [];
 
+    const statusResolved =
+      this.selectedOccurrenceType() === 'OPEN'
+        ? false
+        : this.selectedOccurrenceType() === 'CLOSED'
+          ? true
+          : undefined;
 
-    /*
-     * A assinatura abaixo deve corresponder ao
-     * OccurrenceService existente.
-     */
+    const filter = {
+      query: this.selectedCompany.firm.cnpj,
+      statusResolved: statusResolved
+    };
 
     this.occurrenceService
       .searchOccurrences(
-        0,
-        50,
-        undefined,
+        this.occurrencePage(),
+        this.occurrencePageSize(),
+        filter,
         'dateOccurrence,desc'
       )
       .pipe(
         takeUntilDestroyed(this.destroyRef)
       )
       .subscribe({
-
         next: response => {
-
-          const companyId =
-            company.firm.id;
-
-          this.selectedOccurrences =
-            response.content.filter(
-              occurrence =>
-                occurrence.firm?.id
-                ===
-                companyId
-            );
-
+          this.selectedOccurrences = response.content;
+          this.occurrenceCount.set(response.totalElements);
+          this.occurrenceTotalPages.set(response.totalPages);
           this.isActionLoading.set(false);
-
         },
 
         error: error => {
-
           this.isActionLoading.set(false);
 
           this.notificationService.error(
             'Falha ao carregar ocorrências',
-            error?.message
-            ||
+            error?.message ||
             'Não foi possível carregar as ocorrências da empresa.'
           );
-
         }
-
       });
+  }
 
+  onOccurrenceTypeChange(value: string): void {
+    const type =
+      value === 'CLOSED' || value === 'OPEN'
+        ? value
+        : null;
+
+    this.selectedOccurrenceType.set(type);
+    this.occurrencePage.set(0);
+
+    this.loadCompanyOccurrences();
+  }
+
+  goToOccurrencePage(page: number): void {
+    if (
+      page < 0 ||
+      page >= this.occurrenceTotalPages() ||
+      page === this.occurrencePage()
+    ) {
+      return;
+    }
+
+    this.occurrencePage.set(page);
+    this.loadCompanyOccurrences();
   }
 
 
@@ -862,19 +874,19 @@ export class Companies implements OnInit {
   // NOVA OCORRÊNCIA
   // =========================================================
 
-openNewOccurrence(company: FirmWithScore): void {
-  this.router.navigate(['/occurrences'], {
-    state: {
-      openNewOccurrence: true,
-      company: {
-        id: company.firm.id,
-        registeredCompanyName:
-          company.firm.registeredCompanyName,
-        cnpj: company.firm.cnpj
+  openNewOccurrence(company: FirmWithScore): void {
+    this.router.navigate(['/occurrences'], {
+      state: {
+        openNewOccurrence: true,
+        company: {
+          id: company.firm.id,
+          registeredCompanyName:
+            company.firm.registeredCompanyName,
+          cnpj: company.firm.cnpj
+        }
       }
-    }
-  });
-}
+    });
+  }
 
 
   // =========================================================

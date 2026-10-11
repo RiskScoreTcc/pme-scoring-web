@@ -256,6 +256,10 @@
             </th>
 
             <th scope="col">
+              Valor
+            </th>
+
+            <th scope="col">
               Status
             </th>
 
@@ -317,6 +321,21 @@
               </div>
 
             </td>
+
+            <!-- Valor -->
+
+            <td>
+              <div class="occurrence-cell">
+                <strong>
+                  {{
+                  formatCurrency(
+                  occurrence.amountDue
+                  )
+                  }}
+                </strong>
+              </div>
+            </td>
+
 
 
             <!-- Status -->
@@ -587,6 +606,24 @@ selectedOccurrence
 
           <strong>
             {{ selectedOccurrence.firm?.cnpj }}
+          </strong>
+
+        </div>
+
+        <!-- Valor -->
+
+        <div class="detail-item">
+
+          <span>
+            Valor
+          </span>
+
+          <strong>
+            {{
+            formatCurrency(
+            selectedOccurrence.amountDue
+            )
+            }}
           </strong>
 
         </div>

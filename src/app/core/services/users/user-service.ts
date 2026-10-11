@@ -8,16 +8,17 @@ import { UserResponse } from '../../models/users/user-response';
 import { UserFilter } from '../../models/users/user-filter';
 import { ApiErrorResponse } from '../../models/api-error-response';
 import { Page } from '../../models/Page';
+import { environment } from '../../../../environments/environment';
 
 @Service()
 export class UserService {
-    private readonly API_URL = 'http://localhost:8080';
+    private readonly API_URL = environment.apiUrl;
     private readonly http = inject(HttpClient);
 
 
     create(userCreate: UserCreate): Observable<UserResponse> {
         return this.http
-            .post<UserResponse>(`${this.API_URL}/api/v1/users`, userCreate)
+            .post<UserResponse>(`${this.API_URL}users`, userCreate)
             .pipe(
                 catchError((errorResponse: HttpErrorResponse) => {
                     const apiError = errorResponse.error as ApiErrorResponse;
@@ -32,7 +33,7 @@ export class UserService {
     update(userId: string, userUpdate: UserUpdate): Observable<UserResponse> {
 
         return this.http
-            .patch<UserResponse>(`${this.API_URL}/api/v1/users/${userId}`, userUpdate)
+            .patch<UserResponse>(`${this.API_URL}users/${userId}`, userUpdate)
             .pipe(
                 catchError((errorResponse: HttpErrorResponse) => {
                     const apiError = errorResponse.error as ApiErrorResponse;
@@ -47,7 +48,7 @@ export class UserService {
     delete(userId: string): Observable<UserResponse> {
 
         return this.http
-            .delete<UserResponse>(`${this.API_URL}/api/v1/users/${userId}`)
+            .delete<UserResponse>(`${this.API_URL}users/${userId}`)
             .pipe(
                 catchError((errorResponse: HttpErrorResponse) => {
                     const apiError = errorResponse.error as ApiErrorResponse;
@@ -66,7 +67,7 @@ export class UserService {
         });
 
         return this.http
-            .get<Page<UserResponse>>(`${this.API_URL}/api/v1/users?${params}`)
+            .get<Page<UserResponse>>(`${this.API_URL}users?${params}`)
             .pipe(
                 catchError((errorResponse: HttpErrorResponse) => {
                     const apiError = errorResponse.error as ApiErrorResponse;
@@ -96,7 +97,7 @@ export class UserService {
         }
 
         return this.http
-            .get<Page<UserResponse>>(`${this.API_URL}/api/v1/users/filter?${params}`)
+            .get<Page<UserResponse>>(`${this.API_URL}users/filter?${params}`)
             .pipe(
                 catchError((errorResponse: HttpErrorResponse) => {
                     const apiError = errorResponse.error as ApiErrorResponse;

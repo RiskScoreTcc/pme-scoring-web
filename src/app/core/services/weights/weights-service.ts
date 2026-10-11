@@ -4,15 +4,16 @@ import { catchError, Observable, throwError } from 'rxjs';
 import { ApiErrorResponse } from '../../models/api-error-response';
 import { WeightResponse } from '../../models/weights/weight-response';
 import { WeightRequest } from '../../models/weights/weight-request';
+import { environment } from '../../../../environments/environment';
 
 @Service()
 export class WeightsService {
-    private readonly API_URL = 'http://localhost:8080';
+    private readonly API_URL = environment.apiUrl;
     private readonly http = inject(HttpClient);
 
     searchWeightsActive(): Observable<WeightResponse> {
         return this.http
-            .get<WeightResponse>(`${this.API_URL}/api/v1/weight-configurations/active`)
+            .get<WeightResponse>(`${this.API_URL}weight-configurations/active`)
             .pipe(
                 catchError((errorResponse: HttpErrorResponse) => {
                     const apiError = errorResponse.error as ApiErrorResponse;
@@ -26,7 +27,7 @@ export class WeightsService {
 
     saveConfiguration(payload: Partial<WeightRequest>): Observable<WeightResponse> {
         return this.http
-            .post<WeightResponse>(`${this.API_URL}/api/v1/weight-configurations`, payload)
+            .post<WeightResponse>(`${this.API_URL}weight-configurations`, payload)
             .pipe(
                 catchError((errorResponse: HttpErrorResponse) => {
                     const apiError = errorResponse.error as ApiErrorResponse;

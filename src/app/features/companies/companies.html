@@ -828,7 +828,7 @@ selectedCompany
 
               <div class="number-input">
 
-                <input id="detail-age" type="number" formControlName="ageInMonths" min="0" max="1200" step="1"
+                <input id="detail-age" type="number" formControlName="ageInMonths" min="0" max="9999" step="1"
                   inputmode="numeric" [readonly]="!isEditing()">
 
                 <span>
@@ -1002,24 +1002,7 @@ selectedCompany
 
             <strong>
               {{
-              selectedOccurrences.length
-              ?? 0
-              }}
-            </strong>
-
-          </div>
-
-
-          <div>
-
-            <span>
-              Ocorrências ativas
-            </span>
-
-            <strong>
-              {{
-              selectedCompany
-              ?? 0
+              occurrenceCount()
               }}
             </strong>
 
@@ -1440,7 +1423,7 @@ selectedCompany
 
     <footer class="modal-footer">
 
-      <button type="button" class="button button-secondary" (click)="closeAllModals()">
+      <button type="button" class="button button-secondary" (click)="openCompanyDetails(selectedCompany)">
 
         Fechar
 
@@ -1486,7 +1469,7 @@ activeModal === 'occurrences'
 selectedCompany
 ) {
 
-<div class="modal-backdrop" (click)="closeAllModals()">
+<div class="modal-backdrop" (click)="openCompanyDetails(selectedCompany)">
 
   <section class="company-modal occurrence-modal" role="dialog" aria-modal="true" aria-labelledby="occurrences-title"
     (click)="$event.stopPropagation()">
@@ -1522,6 +1505,21 @@ selectedCompany
 
 
     <div class="modal-content">
+      <div class="occurrence-filters">
+        <div class="filter-field">
+          <label for="occurrence-type-filter">
+            Situação do registro
+          </label>
+
+          <select id="occurrence-type-filter" [value]="selectedOccurrenceType() ?? ''"
+            (change)="onOccurrenceTypeChange($any($event.target).value)">
+
+            <option value="">Todas as situações</option>
+            <option value="OPEN">Aberto</option>
+            <option value="CLOSED">Fechado</option>
+          </select>
+        </div>
+      </div>
 
       @if (isActionLoading()) {
 
@@ -1531,9 +1529,28 @@ selectedCompany
 
       </div>
 
-      } @else if (selectedOccurrences.length) {
+      } @else if (!isActionLoading() && occurrenceTotalPages() > 0) {
 
       <div class="occurrence-list">
+
+        <nav class="occurrence-pagination" aria-label="Paginação das ocorrências">
+
+          <button type="button" class="button button-secondary" [disabled]="occurrencePage() === 0"
+            (click)="goToOccurrencePage(occurrencePage() - 1)">
+            Anterior
+          </button>
+
+          <span aria-live="polite">
+            Página {{ occurrencePage() + 1 }}
+            de {{ occurrenceTotalPages() }}
+          </span>
+
+          <button type="button" class="button button-secondary"
+            [disabled]="occurrencePage() >= occurrenceTotalPages() - 1"
+            (click)="goToOccurrencePage(occurrencePage() + 1)">
+            Próxima
+          </button>
+        </nav>
 
         @for (
         occurrence of selectedOccurrences;
@@ -1588,7 +1605,7 @@ selectedCompany
               <strong>
                 {{
                 formatCurrency(
-                occurrence.averageRevenue
+                occurrence.amountDue
                 )
                 }}
               </strong>

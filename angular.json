@@ -40,12 +40,18 @@
                 {
                   "type": "anyComponentStyle",
                   "maximumWarning": "4kB",
-                  "maximumError": "8kB"
+                  "maximumError": "20kB"
                 }
               ],
               "outputHashing": "all"
             },
-            "development": {
+            "local": {
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.development.ts"
+                }
+              ],
               "optimization": false,
               "extractLicenses": false,
               "sourceMap": true
@@ -59,11 +65,11 @@
             "production": {
               "buildTarget": "pme-scoring-web:build:production"
             },
-            "development": {
-              "buildTarget": "pme-scoring-web:build:development"
+            "local": {
+              "buildTarget": "pme-scoring-web:build:local"
             }
           },
-          "defaultConfiguration": "development"
+          "defaultConfiguration": "local"
         },
         "test": {
           "builder": "@angular/build:unit-test"
